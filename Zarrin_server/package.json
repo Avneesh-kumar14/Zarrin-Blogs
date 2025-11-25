@@ -1,11 +1,16 @@
 {
   "name": "zarrin_server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Zarrin Blogs MERN Backend Server",
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "dev": "nodemon index"
+    "dev": "nodemon index",
+    "build": "echo 'Backend build complete'"
+  },
+  "engines": {
+    "node": "16.x",
+    "npm": "8.x"
   },
   "author": "",
   "license": "ISC",

@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: zarrin-blogs-backend
+    runtime: node
+    buildCommand: "cd Zarrin_server && npm install"
+    startCommand: "cd Zarrin_server && npm start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URL
+        scope: project
+      - key: JWT_SECRET
+        scope: project
+      - key: CLOUD_NAME
+        scope: project
+      - key: CLOUD_API_KEY
+        scope: project
+      - key: CLOUD_API_SECRET
+        scope: project
+      - key: CLOUDINARY_URL
+        scope: project
+      - key: CORS_ORIGIN
+        value: "https://zarrin-blogs-frontend.vercel.app"
+    healthCheckPath: /health

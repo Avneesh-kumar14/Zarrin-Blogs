@@ -17,13 +17,20 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'https://zarrin-blogs-frontend.vercel.app',
+    process.env.CORS_ORIGIN || '*'
+  ],
   credentials: true
 }));
 app.use(express.json());
 
 const PORT = process.env.PORT || 8200;
 
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -31,10 +38,13 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/upload', uploadRoutes);
 
-
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 // Catch-all 404 handler for unknown API routes
-app.use('/api', (req, res) => {
+app.use((req, res) => {
     res.status(404).json({ error: 'API route not found' });
 });
 
@@ -51,13 +61,14 @@ app.use((err, req, res, next) => {
 // Connect to MongoDB before starting the server
 const startServer = async () => {
   try {
-    await connectDB(); // Call the connectDB function
+    await connectDB();
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-      console.log('MongoDB Connection State:', mongoose.connection.readyState);
+      console.log(`✅ Backend API running on http://localhost:${PORT}`);
+      console.log('📊 MongoDB Connection State:', mongoose.connection.readyState);
+      console.log('🔧 Environment:', process.env.NODE_ENV || 'development');
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 };
@@ -65,4 +76,3 @@ const startServer = async () => {
 startServer();
 
 module.exports = app;
-
