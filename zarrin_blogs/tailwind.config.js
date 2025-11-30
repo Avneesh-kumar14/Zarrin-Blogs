@@ -17,7 +17,7 @@ module.exports = {
         'custom-x':'576px',
       },
       colors: {
-        primary: '#7C4EE4',
+        primary: '#2563EB',
         dark: '#333333',
         secondary: '#666666',
         tertiary: '#FFFFFF',
