@@ -40,7 +40,7 @@ const Bookmarks = ({ isAuthenticated }) => {
       }
 
       const data = await res.json();
-      setBookmarks(data.bookmarks || []);
+      setBookmarks(Array.isArray(data) ? data : (data.bookmarks || []));
     } catch (err) {
       setAlert({ type: 'error', message: 'Failed to load bookmarks: ' + err.message });
     } finally {
