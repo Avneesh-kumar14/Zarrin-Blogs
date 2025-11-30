@@ -69,19 +69,30 @@ const EditBlog = () => {
 
     setError('');
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found. Please login again.');
+      }
+
       const newImages = [];
       for (let file of files) {
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('image', file);
 
         const res = await fetch('http://localhost:8200/api/upload/upload', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
           body: formData
         });
 
-        if (!res.ok) throw new Error('Image upload failed');
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(`Image upload failed: ${errorData.message || res.statusText}`);
+        }
         const data = await res.json();
-        newImages.push(data.secure_url);
+        newImages.push(data.url);
       }
       setImages([...images, ...newImages]);
     } catch (err) {
@@ -136,19 +147,23 @@ const EditBlog = () => {
     try {
       const token = localStorage.getItem('token');
       
+      const updatePayload = {
+        title: formData.title,
+        content: formData.content,
+        shortDesc: formData.shortDesc,
+        images: images,
+        category: formData.category.length > 0 ? formData.category : []
+      };
+
+      console.log('Sending update payload:', updatePayload);
+      
       const res = await fetch(`http://localhost:8200/api/blogs/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          title: formData.title,
-          content: formData.content,
-          shortDesc: formData.shortDesc,
-          images: images,
-          category: formData.category
-        })
+        body: JSON.stringify(updatePayload)
       });
 
       if (!res.ok) {
@@ -156,8 +171,11 @@ const EditBlog = () => {
         throw new Error(errorData.message || 'Failed to update blog');
       }
 
+      const updatedBlog = await res.json();
+      console.log('Blog updated successfully:', updatedBlog);
       navigate(`/blog/${id}/preview`);
     } catch (err) {
+      console.error('Error updating blog:', err);
       setError('Error updating blog: ' + err.message);
     } finally {
       setSubmitting(false);

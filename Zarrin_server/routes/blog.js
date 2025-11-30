@@ -85,6 +85,8 @@ router.patch('/:id', auth, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized' });
     }
     
+    console.log('Updating blog with data:', req.body);
+    
     // Map content to blog_content if provided
     const updateData = { ...req.body };
     if (updateData.content) {
@@ -96,10 +98,25 @@ router.patch('/:id', auth, async (req, res) => {
       delete updateData.shortDesc;
     }
     
+    // Handle images - ensure it's an array of strings (URLs)
+    if (updateData.images) {
+      updateData.images = Array.isArray(updateData.images) ? updateData.images.filter(img => typeof img === 'string' && img.trim()) : [];
+    }
+    
+    // Handle categories - ensure it's an array of valid IDs
+    if (updateData.category) {
+      updateData.category = Array.isArray(updateData.category) ? updateData.category.filter(c => c) : (updateData.category ? [updateData.category] : []);
+    }
+    
     Object.assign(blog, updateData);
     await blog.save();
-    res.json(blog);
+    
+    // Populate author and category info
+    const updatedBlog = await Blog.findById(blog._id).populate('author', 'name email').populate('category');
+    console.log('Blog updated successfully:', updatedBlog);
+    res.json(updatedBlog);
   } catch (err) {
+    console.error('Blog update error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
