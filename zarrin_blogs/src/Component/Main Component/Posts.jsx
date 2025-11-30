@@ -6,6 +6,7 @@ import Headings from "../Common/Heading";
 import Paragraph from "../Common/Paragraph";
 import Button from "../Common/Button";
 import Image from "../Common/Image";
+import Alert from "../Common/Alert";
 import { X } from "lucide-react"; 
 
 const BlogForm = () => {
@@ -13,6 +14,8 @@ const BlogForm = () => {
   const [category, setCategory] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [categories, setCategories] = useState([]);
+  const [alert, setAlert] = useState(null);
+  
   // Fetch categories from backend
   useEffect(() => {
     const fetchCategories = async () => {
@@ -43,7 +46,7 @@ const BlogForm = () => {
     
     // Check if category already exists
     if (categories.some(cat => cat.name.toLowerCase() === newCategory.trim().toLowerCase())) {
-      alert('Category already exists');
+      setAlert({ type: 'warning', message: 'Category already exists' });
       return;
     }
 
@@ -66,10 +69,10 @@ const BlogForm = () => {
       const newCat = await res.json();
       setCategories([...categories, newCat]);
       setNewCategory("");
-      alert('Category created successfully!');
+      setAlert({ type: 'success', message: 'Category created successfully!' });
     } catch (err) {
       console.error('Error creating category:', err);
-      alert('Error: ' + err.message);
+      setAlert({ type: 'error', message: 'Error: ' + err.message });
     }
   };
 
@@ -120,9 +123,10 @@ const BlogForm = () => {
 
       setImages((prev) => [...prev, ...uploadedImages]);
       console.log('All images uploaded to Cloudinary:', uploadedImages);
+      setAlert({ type: 'success', message: `${uploadedImages.length} image(s) uploaded successfully!` });
     } catch (err) {
       console.error('Upload error:', err);
-      alert('Error uploading images: ' + err.message);
+      setAlert({ type: 'error', message: 'Error uploading images: ' + err.message });
     } finally {
       setUploading(false);
     }
@@ -139,19 +143,19 @@ const BlogForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) {
-      alert('Please enter a blog title');
+      setAlert({ type: 'warning', message: 'Please enter a blog title' });
       return;
     }
     if (!category) {
-      alert('Please select a category');
+      setAlert({ type: 'warning', message: 'Please select a category' });
       return;
     }
     if (!shortDesc.trim()) {
-      alert('Please enter a short description');
+      setAlert({ type: 'warning', message: 'Please enter a short description' });
       return;
     }
     if (!content.trim()) {
-      alert('Please enter blog content');
+      setAlert({ type: 'warning', message: 'Please enter blog content' });
       return;
     }
     try {
@@ -176,7 +180,7 @@ const BlogForm = () => {
         const errorData = await res.json();
         throw new Error(errorData.message || 'Failed to create blog');
       }
-      alert('Blog submitted successfully!');
+      setAlert({ type: 'success', message: 'Blog submitted successfully!' });
       setTitle('');
       setCategory('');
       setShortDesc('');
@@ -186,15 +190,26 @@ const BlogForm = () => {
       // Redirect to MyBlogs after successful submission
       setTimeout(() => {
         window.location.href = '/dashboard/myblogs';
-      }, 1000);
+      }, 1500);
     } catch (err) {
       console.error('Blog submission error:', err);
-      alert('Error: ' + err.message);
+      setAlert({ type: 'error', message: 'Error: ' + err.message });
     }
   };
 
   return (
     <div className="p-6 bg-tertiary rounded-lg shadow-md max-w-6xl w-full mx-auto mt-6">
+      {alert && (
+        <div className="mb-4">
+          <Alert 
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+            duration={5000}
+          />
+        </div>
+      )}
+      
       {!previewMode ? (
         <form onSubmit={handleSubmit}>
           <Headings type="h5" className="font-bold mb-4">

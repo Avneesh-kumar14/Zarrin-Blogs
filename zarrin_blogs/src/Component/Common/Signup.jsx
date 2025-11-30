@@ -3,6 +3,7 @@ import Paragraph from './Paragraph';
 import Button from './Button';
 import Headings from './Heading';
 import Logo from './Logo';
+import Alert from './Alert';
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
 
@@ -13,8 +14,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [alert, setAlert] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -24,18 +24,16 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccess("");
 
     // Validation
     if (!validatePassword(password)) {
-      setError("Password must be at least 8 characters long");
+      setAlert({ type: 'warning', message: 'Password must be at least 8 characters long' });
       setLoading(false);
       return;
     }
 
     if (!passwordsMatch) {
-      setError("Passwords do not match");
+      setAlert({ type: 'warning', message: 'Passwords do not match' });
       setLoading(false);
       return;
     }
@@ -52,12 +50,12 @@ const Signup = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       
-      setSuccess('Signup successful! Redirecting to dashboard...');
+      setAlert({ type: 'success', message: 'Signup successful! Redirecting to dashboard...' });
       setTimeout(() => {
         navigate('/dashboard/analytics');
       }, 1500);
     } catch (err) {
-      setError(err.message);
+      setAlert({ type: 'error', message: err.message });
     } finally {
       setLoading(false);
     }
@@ -95,20 +93,14 @@ const Signup = () => {
               <Paragraph className="text-gray-600">Create your account to start writing amazing blogs</Paragraph>
             </div>
 
-            {/* Error & Success Messages */}
-            {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded animate-shake">
-                <Paragraph className="text-red-700 font-semibold flex items-center gap-2">
-                  <span>❌</span> {error}
-                </Paragraph>
-              </div>
-            )}
-            {success && (
-              <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-                <Paragraph className="text-green-700 font-semibold flex items-center gap-2">
-                  <CheckCircle size={18} /> {success}
-                </Paragraph>
-              </div>
+            {/* Alert Messages */}
+            {alert && (
+              <Alert 
+                message={alert.message}
+                type={alert.type}
+                onClose={() => setAlert(null)}
+                duration={5000}
+              />
             )}
 
             {/* Signup Form */}

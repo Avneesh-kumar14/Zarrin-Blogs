@@ -3,6 +3,7 @@ import Paragraph from './Paragraph';
 import Headings from './Heading';
 import Button from './Button';
 import Logo from './Logo';
+import Alert from './Alert';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
@@ -11,28 +12,25 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [alert, setAlert] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccess("");
     try {
       // Validate inputs
       const trimmedEmail = email.trim();
       const trimmedPassword = password.trim();
 
       if (!trimmedEmail || !trimmedPassword) {
-        setError("Email and password are required");
+        setAlert({ type: 'warning', message: 'Email and password are required' });
         setLoading(false);
         return;
       }
 
       if (trimmedPassword.length < 6) {
-        setError("Password must be at least 6 characters long");
+        setAlert({ type: 'warning', message: 'Password must be at least 6 characters long' });
         setLoading(false);
         return;
       }
@@ -65,7 +63,7 @@ const Login = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       
-      setSuccess('Login successful!');
+      setAlert({ type: 'success', message: 'Login successful!' });
       
       const validateRes = await fetch('http://localhost:8200/api/auth/validate', {
         method: 'GET',
@@ -79,9 +77,9 @@ const Login = () => {
         throw new Error('Token validation failed');
       }
 
-      setTimeout(() => navigate('/dashboard/analytics'), 500);
+      setTimeout(() => navigate('/dashboard/analytics'), 1500);
     } catch (err) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setAlert({ type: 'error', message: err.message || 'Login failed. Please check your credentials.' });
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     } finally {
@@ -122,19 +120,13 @@ const Login = () => {
             </div>
 
             {/* Error & Success Messages */}
-            {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded animate-shake">
-                <Paragraph className="text-red-700 font-semibold flex items-center gap-2">
-                  <span>❌</span> {error}
-                </Paragraph>
-              </div>
-            )}
-            {success && (
-              <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-                <Paragraph className="text-green-700 font-semibold flex items-center gap-2">
-                  <span>✅</span> {success}
-                </Paragraph>
-              </div>
+            {alert && (
+              <Alert 
+                message={alert.message}
+                type={alert.type}
+                onClose={() => setAlert(null)}
+                duration={5000}
+              />
             )}
 
             {/* Login Form */}

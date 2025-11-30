@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Headings from '../Common/Heading';
 import Button from '../Common/Button';
 import Paragraph from '../Common/Paragraph';
+import Alert from '../Common/Alert';
 import { Eye, Edit, Trash2, Plus, Calendar, Folder } from 'lucide-react';
 
 const BlogManagement = ({ showAll = false }) => {
@@ -10,7 +11,7 @@ const BlogManagement = ({ showAll = false }) => {
   const [blogs, setBlogs] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [alert, setAlert] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
   // Fetch blogs
@@ -37,7 +38,7 @@ const BlogManagement = ({ showAll = false }) => {
       const data = await res.json();
       setBlogs(data);
     } catch (err) {
-      setError(err.message);
+      setAlert({ type: 'error', message: 'Failed to fetch blogs: ' + err.message });
       console.error('Fetch blogs error:', err);
     } finally {
       setLoading(false);
@@ -52,7 +53,7 @@ const BlogManagement = ({ showAll = false }) => {
       const data = await res.json();
       setCategories(data);
     } catch (err) {
-      setError(err.message);
+      console.error('Failed to fetch categories:', err);
     }
   };
 
@@ -73,15 +74,28 @@ const BlogManagement = ({ showAll = false }) => {
         }
       });
       if (!res.ok) throw new Error('Failed to delete blog');
+      setAlert({ type: 'success', message: 'Blog deleted successfully!' });
       fetchBlogs();
     } catch (err) {
-      setError(err.message);
+      setAlert({ type: 'error', message: 'Error deleting blog: ' + err.message });
     }
   };
 
   return (
     <div className="p-4 sm:p-8 bg-gradient-to-b from-gray-50 to-white min-h-screen">
       <div className="max-w-6xl mx-auto">
+        {/* Alert */}
+        {alert && (
+          <div className="mb-6">
+            <Alert 
+              message={alert.message}
+              type={alert.type}
+              onClose={() => setAlert(null)}
+              duration={5000}
+            />
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -103,13 +117,6 @@ const BlogManagement = ({ showAll = false }) => {
             </button>
           )}
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg">
-            <Paragraph className="text-red-700 font-semibold">❌ {error}</Paragraph>
-          </div>
-        )}
 
         {/* Loading State */}
         {loading && (

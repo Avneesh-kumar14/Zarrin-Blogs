@@ -6,6 +6,7 @@ import Image from '../Common/Image';
 import Paragraph from '../Common/Paragraph';
 import Heading from '../Common/Heading';
 import Button from '../Common/Button';
+import Alert from '../Common/Alert';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -15,7 +16,7 @@ const ContactPage = () => {
     subject: "",
     message: ""
   });
-  const [status, setStatus] = useState("");
+  const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -29,7 +30,6 @@ const ContactPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setStatus("");
 
     try {
       const response = await fetch('http://localhost:8200/api/contact', {
@@ -45,7 +45,7 @@ const ContactPage = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setStatus("success");
+        setAlert({ type: 'success', message: 'Message sent successfully! We will get back to you soon.' });
         setFormData({
           name: "",
           email: "",
@@ -53,15 +53,14 @@ const ContactPage = () => {
           subject: "",
           message: ""
         });
-        setTimeout(() => setStatus(""), 5000);
       } else {
         const errorMessage = data.message || data.error || "Failed to send message. Please try again.";
-        setStatus(errorMessage);
+        setAlert({ type: 'error', message: errorMessage });
         console.error("Form submission error:", errorMessage);
       }
     } catch (error) {
       console.error("Network error:", error);
-      setStatus("Network error: Failed to connect to server");
+      setAlert({ type: 'error', message: 'Network error: Failed to connect to server' });
     } finally {
       setLoading(false);
     }
@@ -225,25 +224,14 @@ const ContactPage = () => {
                   />
                 </div>
 
-                {/* Status Messages */}
-                {status && (
-                  <div className={`flex items-center gap-3 p-4 rounded-lg animate-slide-down ${
-                    status === 'success'
-                      ? 'bg-green-50 border-2 border-green-200 text-green-700'
-                      : 'bg-red-50 border-2 border-red-200 text-red-700'
-                  }`}>
-                    {status === 'success' ? (
-                      <>
-                        <CheckCircle size={20} className="flex-shrink-0" />
-                        <span className="font-semibold">Message sent successfully! We'll get back to you soon.</span>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle size={20} className="flex-shrink-0" />
-                        <span className="font-semibold">{status}</span>
-                      </>
-                    )}
-                  </div>
+                {/* Alert Messages */}
+                {alert && (
+                  <Alert 
+                    message={alert.message}
+                    type={alert.type}
+                    onClose={() => setAlert(null)}
+                    duration={5000}
+                  />
                 )}
 
                 {/* Submit Button */}

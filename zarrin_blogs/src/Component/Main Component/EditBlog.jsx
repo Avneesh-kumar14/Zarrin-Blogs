@@ -6,6 +6,7 @@ import Heading from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
 import Button from '../Common/Button';
 import Image from '../Common/Image';
+import Alert from '../Common/Alert';
 
 const EditBlog = () => {
   const { id } = useParams();
@@ -13,6 +14,7 @@ const EditBlog = () => {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [alert, setAlert] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [images, setImages] = useState([]);
@@ -67,7 +69,6 @@ const EditBlog = () => {
     const files = event.target.files;
     if (files.length === 0) return;
 
-    setError('');
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -95,8 +96,9 @@ const EditBlog = () => {
         newImages.push(data.url);
       }
       setImages([...images, ...newImages]);
+      setAlert({ type: 'success', message: `${newImages.length} image(s) uploaded successfully!` });
     } catch (err) {
-      setError('Failed to upload images: ' + err.message);
+      setAlert({ type: 'error', message: 'Failed to upload images: ' + err.message });
     }
   };
 
@@ -134,11 +136,10 @@ const EditBlog = () => {
   // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
     // Validate
     if (!formData.title.trim() || !formData.content.trim() || !formData.shortDesc.trim()) {
-      setError('Title, description, and content are required');
+      setAlert({ type: 'warning', message: 'Title, description, and content are required' });
       return;
     }
 
@@ -173,10 +174,11 @@ const EditBlog = () => {
 
       const updatedBlog = await res.json();
       console.log('Blog updated successfully:', updatedBlog);
-      navigate(`/blog/${id}/preview`);
+      setAlert({ type: 'success', message: 'Blog updated successfully!' });
+      setTimeout(() => navigate(`/blog/${id}/preview`), 1500);
     } catch (err) {
       console.error('Error updating blog:', err);
-      setError('Error updating blog: ' + err.message);
+      setAlert({ type: 'error', message: 'Error updating blog: ' + err.message });
     } finally {
       setSubmitting(false);
     }
@@ -190,7 +192,16 @@ const EditBlog = () => {
     <div className="p-8 max-w-4xl mx-auto">
       <Heading type="h2" className="font-bold mb-6">Edit Blog</Heading>
 
-      {error && <Paragraph className="text-red-500 mb-4 p-4 bg-red-50 rounded">{error}</Paragraph>}
+      {alert && (
+        <div className="mb-4">
+          <Alert 
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+            duration={5000}
+          />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
