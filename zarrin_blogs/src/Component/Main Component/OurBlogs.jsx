@@ -1,12 +1,10 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Headings from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
 import Cards from '../Common/Cards';
 
 const OurBlogs = () => {
-  const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
