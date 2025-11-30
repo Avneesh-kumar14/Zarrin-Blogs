@@ -28,7 +28,7 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
       );
       if (!res.ok) throw new Error('Failed to fetch comments');
       const data = await res.json();
-      setComments(data.comments || []);
+      setComments(Array.isArray(data) ? data : (data.comments || []));
     } catch (err) {
       console.error('Error fetching comments:', err);
       setAlert({ type: 'error', message: 'Failed to load comments' });
@@ -73,7 +73,7 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
       }
 
       const data = await res.json();
-      setComments([data.comment, ...comments]);
+      setComments([data, ...comments]);
       setNewComment('');
       setCharCount(0);
       setAlert({ type: 'success', message: 'Comment posted successfully!' });
@@ -107,7 +107,7 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
       if (!res.ok) throw new Error('Failed to update comment');
       const data = await res.json();
       
-      setComments(comments.map(c => c._id === commentId ? data.comment : c));
+      setComments(comments.map(c => c._id === commentId ? data : c));
       setEditingId(null);
       setEditingText('');
       setAlert({ type: 'success', message: 'Comment updated successfully!' });
