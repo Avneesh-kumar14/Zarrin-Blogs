@@ -1,13 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Headings from "../Common/Heading";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
 import Button from "../Common/Button";
 
-const SideBar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const SideBar = ({ isOpen, setIsOpen }) => {
   const menuItems = [
     { label: "Dashboard", route: "analytics" },
     { label: "My Blogs", route: "myblogs" },
@@ -15,59 +12,38 @@ const SideBar = () => {
   ];
 
   return (
-    <div className="flex h-screen ">
-      
-      <Button
-        className="lg:hidden p-4 text-primary"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X size={28} /> : <Menu size={28} />}
-      </Button>
-
-      
+    <>
+      {/* Sidebar - Slides from left, disappears on scroll with overlay */}
       <aside
-        className={`bg-primary text-tertiary flex flex-col p-6 fixed lg:static top-0 left-0 h-full z-50 transform transition-transform duration-300 
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:w-64`}
+        className={`bg-primary text-tertiary w-64 h-[calc(100vh-64px)] flex flex-col p-6 fixed lg:static top-16 left-0 z-30 transform transition-transform duration-300 overflow-y-auto
+        ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:top-auto lg:h-auto lg:relative`}
       >
         <Headings type="h4" className="font-bold mb-10">
-          Zarrin
+          Menu
         </Headings>
 
-        <nav className="space-y-4 ">
+        <nav className="space-y-4">
           {menuItems.map((item) => (
             <Link
               key={item.route}
               to={`/dashboard/${item.route}`}
-              className="block font-medium hover:text-secondary"
+              className="block font-medium hover:text-secondary transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-primary/80"
               onClick={() => setIsOpen(false)}
             >
               {item.label}
             </Link>
-   
-  ))}
+          ))}
         </nav>
-        <div className="mt-auto pt-8">
-          <Button
-            variant="primary"
-            className="w-full text-left flex items-center text-red-500 hover:text-red-600"
-            onClick={() => {
-              localStorage.removeItem('token');
-              window.location.href = '/login';
-            }}
-          >
-            Logout
-          </Button>
-        </div>
       </aside>
 
-     
+      {/* Mobile Overlay - Click to close */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-dark opacity-50 lg:hidden"
+          className="fixed inset-0 bg-black opacity-50 lg:hidden z-20 top-16"
           onClick={() => setIsOpen(false)}
         ></div>
       )}
-    </div>
+    </>
   );
 };
 
