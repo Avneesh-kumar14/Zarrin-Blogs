@@ -22,7 +22,7 @@ const Cards = ({
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/blog/${id}`);
+    navigate(`/blog/${id}/preview`);
   };
 
   const formatDate = (dateString) => {
