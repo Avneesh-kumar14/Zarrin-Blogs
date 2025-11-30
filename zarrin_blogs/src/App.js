@@ -19,6 +19,8 @@ import AuthenticatedLayout from './Component/AuthenticatedLayout.jsx';
 import Posts from './Component/Main Component/Posts.jsx';
 import MyBlogs from './Component/Main Component/MyBlogs.jsx';
 import Categories from './Component/Main Component/Categories.jsx';
+import Search from './Pages/Search.jsx';
+import Bookmarks from './Pages/Bookmarks.jsx';
 
 
 function AppWrapper() {
@@ -33,6 +35,8 @@ function AppWrapper() {
         <Route path="/blog/:id/preview" element={<BlogPreview />} />
         <Route path="/blog/:id/edit" element={<BlogEditPage />} />
         <Route path="/blog/create" element={<Posts />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/bookmarks" element={<Bookmarks isAuthenticated={!!localStorage.getItem('token')} />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path='/signup' element={<Signup />} />

@@ -1,17 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Heading from '../Common/Heading';
-import { Search, Menu, X, LogOut, BookOpen, Info, Mail, LogIn } from 'lucide-react';
+import { Search, Menu, X, LogOut, BookOpen, Info, Mail, LogIn, Bookmark } from 'lucide-react';
 import Button from '../Common/Button';
 import Logo from '../Common/Logo';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const searchInputRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (showSearch && searchInputRef.current) {
@@ -38,6 +40,14 @@ const Navbar = () => {
     setIsLoggedIn(false);
     setUser(null);
     window.location.href = '/';
+  };
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setShowSearch(false);
+      setSearchQuery('');
+    }
   };
 
   const navLinks = [
@@ -95,6 +105,9 @@ const Navbar = () => {
                   ref={searchInputRef}
                   type="text"
                   placeholder="Search blogs..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleSearch}
                   className="absolute right-10 w-48 px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all duration-300 text-sm bg-white shadow-lg animate-slide-down"
                 />
               )}
@@ -109,6 +122,9 @@ const Navbar = () => {
                   </div>
                   <span className="text-sm font-semibold text-gray-700">{user?.name || 'User'}</span>
                 </div>
+                <NavLink to="/bookmarks" className="p-2 hover:bg-yellow-50 rounded-lg transition-all duration-300 text-gray-700 hover:text-yellow-600" title="Bookmarks">
+                  <Bookmark size={20} />
+                </NavLink>
                 <NavLink to="/dashboard/analytics">
                   <Button
                     text="Dashboard"
@@ -194,7 +210,10 @@ const Navbar = () => {
               <Search size={18} className="text-gray-600" />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search blogs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleSearch}
                 className="bg-transparent flex-1 outline-none text-sm text-gray-700 placeholder-gray-500"
               />
             </div>
@@ -210,6 +229,15 @@ const Navbar = () => {
                     <p className="text-lg font-bold text-gray-900">{user.name}</p>
                   </div>
                 )}
+                <NavLink to="/bookmarks" onClick={() => setIsOpen(false)}>
+                  <Button 
+                    text="My Bookmarks" 
+                    variant="outline" 
+                    fullWidth 
+                    size="md"
+                    icon={Bookmark}
+                  />
+                </NavLink>
                 <NavLink to="/dashboard/analytics" onClick={() => setIsOpen(false)}>
                   <Button text="Go to Dashboard" variant="primary" fullWidth size="md" />
                 </NavLink>

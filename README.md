@@ -20,6 +20,10 @@ A full-stack blog management platform built with **MongoDB**, **Express.js**, **
 - ✅ **Dashboard** - User analytics and dashboard interface
 - ✅ **Responsive Design** - Mobile-friendly UI with Tailwind CSS
 - ✅ **Admin Panel** - Admin user with special privileges
+- ✅ **🔍 Blog Search** - Search blogs with filters and sorting
+- ✅ **💬 Comments System** - Create, edit, delete comments on blogs
+- ✅ **❤️ Like/Bookmark** - Like blogs and bookmark for later
+- ✅ **📚 Bookmarks Page** - Manage and view all saved blogs
 
 ### Backend Features
 - ✅ **RESTful API** - Complete REST API for all operations
@@ -29,6 +33,10 @@ A full-stack blog management platform built with **MongoDB**, **Express.js**, **
 - ✅ **Authorization** - Role-based access control (Admin/User)
 - ✅ **Error Handling** - Comprehensive error handling
 - ✅ **Password Hashing** - bcryptjs for secure password storage
+- ✅ **🔍 Advanced Search** - Full-text search with category filtering
+- ✅ **💬 Comments API** - Full CRUD for blog comments
+- ✅ **❤️ Likes System** - Like/unlike with duplicate prevention
+- ✅ **📌 Bookmarks API** - Save and manage bookmarks
 
 ---
 
@@ -214,6 +222,35 @@ The frontend uses full URLs for API calls: `http://localhost:8200/api/...`
 |--------|----------|-------------|
 | GET | `/api/stats/count` | Get dashboard statistics |
 
+### Search Routes
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/search` | Search blogs with filters and sorting |
+
+### Comments Routes
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/comments/blog/:blogId` | Get all comments for a blog |
+| POST | `/api/comments` | Create a new comment |
+| PATCH | `/api/comments/:id` | Update a comment |
+| DELETE | `/api/comments/:id` | Delete a comment |
+
+### Likes Routes
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/likes/count/:blogId` | Get like count for a blog |
+| GET | `/api/likes/check/:blogId` | Check if user liked a blog |
+| POST | `/api/likes/:blogId` | Like a blog |
+| DELETE | `/api/likes/:blogId` | Unlike a blog |
+
+### Bookmarks Routes
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/bookmarks` | Get user's bookmarks |
+| GET | `/api/bookmarks/check/:blogId` | Check if blog is bookmarked |
+| POST | `/api/bookmarks/:blogId` | Bookmark a blog |
+| DELETE | `/api/bookmarks/:blogId` | Remove bookmark |
+
 ---
 
 ## 📖 Usage Guide
@@ -255,6 +292,46 @@ The frontend uses full URLs for API calls: `http://localhost:8200/api/...`
 1. Go to **Dashboard** → **Categories**
 2. Create new categories
 3. Delete existing categories
+
+### 🔍 Searching Blogs
+1. Click on the **Search** icon in the navbar
+2. Type keywords to search blogs
+3. Press Enter or click search button
+4. Use filters:
+   - **Category** - Filter by blog category
+   - **Sort** - Choose (Newest, Oldest, or Trending)
+5. Click on any result to read the full blog
+
+### 💬 Commenting on Blogs
+1. Navigate to any blog post
+2. Scroll down to the **Comments** section
+3. If logged in, you can:
+   - **Post** - Write a comment (1-1000 characters)
+   - **Edit** - Click the pencil icon to modify your comment
+   - **Delete** - Click the trash icon to remove your comment
+4. If not logged in, click to log in first
+5. See all comments with author names and timestamps
+
+### ❤️ Liking & Bookmarking Blogs
+1. On any blog post, see the **Like** and **Bookmark** buttons
+2. Click **Like** button:
+   - Button turns red when liked
+   - Shows the total number of likes
+   - Click again to unlike
+3. Click **Bookmark** button:
+   - Button turns yellow when bookmarked
+   - Saves blog for later reading
+   - Click again to remove bookmark
+4. Both require authentication (log in if needed)
+
+### 📚 Managing Bookmarks
+1. Click the **Bookmark** icon in the navbar (when logged in)
+2. View all your saved blogs in a grid layout
+3. For each bookmark:
+   - Click **Read** to open the blog
+   - Click **Remove** to delete the bookmark
+4. See category, author, and save date for each blog
+5. Message shows if you have no bookmarks yet
 
 ---
 
@@ -368,6 +445,17 @@ Public Blog Page (View All Blogs)
     ↓
 Single Blog Preview (View Full Blog)
 ```
+
+---
+
+## 📚 Documentation
+
+For detailed information about the new features, please refer to:
+
+- **[FRONTEND_FEATURES_GUIDE.md](./FRONTEND_FEATURES_GUIDE.md)** - Complete guide to all frontend features including Search, Comments, Likes, Bookmarks
+- **[DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - Pre-deployment testing checklist and deployment steps
+- **[QUICK_TESTING_GUIDE.md](./QUICK_TESTING_GUIDE.md)** - Step-by-step testing guide for all features
+- **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)** - Overview of implementation and status
 
 ---
 

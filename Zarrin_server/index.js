@@ -12,6 +12,10 @@ const categoryRoutes = require('./routes/category');
 const contactRoutes = require('./routes/contact');
 const statsRoutes = require('./routes/stats');
 const uploadRoutes = require('./routes/upload');
+const commentsRoutes = require('./routes/comments');
+const likesRoutes = require('./routes/likes');
+const bookmarksRoutes = require('./routes/bookmarks');
+const searchRoutes = require('./routes/search');
 
 const app = express();
 
@@ -37,6 +41,10 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/comments', commentsRoutes);
+app.use('/api/likes', likesRoutes);
+app.use('/api/bookmarks', bookmarksRoutes);
+app.use('/api/search', searchRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

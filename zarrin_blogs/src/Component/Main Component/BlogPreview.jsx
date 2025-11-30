@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Heading from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
 import Image from '../Common/Image';
+import Comments from '../Common/Comments';
+import LikeBookmarkButtons from '../Common/LikeBookmarkButtons';
 import { ArrowLeft, Calendar, User, Share2, Eye, BookOpen, Clock } from 'lucide-react';
 
 const BlogPreview = () => {
@@ -12,6 +14,8 @@ const BlogPreview = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [readTime, setReadTime] = useState(0);
+  const [currentUser, setCurrentUser] = useState(null);
+  const isAuthenticated = !!localStorage.getItem('token');
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -36,12 +40,21 @@ const BlogPreview = () => {
       }
     };
 
+    // Fetch current user if authenticated
+    if (isAuthenticated) {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setCurrentUser(JSON.parse(userData));
+      }
+    }
+
     if (id) {
       fetchBlog();
     } else {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   if (loading) {
     return (
@@ -237,7 +250,26 @@ const BlogPreview = () => {
         {/* Divider with gradient */}
         <div className="mb-14 h-1 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 rounded-full"></div>
 
-        {/* Call-to-Action Section */}
+        {/* Like and Bookmark Buttons */}
+        <div className="mb-12 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+          <LikeBookmarkButtons 
+            blogId={id}
+            isAuthenticated={isAuthenticated}
+            onLikeChange={(count) => {}}
+          />
+        </div>
+
+        {/* Comments Section */}
+        <div className="mb-12 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+          <Comments 
+            blogId={id}
+            currentUser={currentUser}
+            isAuthenticated={isAuthenticated}
+          />
+        </div>
+
+        {/* Divider with gradient */}
+        <div className="mb-14 h-1 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 rounded-full"></div>
         <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-8 md:p-12 rounded-2xl text-white shadow-2xl hover:shadow-2xl transition-all duration-300 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-8">
             <div>
