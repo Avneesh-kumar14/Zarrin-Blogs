@@ -164,9 +164,9 @@ const Search = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-12 md:py-16">
+      <div className="bg-gradient-to-r from-blue-600 dark:from-blue-700 via-purple-600 dark:via-purple-700 to-pink-600 dark:to-pink-700 text-white py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <Heading type="h1" className="text-4xl md:text-5xl font-bold mb-4">
@@ -188,17 +188,17 @@ const Search = () => {
                   placeholder={searchType === 'users' ? 'Search users by name...' : 'Search blogs, topics, keywords...'}
                   value={query}
                   onChange={handleQueryChange}
-                  className="w-full pl-12 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-900"
+                  className="w-full pl-12 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 />
                 
                 {/* Live User Suggestions Dropdown */}
                 {showSuggestions && searchType === 'users' && liveUserSuggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
                     {liveUserSuggestions.map((user) => (
                       <div
                         key={user._id}
                         onClick={() => handleSuggestionClick(user)}
-                        className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
+                        className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors"
                       >
                         {/* Avatar */}
                         <div className="flex-shrink-0">
@@ -217,11 +217,11 @@ const Search = () => {
 
                         {/* User Info */}
                         <div className="flex-1 min-w-0">
-                          <Heading type="h4" className="text-sm font-semibold text-gray-900 truncate">
+                          <Heading type="h4" className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                             {user.name}
                           </Heading>
                           {user.bio && (
-                            <Paragraph className="text-xs text-gray-500 truncate">
+                            <Paragraph className="text-xs text-gray-500 dark:text-gray-400 truncate">
                               {user.bio}
                             </Paragraph>
                           )}
@@ -292,7 +292,7 @@ const Search = () => {
 
         {/* Filters */}
         {searchType === 'blogs' && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Filter size={20} className="text-blue-600" />
             <Heading type="h3" className="text-lg font-semibold">

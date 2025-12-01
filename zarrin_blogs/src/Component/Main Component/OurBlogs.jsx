@@ -26,7 +26,7 @@ const OurBlogs = () => {
   }, []);
 
   return (
-    <div className="px-4 md:px-16 py-16 bg-gradient-to-b from-white to-gray-50">
+    <div className="px-4 md:px-16 py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
         
 
@@ -34,12 +34,12 @@ const OurBlogs = () => {
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-pulse space-y-4">
-              <div className="h-64 bg-gray-200 rounded-lg w-80"></div>
-              <div className="h-4 bg-gray-200 rounded w-64"></div>
+              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg w-80"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-64"></div>
             </div>
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <div className="bg-red-50 dark:bg-red-900 dark:bg-opacity-20 border border-red-200 dark:border-red-700 rounded-lg p-6 text-center">
             <Paragraph className="text-red-700 font-semibold">
               ❌ Error loading blogs
             </Paragraph>
@@ -47,7 +47,7 @@ const OurBlogs = () => {
           </div>
         ) : blogs.length === 0 ? (
           <div className="text-center py-12">
-            <Paragraph className="text-gray-600 text-lg">
+            <Paragraph className="text-gray-600 dark:text-gray-300 text-lg">
               📝 No blogs published yet. Check back soon!
             </Paragraph>
           </div>

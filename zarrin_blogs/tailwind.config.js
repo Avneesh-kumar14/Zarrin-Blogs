@@ -1,6 +1,7 @@
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
@@ -17,11 +18,11 @@ module.exports = {
         'custom-x':'576px',
       },
       colors: {
-        primary: '#2563EB',
-        dark: '#333333',
-        secondary: '#666666',
-        tertiary: '#FFFFFF',
-        secondaryGray: '#999999',
+        primary: 'var(--color-primary)',
+        dark: 'var(--color-dark)',
+        secondary: 'var(--color-secondary)',
+        tertiary: 'var(--color-tertiary)',
+        secondaryGray: 'var(--color-secondaryGray)',
       },
       lineHeight: {
         'custom-para': '24px',

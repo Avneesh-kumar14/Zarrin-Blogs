@@ -82,7 +82,7 @@ const BlogManagement = ({ showAll = false }) => {
   };
 
   return (
-    <div className="p-4 sm:p-8 bg-gradient-to-b from-gray-50 to-white min-h-screen">
+    <div className="p-4 sm:p-8 bg-gradient-to-b from-gray-50 dark:from-gray-900 to-white dark:to-gray-800 min-h-screen">
       <div className="max-w-6xl mx-auto">
         {/* Alert */}
         {alert && (
@@ -129,7 +129,7 @@ const BlogManagement = ({ showAll = false }) => {
 
         {/* Empty State */}
         {!loading && blogs.length === 0 && (
-          <div className="text-center py-16 bg-white rounded-xl border-2 border-dashed border-gray-300">
+          <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
             <Headings type="h4" className="text-gray-600 mb-2">
               📝 No blogs yet
             </Headings>
@@ -153,7 +153,7 @@ const BlogManagement = ({ showAll = false }) => {
             {blogs.map((blog) => (
               <div 
                 key={blog._id} 
-                className="bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
               >
                 <div className="p-6 sm:p-8">
                   {/* Blog Info */}
@@ -199,7 +199,7 @@ const BlogManagement = ({ showAll = false }) => {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+                  <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <button
                       onClick={() => navigate(`/blog/${blog._id}/preview`)}
                       className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 rounded-lg font-semibold hover:from-blue-100 hover:to-blue-200 transition-all duration-300"

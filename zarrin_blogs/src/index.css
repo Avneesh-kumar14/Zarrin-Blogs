@@ -3,6 +3,23 @@
 @tailwind utilities;
 @tailwind screens;
 
+/* Theme Variables for Light and Dark Mode */
+:root {
+  --color-primary: #2563EB;
+  --color-dark: #333333;
+  --color-secondary: #666666;
+  --color-tertiary: #FFFFFF;
+  --color-secondaryGray: #999999;
+}
+
+.dark {
+  --color-primary: #3B82F6;
+  --color-dark: #E5E7EB;
+  --color-secondary: #D1D5DB;
+  --color-tertiary: #1F2937;
+  --color-secondaryGray: #6B7280;
+}
+
 /* Smooth Animations */
 @keyframes blob {
   0%, 100% {

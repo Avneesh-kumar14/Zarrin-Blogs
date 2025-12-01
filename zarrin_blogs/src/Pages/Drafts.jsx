@@ -102,9 +102,9 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-16 md:py-20 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-600 dark:from-blue-700 via-purple-600 dark:via-purple-700 to-pink-600 dark:to-pink-700 text-white py-16 md:py-20 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full filter blur-3xl"></div>
           <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full filter blur-3xl"></div>
@@ -156,10 +156,10 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
             {drafts.map((draft) => (
               <div
                 key={draft._id}
-                className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-300 transform hover:scale-105"
+                className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transform hover:scale-105"
               >
                 {draft.images && draft.images.length > 0 && (
-                  <div className="h-48 overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300 relative">
+                  <div className="h-48 overflow-hidden bg-gradient-to-br from-gray-200 dark:from-gray-700 to-gray-300 dark:to-gray-600 relative">
                     <img
                       src={draft.images[0]}
                       alt={draft.title}
@@ -209,7 +209,7 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-3xl border-2 border-dashed border-gray-300 relative overflow-hidden">
+          <div className="text-center py-24 bg-gradient-to-br from-blue-50 dark:from-gray-800 via-purple-50 dark:via-gray-700 to-pink-50 dark:to-gray-800 rounded-3xl border-2 border-dashed border-gray-300 dark:border-gray-600 relative overflow-hidden">
             <div className="absolute inset-0 opacity-5">
               <FileText size={200} className="absolute inset-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-900" />
             </div>

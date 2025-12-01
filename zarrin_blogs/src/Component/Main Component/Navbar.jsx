@@ -59,13 +59,13 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 w-full z-50 bg-gradient-to-r from-white to-blue-50 border-b border-gray-200 shadow-sm backdrop-blur-md bg-white/80">
+    <nav className="sticky top-0 w-full z-50 bg-gradient-to-r from-white to-blue-50 dark:from-gray-900 dark:to-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm backdrop-blur-md bg-white/80 dark:bg-gray-900/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2 group hover:scale-105 transition-transform duration-300">
             <Logo size="text-3xl" className="group-hover:rotate-12 transition-transform" />
-            <Heading type="h4" className="hidden sm:block text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <Heading type="h4" className="hidden sm:block text-2xl font-bold bg-gradient-to-r from-blue-600 dark:from-blue-400 to-purple-600 dark:to-purple-400 bg-clip-text text-transparent">
               Zarrin
             </Heading>
           </NavLink>
@@ -81,8 +81,8 @@ const Navbar = () => {
                   to={link.path}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-300 group ${
                     isActive
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-gradient-to-r from-blue-600 dark:from-blue-700 to-purple-600 dark:to-purple-700 text-white shadow-lg'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Icon size={18} className="group-hover:scale-110 transition-transform" />
@@ -98,7 +98,7 @@ const Navbar = () => {
             <div className="hidden md:flex items-center relative group">
               <button
                 onClick={() => setShowSearch(!showSearch)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-300 text-gray-700"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-300 text-gray-700 dark:text-gray-300"
               >
                 <Search size={20} className="group-hover:scale-110 transition-transform" />
               </button>
@@ -110,7 +110,7 @@ const Navbar = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleSearch}
-                  className="absolute right-10 w-48 px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all duration-300 text-sm bg-white shadow-lg animate-slide-down"
+                  className="absolute right-10 w-48 px-4 py-2 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-blue-600 dark:focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-300 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-lg animate-slide-down"
                 />
               )}
             </div>
@@ -127,13 +127,13 @@ const Navbar = () => {
             {/* Auth Buttons */}
             {isLoggedIn ? (
               <div className="flex items-center gap-4">
-                <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 dark:from-gray-800 to-purple-50 dark:to-gray-700 rounded-lg">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                     {user?.name?.[0]?.toUpperCase() || 'U'}
                   </div>
-                  <span className="text-sm font-semibold text-gray-700">{user?.name || 'User'}</span>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{user?.name || 'User'}</span>
                 </div>
-                <NavLink to="/bookmarks" className="p-2 hover:bg-yellow-50 rounded-lg transition-all duration-300 text-gray-700 hover:text-yellow-600" title="Bookmarks">
+                <NavLink to="/bookmarks" className="p-2 hover:bg-yellow-50 dark:hover:bg-yellow-900 dark:hover:bg-opacity-30 rounded-lg transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-yellow-600 dark:hover:text-yellow-400" title="Bookmarks">
                   <Bookmark size={20} />
                 </NavLink>
                 <NavLink to="/dashboard/analytics">
@@ -146,7 +146,7 @@ const Navbar = () => {
                 </NavLink>
                 <button
                   onClick={handleLogout}
-                  className="p-2 hover:bg-red-50 rounded-lg transition-all duration-300 text-gray-700 hover:text-red-600"
+                  className="p-2 hover:bg-red-50 dark:hover:bg-red-900 dark:hover:bg-opacity-30 rounded-lg transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400"
                   title="Logout"
                 >
                   <LogOut size={20} />
@@ -175,12 +175,12 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-all duration-300"
+              className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-300"
             >
               {isOpen ? (
-                <X className="w-6 h-6 text-gray-700" />
+                <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
               ) : (
-                <Menu className="w-6 h-6 text-gray-700" />
+                <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
               )}
             </button>
           </div>
@@ -189,7 +189,7 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       <div
-        className={`md:hidden fixed top-16 right-0 h-[calc(100vh-64px)] w-full bg-white shadow-lg z-40 transform transition-all duration-300 ease-in-out overflow-y-auto ${
+        className={`md:hidden fixed top-16 right-0 h-[calc(100vh-64px)] w-full bg-white dark:bg-gray-900 shadow-lg z-40 transform transition-all duration-300 ease-in-out overflow-y-auto ${
           isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
         }`}
       >

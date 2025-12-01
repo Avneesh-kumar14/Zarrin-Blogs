@@ -9,18 +9,18 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 
 const Banner = () => {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
       {/* Animated Background Blobs */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-      <div className="absolute -top-8 right-0 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-      <div className="absolute -bottom-8 left-1/3 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-300 dark:bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob"></div>
+      <div className="absolute -top-8 right-0 w-72 h-72 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob animation-delay-2000"></div>
+      <div className="absolute -bottom-8 left-1/3 w-80 h-80 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob animation-delay-4000"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Image Section */}
           <div className="relative group order-2 md:order-1">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-white to-blue-50 p-8 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform group-hover:scale-105">
+            <div className="relative bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl shadow-2xl dark:shadow-2xl dark:shadow-gray-900 hover:shadow-3xl transition-all duration-500 transform group-hover:scale-105">
               <Image 
                 src={'./Assets/man.png'} 
                 className="h-auto w-full rounded-xl object-cover hover:scale-110 transition-transform duration-700" 
@@ -33,9 +33,9 @@ const Banner = () => {
           {/* Content Section */}
           <div className="order-1 md:order-2 space-y-6 animate-slide-up">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full">
-              <Sparkles size={16} className="text-blue-600" />
-              <span className="text-xs font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-full">
+              <Sparkles size={16} className="text-blue-600 dark:text-blue-400" />
+              <span className="text-xs font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent uppercase tracking-widest">
                 Featured Article
               </span>
             </div>
@@ -46,7 +46,7 @@ const Banner = () => {
                 <span className="px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg text-xs">
                   DEVELOPMENT
                 </span>
-                <span className="text-gray-500 font-medium flex items-center gap-1">
+                <span className="text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
                   <span>📅</span> 1 August 2025
                 </span>
               </div>
@@ -56,7 +56,7 @@ const Banner = () => {
             <div>
               <Headings 
                 type="h2" 
-                className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-gray-900 via-blue-800 to-purple-900 bg-clip-text text-transparent"
+                className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-gray-900 via-blue-800 to-purple-900 dark:from-white dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent"
               >
                 How to make a Game look more attractive with New VR & AI Technology
               </Headings>
@@ -65,7 +65,7 @@ const Banner = () => {
             {/* Description */}
             <Paragraph 
               variant="base" 
-              className="text-gray-600 text-lg leading-relaxed max-w-lg opacity-90 line-clamp-3"
+              className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed max-w-lg opacity-90 line-clamp-3"
             >
               Google has been investing in AI for many years and bringing its benefits to individuals, businesses and communities. Explore how cutting-edge VR and AI technologies can revolutionize game design and user experience.
             </Paragraph>
@@ -88,18 +88,18 @@ const Banner = () => {
             </div>
 
             {/* Stats or Highlight */}
-            <div className="pt-8 border-t border-gray-200 grid grid-cols-3 gap-4 opacity-75">
+            <div className="pt-8 border-t border-gray-200 dark:border-gray-700 grid grid-cols-3 gap-4 opacity-75">
               <div>
-                <p className="text-2xl font-bold text-blue-600">10M+</p>
-                <p className="text-sm text-gray-600">Readers</p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">10M+</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Readers</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-purple-600">500+</p>
-                <p className="text-sm text-gray-600">Articles</p>
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">500+</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Articles</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-pink-600">50K+</p>
-                <p className="text-sm text-gray-600">Community</p>
+                <p className="text-2xl font-bold text-pink-600 dark:text-pink-400">50K+</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Community</p>
               </div>
             </div>
           </div>
