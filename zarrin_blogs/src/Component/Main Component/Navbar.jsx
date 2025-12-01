@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Heading from '../Common/Heading';
-import { Search, Menu, X, LogOut, BookOpen, Info, Mail, LogIn, Bookmark } from 'lucide-react';
+import { Search, Menu, X, LogOut, BookOpen, Info, Mail, LogIn, Bookmark, Moon, Sun } from 'lucide-react';
 import Button from '../Common/Button';
 import Logo from '../Common/Logo';
+import { ThemeContext } from '../../context/ThemeContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +15,7 @@ const Navbar = () => {
   const searchInputRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { isDark, toggleTheme } = useContext(ThemeContext);
 
   useEffect(() => {
     if (showSearch && searchInputRef.current) {
@@ -112,6 +114,15 @@ const Navbar = () => {
                 />
               )}
             </div>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-300 text-gray-700 dark:text-gray-300"
+              title={isDark ? 'Light Mode' : 'Dark Mode'}
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
 
             {/* Auth Buttons */}
             {isLoggedIn ? (

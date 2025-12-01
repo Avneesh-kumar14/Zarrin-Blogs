@@ -5,6 +5,7 @@ import Paragraph from '../Common/Paragraph';
 import Image from '../Common/Image';
 import Comments from '../Common/Comments';
 import LikeBookmarkButtons from '../Common/LikeBookmarkButtons';
+import RelatedBlogs from './RelatedBlogs';
 import { ArrowLeft, Calendar, User, Share2, Eye, BookOpen, Clock } from 'lucide-react';
 
 const BlogPreview = () => {
@@ -266,6 +267,11 @@ const BlogPreview = () => {
             currentUser={currentUser}
             isAuthenticated={isAuthenticated}
           />
+        </div>
+
+        {/* Related Blogs Section */}
+        <div className="mb-12 animate-fade-in-up" style={{animationDelay: '0.55s'}}>
+          <RelatedBlogs blogId={id} />
         </div>
 
         {/* Divider with gradient */}

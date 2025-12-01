@@ -28,6 +28,16 @@ const UserSchema = new Schema({
     blog: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "blog"
+    }],
+    bio: { type: String, default: '' },
+    avatar: { type: String, default: '' },
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
+    }],
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
     }]
 }, {
     timestamps: true

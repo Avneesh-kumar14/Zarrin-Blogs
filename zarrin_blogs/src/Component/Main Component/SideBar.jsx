@@ -1,14 +1,15 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Headings from "../Common/Heading";
 import { Link } from "react-router-dom";
-import Button from "../Common/Button";
 
 const SideBar = ({ isOpen, setIsOpen }) => {
   const menuItems = [
     { label: "Dashboard", route: "analytics" },
     { label: "My Blogs", route: "myblogs" },
-    { label: "Categories", route: "categories" }
+    { label: "Categories", route: "categories" },
+    { label: "My Drafts", route: "drafts" },
+    { label: "My Profile", route: "profile" }
   ];
 
   return (

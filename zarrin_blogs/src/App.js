@@ -3,6 +3,7 @@
 import './App.css';
 import Navbar from './Component/Main Component/Navbar.jsx';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { ThemeProvider } from './context/ThemeContext.jsx';
 import Home from './Pages/Home.jsx';
 import Footer from './Component/Main Component/Footer.jsx';
 import Usercomponent from './Component/Common/Usercontact.jsx'
@@ -21,6 +22,10 @@ import MyBlogs from './Component/Main Component/MyBlogs.jsx';
 import Categories from './Component/Main Component/Categories.jsx';
 import Search from './Pages/Search.jsx';
 import Bookmarks from './Pages/Bookmarks.jsx';
+import UserProfile from './Pages/UserProfile.jsx';
+import Drafts from './Pages/Drafts.jsx';
+import Followers from './Pages/Followers.jsx';
+import Following from './Pages/Following.jsx';
 
 
 function AppWrapper() {
@@ -37,6 +42,9 @@ function AppWrapper() {
         <Route path="/blog/create" element={<Posts />} />
         <Route path="/search" element={<Search />} />
         <Route path="/bookmarks" element={<Bookmarks isAuthenticated={!!localStorage.getItem('token')} />} />
+        <Route path="/followers/:userId" element={<Followers />} />
+        <Route path="/following/:userId" element={<Following />} />
+        <Route path="/profile/:userId" element={<UserProfile currentUser={JSON.parse(localStorage.getItem('user') || '{}')} isAuthenticated={!!localStorage.getItem('token')} />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path='/signup' element={<Signup />} />
@@ -47,6 +55,8 @@ function AppWrapper() {
           <Route path='/dashboard/posts' element={<Posts />} />
           <Route path='/dashboard/myblogs' element={<MyBlogs />} />
           <Route path='/dashboard/categories' element={<Categories />} />
+          <Route path='drafts' element={<Drafts />} />
+          <Route path='profile' element={<UserProfile currentUser={JSON.parse(localStorage.getItem('user') || '{}')} isAuthenticated={!!localStorage.getItem('token')} />} />
         </Route>
       </Routes>
 
@@ -58,9 +68,11 @@ function AppWrapper() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppWrapper />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AppWrapper />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

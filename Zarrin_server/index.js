@@ -16,6 +16,9 @@ const commentsRoutes = require('./routes/comments');
 const likesRoutes = require('./routes/likes');
 const bookmarksRoutes = require('./routes/bookmarks');
 const searchRoutes = require('./routes/search');
+const trendingRoutes = require('./routes/trending');
+const relatedRoutes = require('./routes/related');
+const usersRoutes = require('./routes/users');
 
 const app = express();
 
@@ -45,6 +48,9 @@ app.use('/api/comments', commentsRoutes);
 app.use('/api/likes', likesRoutes);
 app.use('/api/bookmarks', bookmarksRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/trending', trendingRoutes);
+app.use('/api/related', relatedRoutes);
+app.use('/api/users', usersRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
