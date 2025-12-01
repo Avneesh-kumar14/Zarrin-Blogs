@@ -14,8 +14,11 @@ const Following = () => {
   const [followingMap, setFollowingMap] = useState({});
   const [userName, setUserName] = useState('');
 
-  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const storedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const loggedInUser = (storedUser && Object.keys(storedUser).length > 0) ? storedUser : {};
   const token = localStorage.getItem('token');
+  
+  const getUserId = (user) => user?._id || user?.id;
 
   useEffect(() => {
     if (userId) {
@@ -33,19 +36,34 @@ const Following = () => {
       const userData = await res.json();
       
       setUserName(userData.name);
-      setFollowing(userData.following || []);
       
-      // Check following status for each user
-      if (token && userData.following) {
+      // Fetch full details for each followed user
+      if (userData.following && Array.isArray(userData.following)) {
+        const followingDetails = [];
         const followMap = {};
+        
         for (const followedUser of userData.following) {
-          const userRes = await fetch(`http://localhost:8200/api/users/${followedUser._id}`);
-          if (userRes.ok) {
-            const userData = await userRes.json();
-            followMap[followedUser._id] = userData.followers?.some(f => f._id === loggedInUser._id) || false;
+          const followedUserId = getUserId(followedUser);
+          try {
+            const userRes = await fetch(`http://localhost:8200/api/users/${followedUserId}`);
+            if (userRes.ok) {
+              const fullUserData = await userRes.json();
+              followingDetails.push(fullUserData);
+              
+              // Check if logged in user is following this person
+              if (token) {
+                followMap[followedUserId] = fullUserData.followers?.some(f => getUserId(f) === getUserId(loggedInUser)) || false;
+              }
+            }
+          } catch (err) {
+            console.error('Error fetching user details:', err);
           }
         }
+        
+        setFollowing(followingDetails);
         setFollowingMap(followMap);
+      } else {
+        setFollowing([]);
       }
     } catch (err) {
       console.error('Error fetching following:', err);

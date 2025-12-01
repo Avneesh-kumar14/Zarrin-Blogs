@@ -5,6 +5,76 @@ const Blog = require('../models/blog');
 
 const router = express.Router();
 
+// Search users by name (MUST come before /:userId route)
+router.get('/search', async (req, res) => {
+  try {
+    const { query } = req.query;
+    console.log('🔍 User search endpoint hit with query:', query);
+    
+    if (!query) {
+      console.log('No query provided, returning empty array');
+      return res.json([]);
+    }
+
+    const users = await User.find({
+      name: { $regex: query, $options: 'i' }
+    })
+      .select('-password')
+      .populate('followers', 'name email avatar')
+      .populate('following', 'name email avatar')
+      .limit(5);
+
+    console.log('Found users:', users.length);
+
+    // Add totalBlogs for each user
+    const usersWithBlogs = await Promise.all(
+      users.map(async (user) => {
+        const blogs = await Blog.countDocuments({ author: user._id, status: 'published' });
+        return {
+          ...user.toObject(),
+          totalBlogs: blogs
+        };
+      })
+    );
+
+    console.log('Returning users with blogs:', usersWithBlogs);
+    res.json(usersWithBlogs);
+  } catch (err) {
+    console.error('Error in user search:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Get all users (for search fallback)
+router.get('/', async (req, res) => {
+  try {
+    console.log('📋 Get all users endpoint hit');
+    const users = await User.find()
+      .select('-password')
+      .populate('followers', 'name email avatar')
+      .populate('following', 'name email avatar');
+
+    console.log('Found total users:', users.length);
+
+    // Add totalBlogs for each user
+    const usersWithBlogs = await Promise.all(
+      users.map(async (user) => {
+        const blogs = await Blog.countDocuments({ author: user._id, status: 'published' });
+        return {
+          ...user.toObject(),
+          totalBlogs: blogs
+        };
+      })
+    );
+
+    console.log('Returning users with blogs count');
+    res.json(usersWithBlogs);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
 // Get user profile
 router.get('/:userId', async (req, res) => {
   try {

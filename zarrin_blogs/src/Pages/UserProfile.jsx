@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { User, Mail, FileText } from 'lucide-react';
-import Heading from '../Component/Common/Heading';
-import Paragraph from '../Component/Common/Paragraph';
-import Button from '../Component/Common/Button';
-import Alert from '../Component/Common/Alert';
+import { User, Mail, FileText, ArrowLeft, UserCheck, UserPlus } from 'lucide-react';
 
 const UserProfile = ({ currentUser, isAuthenticated }) => {
   const { userId } = useParams();
@@ -15,111 +11,76 @@ const UserProfile = ({ currentUser, isAuthenticated }) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [alert, setAlert] = useState(null);
   
-  // Get current user from props or localStorage
-  let loggedInUser = currentUser;
-  if (!loggedInUser || !loggedInUser._id) {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        loggedInUser = JSON.parse(storedUser);
-      }
-    } catch (e) {
-      console.error('Error parsing stored user:', e);
-      loggedInUser = null;
-    }
-  }
-  
   const token = localStorage.getItem('token');
-  const isAuth = isAuthenticated !== undefined ? isAuthenticated : !!token;
+  const storedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
   
-  // If no userId in params, show own profile (when in dashboard)
-  const profileUserId = userId || loggedInUser?._id;
+  // Handle empty object from App.js - use localStorage instead
+  const loggedInUser = (currentUser && Object.keys(currentUser).length > 0) ? currentUser : storedUser;
 
-  // Fetch blogs for a user
-  const fetchUserBlogs = async (uid) => {
-    try {
-      const blogsRes = await fetch(`http://localhost:8200/api/users/${uid}/blogs`);
-      if (blogsRes.ok) {
-        const blogsData = await blogsRes.json();
-        setUserBlogs(Array.isArray(blogsData) ? blogsData : []);
-      } else {
-        setUserBlogs([]);
-      }
-    } catch (err) {
-      console.warn('Could not fetch blogs:', err);
-      setUserBlogs([]);
-    }
-  };
+  // Normalize user ID field (_id or id)
+  const getUserId = (user) => user?._id || user?.id;
 
-  // Fetch profile from API
-  const fetchUserProfile = async (uid) => {
+  const fetchProfile = async () => {
     try {
-      console.log('Fetching profile for uid:', uid);
       setLoading(true);
-      const url = `http://localhost:8200/api/users/${uid}`;
-      console.log('API URL:', url);
+      console.log('=== Fetching Profile ===');
+      console.log('userId param:', userId);
+      console.log('currentUser prop:', currentUser);
+      console.log('storedUser:', storedUser);
+      console.log('loggedInUser:', loggedInUser);
+      console.log('loggedInUser ID:', getUserId(loggedInUser));
       
-      const res = await fetch(url);
-      console.log('Fetch response status:', res.status);
+      let userData;
       
-      if (!res.ok) {
-        throw new Error(`Failed to fetch user profile (${res.status})`);
+      if (!userId) {
+        console.log('No userId - using logged in user');
+        userData = loggedInUser;
+        console.log('userData from loggedInUser:', userData);
+      } else {
+        console.log('Fetching from API for userId:', userId);
+        const res = await fetch(`http://localhost:8200/api/users/${userId}`);
+        console.log('API response status:', res.status);
+        if (!res.ok) throw new Error('Failed to fetch user');
+        userData = await res.json();
+        console.log('userData from API:', userData);
       }
       
-      const data = await res.json();
-      console.log('Profile data received:', data);
-      setUser(data);
-      setIsFollowing(data.followers?.some(f => f._id === loggedInUser?._id) || false);
-
-      // Fetch user's blogs
-      await fetchUserBlogs(uid);
+      if (!userData || !getUserId(userData)) {
+        console.log('No user data or user ID found');
+        throw new Error('No user data available');
+      }
+      
+      setUser(userData);
+      setIsFollowing(userData.followers?.some(f => getUserId(f) === getUserId(loggedInUser)) || false);
+      
+      const blogsRes = await fetch(`http://localhost:8200/api/users/${getUserId(userData)}/blogs`);
+      if (blogsRes.ok) {
+        const blogs = await blogsRes.json();
+        setUserBlogs(Array.isArray(blogs) ? blogs : []);
+      }
+      
+      setLoading(false);
     } catch (err) {
       console.error('Error fetching profile:', err);
-      setAlert({ type: 'error', message: 'Failed to load user profile' });
+      setAlert({ type: 'error', message: err.message });
       setUser(null);
-    } finally {
       setLoading(false);
     }
   };
 
-  // Main effect to load profile
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    console.log('=== UserProfile Component ===');
-    console.log('userId from params:', userId);
-    console.log('loggedInUser:', loggedInUser);
-    console.log('profileUserId:', profileUserId);
-    
-    if (!userId) {
-      // Viewing own profile from /dashboard/profile
-      console.log('Loading own profile from localStorage');
-      if (loggedInUser && loggedInUser._id) {
-        console.log('Setting user from loggedInUser:', loggedInUser);
-        setUser(loggedInUser);
-        setLoading(false);
-        // Fetch blogs in background
-        fetchUserBlogs(loggedInUser._id);
-      } else {
-        console.log('No logged in user found - showing empty state');
-        setLoading(false);
-      }
-    } else {
-      // Viewing another user's profile - fetch from API
-      console.log('Fetching other user profile for userId:', userId);
-      fetchUserProfile(userId);
-    }
+    fetchProfile();
   }, [userId]);
 
   const handleFollowToggle = async () => {
-    if (!isAuth) {
+    if (!token) {
       setAlert({ type: 'warning', message: 'Please log in to follow users' });
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
       const method = isFollowing ? 'DELETE' : 'POST';
-      const res = await fetch(`http://localhost:8200/api/users/${profileUserId}/follow`, {
+      const res = await fetch(`http://localhost:8200/api/users/${user._id}/follow`, {
         method,
         headers: {
           Authorization: `Bearer ${token}`
@@ -137,47 +98,23 @@ const UserProfile = ({ currentUser, isAuthenticated }) => {
     }
   };
 
-  // Loading state
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#f0f9ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            border: '4px solid #dbeafe',
-            borderTop: '4px solid #2563eb',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 16px'
-          }}></div>
-          <p style={{ color: '#4b5563' }}>Loading profile...</p>
+          <div style={{ width: '50px', height: '50px', margin: '0 auto 1rem', border: '4px solid #e5e7eb', borderTopColor: '#60A5FA', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+          <p style={{ color: '#6b7280' }}>Loading profile...</p>
         </div>
       </div>
     );
   }
 
-  // User not found state
   if (!user) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#f0f9ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#4b5563', fontSize: '18px', marginBottom: '16px' }}>User not found</p>
-          <button
-            onClick={() => navigate('/dashboard')}
-            style={{
-              padding: '10px 24px',
-              backgroundColor: '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '16px',
-              fontWeight: '500'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#1d4ed8'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#2563eb'}
-          >
+      <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <p style={{ color: '#6b7280', marginBottom: '1rem' }}>User not found</p>
+          <button onClick={() => navigate('/dashboard')} style={{ padding: '0.75rem 1.5rem', backgroundColor: '#60A5FA', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
             Go Back to Dashboard
           </button>
         </div>
@@ -185,154 +122,122 @@ const UserProfile = ({ currentUser, isAuthenticated }) => {
     );
   }
 
-  const isOwnProfile = loggedInUser?._id === profileUserId;
+  const isOwnProfile = !userId || loggedInUser?._id === user._id;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 py-12">
+    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', padding: '2rem 1rem' }}>
       {alert && (
-        <div className="max-w-4xl mx-auto px-4 mb-4">
-          <Alert
-            message={alert.message}
-            type={alert.type}
-            onClose={() => setAlert(null)}
-          />
+        <div style={{ maxWidth: '1200px', margin: '0 auto 2rem auto', padding: '1rem', backgroundColor: alert.type === 'error' ? '#fee2e2' : alert.type === 'warning' ? '#fef3c7' : '#dcfce7', borderRadius: '8px', border: `1px solid ${alert.type === 'error' ? '#fecaca' : alert.type === 'warning' ? '#fcd34d' : '#86efac'}`, color: alert.type === 'error' ? '#991b1b' : alert.type === 'warning' ? '#92400e' : '#166534', display: 'flex', justifyContent: 'space-between' }}>
+          <p>{alert.message}</p>
+          <button onClick={() => setAlert(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>×</button>
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Profile Header */}
-        <div className="bg-gradient-to-br from-white via-blue-50 to-purple-50 rounded-3xl shadow-2xl p-8 md:p-12 mb-12 border border-blue-100">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            {/* Avatar */}
-            <div className="relative">
-              <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center text-white shadow-2xl border-4 border-white">
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {!isOwnProfile && (
+          <button onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', padding: '0.75rem 1rem', backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '6px', cursor: 'pointer', fontSize: '0.95rem', color: '#374151', fontWeight: '500' }}>
+            <ArrowLeft size={18} /> Go Back
+          </button>
+        )}
+
+        <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '2rem', marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
                 {user.avatar ? (
-                  <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
+                  <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <User size={80} />
+                  <User size={60} />
                 )}
               </div>
-              <div className="absolute bottom-0 right-0 w-12 h-12 bg-green-500 rounded-full border-4 border-white shadow-lg"></div>
+              <div style={{ position: 'absolute', bottom: 0, right: 0, width: '30px', height: '30px', backgroundColor: '#10b981', borderRadius: '50%', border: '3px solid white' }}></div>
             </div>
 
-            {/* Info */}
-            <div className="flex-1 text-center md:text-left">
-              <Heading type="h1" className="text-5xl font-bold text-gray-900 mb-2">
-                {user.name}
-              </Heading>
-              <Paragraph className="text-gray-600 mb-4 flex items-center justify-center md:justify-start gap-2">
-                <Mail size={18} className="text-blue-600" />
-                {user.email}
-              </Paragraph>
-              {user.bio && (
-                <Paragraph className="text-gray-700 mb-6 text-lg italic">
-                  "{user.bio}"
-                </Paragraph>
-              )}
-
-              {/* Stats */}
-              <div className="flex gap-8 mb-8 justify-center md:justify-start">
-                <div className="text-center">
-                  <Heading type="h3" className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    {user.totalBlogs || 0}
-                  </Heading>
-                  <Paragraph className="text-gray-600 font-semibold mt-1">Articles</Paragraph>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827', margin: 0, marginBottom: '0.5rem' }}>{user.name}</h1>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#6b7280' }}>
+                    <Mail size={16} />
+                    <span>{user.email}</span>
+                  </div>
                 </div>
-                <div className="border-l border-gray-300"></div>
-                <button
-                  onClick={() => navigate(`/followers/${profileUserId}`)}
-                  className="text-center hover:scale-110 transition-transform duration-300 cursor-pointer group"
-                >
-                  <Heading type="h3" className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:from-purple-700 group-hover:to-pink-700">
-                    {user.followers?.length || 0}
-                  </Heading>
-                  <Paragraph className="text-gray-600 font-semibold mt-1 group-hover:text-purple-600">Followers</Paragraph>
-                </button>
-                <div className="border-l border-gray-300"></div>
-                <button
-                  onClick={() => navigate(`/following/${profileUserId}`)}
-                  className="text-center hover:scale-110 transition-transform duration-300 cursor-pointer group"
-                >
-                  <Heading type="h3" className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent group-hover:from-pink-700 group-hover:to-orange-700">
-                    {user.following?.length || 0}
-                  </Heading>
-                  <Paragraph className="text-gray-600 font-semibold mt-1 group-hover:text-pink-600">Following</Paragraph>
-                </button>
+                {!isOwnProfile && (
+                  <button onClick={handleFollowToggle} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', backgroundColor: isFollowing ? '#e5e7eb' : '#60A5FA', color: isFollowing ? '#374151' : 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    {isFollowing ? (
+                      <>
+                        <UserCheck size={18} /> Following
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus size={18} /> Follow
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
-              {/* Follow Button */}
-              {!isOwnProfile && (
-                <Button
-                  onClick={handleFollowToggle}
-                  className={`px-10 py-3 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg ${
-                    isFollowing
-                      ? 'bg-gray-300 text-gray-800 hover:bg-gray-400'
-                      : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
-                  }`}
-                  text={isFollowing ? '✓ Following' : '+ Follow'}
-                />
+              {user.bio && (
+                <p style={{ color: '#4b5563', fontSize: '1rem', marginBottom: '1.5rem', fontStyle: 'italic' }}>"{user.bio}"</p>
               )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
+                <div style={{ backgroundColor: '#f9fafb', padding: '1.5rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#60A5FA', marginBottom: '0.5rem' }}>{user.totalBlogs || 0}</div>
+                  <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: 0 }}>Articles</p>
+                </div>
+                <button onClick={() => navigate(`/followers/${user._id}`)} style={{ backgroundColor: '#f9fafb', padding: '1.5rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #e5e7eb', cursor: 'pointer', fontWeight: 'normal' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f6'; e.currentTarget.style.borderColor = '#60A5FA'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#f9fafb'; e.currentTarget.style.borderColor = '#e5e7eb'; }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#a855f7', marginBottom: '0.5rem' }}>{user.followers?.length || 0}</div>
+                  <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: 0 }}>Followers</p>
+                </button>
+                <button onClick={() => navigate(`/following/${user._id}`)} style={{ backgroundColor: '#f9fafb', padding: '1.5rem', borderRadius: '8px', textAlign: 'center', border: '1px solid #e5e7eb', cursor: 'pointer', fontWeight: 'normal' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f6'; e.currentTarget.style.borderColor = '#ec4899'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#f9fafb'; e.currentTarget.style.borderColor = '#e5e7eb'; }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ec4899', marginBottom: '0.5rem' }}>{user.following?.length || 0}</div>
+                  <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: 0 }}>Following</p>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* User's Blogs */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-              <FileText size={28} className="text-white" />
+        <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+            <div style={{ width: '40px', height: '40px', backgroundColor: '#60A5FA', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+              <FileText size={24} />
             </div>
-            <Heading type="h2" className="text-3xl font-bold text-gray-900">
-              Published Articles
-            </Heading>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111827', margin: 0 }}>Published Articles</h2>
           </div>
 
           {userBlogs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
               {userBlogs.map((blog) => (
-                <div
-                  key={blog._id}
-                  onClick={() => navigate(`/blog/${blog._id}/preview`)}
-                  className="group bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-6 hover:border-blue-400 hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105"
-                >
-                  {blog.images && blog.images.length > 0 && (
-                    <div className="h-48 rounded-xl mb-5 overflow-hidden bg-gray-200 relative">
-                      <img
-                        src={blog.images[0]}
-                        alt={blog.title}
-                        className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                <div key={blog._id} onClick={() => navigate(`/blog/${blog._id}/preview`)} style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#60A5FA'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(96, 165, 250, 0.2)'; e.currentTarget.style.transform = 'translateY(-4px)'; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                  {blog.images && blog.images.length > 0 && <img src={blog.images[0]} alt={blog.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />}
+                  <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#111827', margin: '0 0 0.75rem 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{blog.title}</h3>
+                    <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: '0 0 1rem 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}>{blog.short_description}</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                      <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>{new Date(blog.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                      <span style={{ color: '#60A5FA', fontWeight: '600' }}>Read →</span>
                     </div>
-                  )}
-                  <Heading type="h3" className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600">
-                    {blog.title}
-                  </Heading>
-                  <Paragraph className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {blog.short_description}
-                  </Paragraph>
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <span className="text-xs text-gray-500 font-semibold">
-                      {new Date(blog.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                    </span>
-                    <span className="text-blue-600 font-bold group-hover:gap-2 transition-all">Read →</span>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300">
-              <FileText size={56} className="mx-auto text-gray-400 mb-4" />
-              <Paragraph className="text-gray-600 text-lg font-semibold">
-                No articles published yet
-              </Paragraph>
-              <Paragraph className="text-gray-500 mt-2">
-                This author is working on their first piece!
-              </Paragraph>
+            <div style={{ textAlign: 'center', padding: '3rem 1rem', backgroundColor: '#f9fafb', borderRadius: '8px', border: '2px dashed #d1d5db' }}>
+              <FileText size={48} style={{ margin: '0 auto 1rem', color: '#d1d5db' }} />
+              <p style={{ fontSize: '1.1rem', fontWeight: '600', color: '#4b5563', margin: '0 0 0.5rem 0' }}>No articles published yet</p>
+              <p style={{ color: '#9ca3af', margin: 0 }}>This author is working on their first piece!</p>
             </div>
           )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

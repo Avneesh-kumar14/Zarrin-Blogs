@@ -14,8 +14,11 @@ const Followers = () => {
   const [followingMap, setFollowingMap] = useState({});
   const [userName, setUserName] = useState('');
 
-  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const storedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const loggedInUser = (storedUser && Object.keys(storedUser).length > 0) ? storedUser : {};
   const token = localStorage.getItem('token');
+  
+  const getUserId = (user) => user?._id || user?.id;
 
   useEffect(() => {
     if (userId) {
@@ -33,19 +36,34 @@ const Followers = () => {
       const userData = await res.json();
       
       setUserName(userData.name);
-      setFollowers(userData.followers || []);
       
-      // Check following status for each follower
-      if (token && userData.followers) {
+      // Fetch full details for each follower
+      if (userData.followers && Array.isArray(userData.followers)) {
+        const followersDetails = [];
         const followMap = {};
+        
         for (const follower of userData.followers) {
-          const userRes = await fetch(`http://localhost:8200/api/users/${follower._id}`);
-          if (userRes.ok) {
-            const followerData = await userRes.json();
-            followMap[follower._id] = followerData.followers?.some(f => f._id === loggedInUser._id) || false;
+          const followerId = getUserId(follower);
+          try {
+            const userRes = await fetch(`http://localhost:8200/api/users/${followerId}`);
+            if (userRes.ok) {
+              const fullUserData = await userRes.json();
+              followersDetails.push(fullUserData);
+              
+              // Check if logged in user is following this person
+              if (token) {
+                followMap[followerId] = fullUserData.followers?.some(f => getUserId(f) === getUserId(loggedInUser)) || false;
+              }
+            }
+          } catch (err) {
+            console.error('Error fetching user details:', err);
           }
         }
+        
+        setFollowers(followersDetails);
         setFollowingMap(followMap);
+      } else {
+        setFollowers([]);
       }
     } catch (err) {
       console.error('Error fetching followers:', err);
