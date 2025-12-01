@@ -76,13 +76,13 @@ const ContactPage = () => {
     {
       icon: Mail,
       title: 'Email',
-      detail: 'hello@Avneesh.com',
+      detail: 'rajneeshavneesh@gmail.com',
       gradient: 'from-purple-600 to-pink-600'
     },
     {
       icon: Phone,
       title: 'Phone',
-      detail: '7080921..',
+      detail: '6388860757',
       gradient: 'from-orange-600 to-red-600'
     },
   ];

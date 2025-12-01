@@ -28,27 +28,7 @@ const OurBlogs = () => {
   return (
     <div className="px-4 md:px-16 py-16 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <Headings 
-            type="h6" 
-            className="text-blue-600 font-bold text-sm uppercase tracking-widest mb-2"
-          >
-            Explore Our Collection
-          </Headings>
-          <Headings 
-            type="h2" 
-            className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4"
-          >
-            Discover Amazing Stories
-          </Headings>
-          <Paragraph 
-            className="text-gray-600 max-w-2xl mx-auto leading-relaxed opacity-80"
-          >
-            Read thoughtfully researched articles and insights from our talented writers. 
-            Explore diverse topics and gain valuable knowledge.
-          </Paragraph>
-        </div>
+        
 
         {/* Blogs Grid */}
         {loading ? (
