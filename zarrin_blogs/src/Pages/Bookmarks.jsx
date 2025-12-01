@@ -203,7 +203,7 @@ const Bookmarks = ({ isAuthenticated }) => {
               Start bookmarking blogs to save them for later reading
             </Paragraph>
             <Button
-              onClick={() => navigate('/all-blogs')}
+              onClick={() => navigate('/blog')}
               className="inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-md transition-all"
               text="Explore Blogs"
             />
