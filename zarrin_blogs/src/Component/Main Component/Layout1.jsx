@@ -64,9 +64,9 @@ const cardsData = [
 
 const BlogSection = () => {
   return (
-    <div className='px-4 md:px-16 py-12'>
+    <div className='px-4 md:px-16 py-12 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-colors'>
       <div className="flex justify-between px-6 py-2">
-        <Heading type='h4' className='font-bold'>
+        <Heading type='h4' className='font-bold text-gray-900 dark:text-white'>
           Popular Post
         </Heading>
 

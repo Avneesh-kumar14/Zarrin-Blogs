@@ -38,13 +38,13 @@ const CardsData = [
 
 const RecentPost = () => {
   return (
-    <div className='px-4  md:px-16 py-12'>
+    <div className='px-4  md:px-16 py-12 bg-white dark:bg-gray-800 transition-colors'>
       
 <div className='px-4 md:px-8 py-12 sm:flex-row'>
 
   <div className='flex flex-col sm:flex-row justify-between items-start  gap-4'>
     <Headings type='h3'
-      className='text-xl sm:text-2xl md:text-3xl font-semibold'>
+      className='text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white'>
       Our Recent Post
     </Headings>
     <Button text="View All"variant="primary"className="px-6 py-2 rounded-md"/>
@@ -64,17 +64,17 @@ const RecentPost = () => {
        
         <div className='w-full lg:w-1/2'>
           <div className='flex gap-4 flex-wrap'>
-            <span className='text-xs font-bold'>DEVELOPMENT</span>
-            <span className='text-xs font-medium opacity-65'>1 August 2025</span>
+            <span className='text-xs font-bold text-gray-900 dark:text-gray-300'>DEVELOPMENT</span>
+            <span className='text-xs font-medium opacity-65 text-gray-700 dark:text-gray-400'>1 August 2025</span>
           </div>
 
           <div className='py-4'>
-            <Headings type='h4' className='custom-heading-xl py-4'>
+            <Headings type='h4' className='custom-heading-xl py-4 text-gray-900 dark:text-white'>
               How to make a Game look more attractive with New VR & AI Technology
             </Headings>
           </div>
 
-          <Paragraph variant='small' className='font-normal py-2 opacity-65'>
+          <Paragraph variant='small' className='font-normal py-2 opacity-65 text-gray-700 dark:text-gray-400'>
             Google has been investing in AI for many years and bringing its benefits to individuals, businesses and communities. Whether it’s publishing state-of-the-art research, building helpful products or developing tools and resources that enable others, we’re committed to making AI accessible to everyone.
           </Paragraph>
 
