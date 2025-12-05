@@ -1,29 +1,58 @@
-
 import React, { useEffect, useState } from 'react';
 import Headings from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
 import Cards from '../Common/Cards';
+import Pagination from '../Pagination';
 
 const OurBlogs = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // ✅ Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [itemsPerPage] = useState(10); // Items per page
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch('http://localhost:8200/api/blogs');
+        setLoading(true);
+        // ✅ Fetch with pagination parameters
+        const res = await fetch(
+          `http://localhost:8200/api/blogs?page=${currentPage}&limit=${itemsPerPage}`
+        );
         if (!res.ok) throw new Error('Failed to fetch blogs');
+        
         const data = await res.json();
-        setBlogs(data);
+        
+        // ✅ Update pagination state
+        if (data.pagination) {
+          setBlogs(data.data || []);
+          setTotalPages(data.pagination.totalPages);
+          setTotalItems(data.pagination.totalItems);
+        } else {
+          // Fallback for API without pagination response
+          setBlogs(Array.isArray(data) ? data : []);
+        }
       } catch (err) {
         setError(err.message);
+        setBlogs([]);
       } finally {
         setLoading(false);
       }
     };
+    
     fetchBlogs();
-  }, []);
+  }, [currentPage, itemsPerPage]);
+
+  // ✅ Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top of blogs section
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="px-4 md:px-16 py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
@@ -52,22 +81,34 @@ const OurBlogs = () => {
             </Paragraph>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {blogs.map((blog) => (
-              <Cards
-                key={blog._id}
-                id={blog._id}
-                imageSrc={blog.images && blog.images[0]}
-                imageAlt={blog.title}
-                headingSmall={blog.category && blog.category[0]?.name}
-                headingLarge={blog.title}
-                paragraph={blog.short_description}
-                buttonText="Read More"
-                buttonVariant="read"
-                createdAt={blog.createdAt}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {blogs.map((blog) => (
+                <Cards
+                  key={blog._id}
+                  id={blog._id}
+                  imageSrc={blog.images && blog.images[0]}
+                  imageAlt={blog.title}
+                  headingSmall={blog.category && blog.category[0]?.name}
+                  headingLarge={blog.title}
+                  paragraph={blog.short_description}
+                  buttonText="Read More"
+                  buttonVariant="read"
+                  createdAt={blog.createdAt}
+                />
+              ))}
+            </div>
+            
+            {/* ✅ Pagination Component */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              isLoading={loading}
+            />
+          </>
         )}
       </div>
     </div>
