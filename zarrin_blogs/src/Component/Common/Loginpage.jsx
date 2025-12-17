@@ -14,6 +14,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [rateLimitReset, setRateLimitReset] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,6 +51,27 @@ const Login = () => {
       
       let data = await res.json();
       
+      // Handle rate limiting (429)
+      if (res.status === 429) {
+        const retryAfter = data.retryAfter || 15 * 60; // Default to 15 minutes
+        setRateLimitReset(retryAfter);
+        throw new Error(`Too many login attempts. Please try again in ${Math.ceil(retryAfter / 60)} minutes.`);
+      }
+
+      // Handle email not verified (403)
+      if (res.status === 403) {
+        setAlert({ 
+          type: 'warning', 
+          message: data.message || 'Email not verified. Please check your email for OTP verification.'
+        });
+        setLoading(false);
+        setTimeout(() => {
+          navigate('/otp-verify', { state: { email: trimmedEmail } });
+        }, 2000);
+        return;
+      }
+
+      // Handle other errors
       if (!res.ok) {
         throw new Error(data.message || 'Invalid credentials');
       }
@@ -184,9 +206,9 @@ const Login = () => {
                   <input type="checkbox" className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:bg-gray-700" />
                   <span>Remember me</span>
                 </label>
-                <a href="#" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors">
+                <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors">
                   Forgot password?
-                </a>
+                </Link>
               </div>
 
               {/* Submit Button */}

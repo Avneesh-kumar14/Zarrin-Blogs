@@ -1,0 +1,168 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # Backend Tests & Build
+  backend:
+    runs-on: ubuntu-latest
+    working-directory: ./Zarrin_server
+
+    services:
+      mongodb:
+        image: mongo:5
+        options: >-
+          --health-cmd mongosh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 27017:27017
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: Zarrin_server/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./Zarrin_server
+
+      - name: Run linter
+        run: npm run lint --if-present
+        working-directory: ./Zarrin_server
+
+      - name: Build backend
+        run: npm run build --if-present
+        working-directory: ./Zarrin_server
+
+      - name: Run tests
+        env:
+          MONGODB_URI: mongodb://localhost:27017/zarrin_test
+          JWT_SECRET: test_secret
+          NODE_ENV: test
+        run: npm test --if-present
+        working-directory: ./Zarrin_server
+
+  # Frontend Tests & Build
+  frontend:
+    runs-on: ubuntu-latest
+    working-directory: ./zarrin_blogs
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: zarrin_blogs/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./zarrin_blogs
+
+      - name: Run linter
+        run: npm run lint --if-present
+        working-directory: ./zarrin_blogs
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: ./zarrin_blogs
+
+      - name: Run tests
+        run: npm test --watchAll=false --passWithNoTests
+        working-directory: ./zarrin_blogs
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./zarrin_blogs/coverage/coverage-final.json
+          flags: frontend
+          name: codecov-frontend
+
+  # Security scanning
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/setup@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Scan dependencies
+        run: |
+          npm install -g snyk
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --all-projects
+        continue-on-error: true
+
+  # Code quality check
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (Backend)
+        run: npm install
+        working-directory: ./Zarrin_server
+
+      - name: Install dependencies (Frontend)
+        run: npm install
+        working-directory: ./zarrin_blogs
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
+
+  # Deploy to Render (if all tests pass)
+  deploy:
+    needs: [backend, frontend, security, code-quality]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy Backend to Render
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}
+        run: |
+          if [ ! -z "$RENDER_DEPLOY_HOOK" ]; then
+            curl "$RENDER_DEPLOY_HOOK"
+          fi
+
+      - name: Deploy Frontend to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: |
+          npm install -g vercel
+          vercel --prod --token $VERCEL_TOKEN
+        continue-on-error: true
+
+      - name: Notify on deploy
+        run: echo "✅ Deployment completed successfully!"

@@ -25,6 +25,28 @@ const UserSchema = new Schema({
         required: true,
         minlength: 6
     },
+    // ✅ OTP verification fields
+    isEmailVerified: {
+        type: Boolean,
+        default: false
+    },
+    otp: {
+        type: String,
+        default: null
+    },
+    otpExpires: {
+        type: Date,
+        default: null
+    },
+    // ✅ Password reset fields
+    passwordResetToken: {
+        type: String,
+        default: null
+    },
+    passwordResetExpires: {
+        type: Date,
+        default: null
+    },
     blog: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "blog"

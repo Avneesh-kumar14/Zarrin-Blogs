@@ -18,7 +18,14 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const validatePassword = (pass) => pass.length >= 8;
+  const validatePassword = (pass) => {
+    if (pass.length < 8) return false;
+    if (!/[a-z]/.test(pass)) return false;
+    if (!/[A-Z]/.test(pass)) return false;
+    if (!/\d/.test(pass)) return false;
+    return true;
+  };
+  
   const passwordsMatch = password === confirmPassword && password.length > 0;
 
   const handleSubmit = async (e) => {
@@ -27,7 +34,7 @@ const Signup = () => {
 
     // Validation
     if (!validatePassword(password)) {
-      setAlert({ type: 'warning', message: 'Password must be at least 8 characters long' });
+      setAlert({ type: 'warning', message: 'Password must be 8+ chars with uppercase, lowercase, and number (e.g., MyPass123)' });
       setLoading(false);
       return;
     }
@@ -214,7 +221,7 @@ const Signup = () => {
               {/* Terms & Conditions */}
               <label className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer group">
                 <input type="checkbox" className="w-4 h-4 mt-1 rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500 dark:bg-gray-700" required />
-                <span>I agree to the <a href="#" className="text-purple-600 dark:text-purple-400 font-semibold hover:text-purple-700 dark:hover:text-purple-300 transition-colors">Terms & Conditions</a> and <a href="#" className="text-purple-600 dark:text-purple-400 font-semibold hover:text-purple-700 dark:hover:text-purple-300 transition-colors">Privacy Policy</a></span>
+                <span>I agree to the <button type="button" className="text-purple-600 dark:text-purple-400 font-semibold hover:text-purple-700 dark:hover:text-purple-300 transition-colors">Terms & Conditions</button> and <button type="button" className="text-purple-600 dark:text-purple-400 font-semibold hover:text-purple-700 dark:hover:text-purple-300 transition-colors">Privacy Policy</button></span>
               </label>
 
               {/* Submit Button */}

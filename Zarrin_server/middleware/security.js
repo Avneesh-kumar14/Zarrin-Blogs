@@ -35,46 +35,60 @@ const securityHeaders = helmet({
 
 // ✅ 2. RATE LIMITING - Prevent Brute Force & DDoS
 
-// General rate limiter for all requests
+// General rate limiter for all requests (DISABLED for localhost development)
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 1000, // Limit each IP to 1000 requests per windowMs
   message: 'Too many requests, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.ip === '127.0.0.1', // Skip localhost for testing
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1', // Skip localhost for testing
 });
 
-// Strict rate limiter for authentication routes (login, signup)
+// Rate limiter for authentication routes (login, signup, forgot-password, verify-otp)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Only 5 requests per 15 minutes for auth
-  message: 'Too many authentication attempts, please try again later',
+  max: 30, // 30 requests per 15 minutes per email/IP (increased from 5)
+  message: 'Too many authentication attempts, please try again in 15 minutes',
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.body.email || req.ip, // Rate limit by email if provided
+  keyGenerator: (req) => req.body.email || req.ip, // Rate limit by email if provided, otherwise IP
+  handler: (req, res) => {
+    console.warn(`Rate limit exceeded for ${req.body.email || req.ip} on ${req.path}`);
+    res.status(429).json({ 
+      message: 'Too many authentication attempts. Please wait 15 minutes before trying again.',
+      retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+    });
+  },
 });
 
 // Strict rate limiter for search/filtering (prevent data scraping)
 const searchLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // 30 searches per minute
+  max: 60, // 60 searches per minute (increased from 30)
   message: 'Too many search requests, please try again later',
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1', // Skip localhost
 });
 
 // Rate limiter for file uploads
 const uploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 20, // 20 uploads per hour
+  max: 50, // 50 uploads per hour (increased from 20)
   message: 'Upload limit exceeded, try again later',
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1', // Skip localhost
 });
 
-// Rate limiter for API write operations (POST, PUT, DELETE)
+// Rate limiter for API write operations (POST, PUT, DELETE) - DISABLED for localhost
 const writeLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 50, // 50 write operations per 5 minutes
+  max: 500, // 500 write operations per 5 minutes (increased from 50)
   message: 'Too many write operations, please try again later',
-  skip: (req) => !['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method),
+  skip: (req) => {
+    // Skip rate limiting for localhost
+    if (req.ip === '127.0.0.1' || req.ip === '::1') return true;
+    // Only apply to actual write methods
+    return !['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method);
+  },
 });
 
 // ✅ 3. INPUT VALIDATION & SANITIZATION
@@ -133,7 +147,7 @@ const validateAuth = [
   
   body('password')
     .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/).withMessage('Password must contain uppercase, lowercase, number, and special character'),
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/).withMessage('Password must contain uppercase, lowercase, and number'),
   
   (req, res, next) => {
     const errors = validationResult(req);

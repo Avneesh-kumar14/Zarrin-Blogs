@@ -12,6 +12,8 @@ import Signup from './Component/Common/Signup.jsx';
 import BlogPreview from './Component/Main Component/BlogPreview.jsx';
 import BlogEditPage from './Component/Main Component/EditBlog.jsx';
 import Login from './Component/Common/Loginpage.jsx';
+import ForgotPassword from './Component/Common/ForgotPassword.jsx';
+import ResetPassword from './Component/Common/ResetPassword.jsx';
 import Dashboard from './Component/Main Component/Dashboard.jsx';
 import Blog from './Pages/Blog.jsx';
 import Contact from './Pages/Contact.jsx';
@@ -27,6 +29,16 @@ import Drafts from './Pages/Drafts.jsx';
 import Followers from './Pages/Followers.jsx';
 import Following from './Pages/Following.jsx';
 
+// ✅ Safe JSON parse helper
+const safeJsonParse = (jsonString, fallback = {}) => {
+  try {
+    if (!jsonString || jsonString === 'undefined') return fallback;
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error('JSON parse error:', error);
+    return fallback;
+  }
+};
 
 function AppWrapper() {
   const location = useLocation();
@@ -44,11 +56,13 @@ function AppWrapper() {
         <Route path="/bookmarks" element={<Bookmarks isAuthenticated={!!localStorage.getItem('token')} />} />
         <Route path="/followers/:userId" element={<Followers />} />
         <Route path="/following/:userId" element={<Following />} />
-        <Route path="/profile/:userId" element={<UserProfile currentUser={JSON.parse(localStorage.getItem('user') || '{}')} isAuthenticated={!!localStorage.getItem('token')} />} />
+        <Route path="/profile/:userId" element={<UserProfile currentUser={safeJsonParse(localStorage.getItem('user'))} isAuthenticated={!!localStorage.getItem('token')} />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password/:token' element={<ResetPassword />} />
         <Route path="/*" element={<Error />} />
         <Route path='/dashboard' element={<AuthenticatedLayout />}>
           <Route path='/dashboard/analytics' element={<Dashboard />} />
@@ -56,7 +70,7 @@ function AppWrapper() {
           <Route path='/dashboard/myblogs' element={<MyBlogs />} />
           <Route path='/dashboard/categories' element={<Categories />} />
           <Route path='drafts' element={<Drafts />} />
-          <Route path='profile' element={<UserProfile currentUser={JSON.parse(localStorage.getItem('user') || '{}')} isAuthenticated={!!localStorage.getItem('token')} />} />
+          <Route path='profile' element={<UserProfile currentUser={safeJsonParse(localStorage.getItem('user'))} isAuthenticated={!!localStorage.getItem('token')} />} />
         </Route>
       </Routes>
 
