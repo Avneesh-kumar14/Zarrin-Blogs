@@ -6,6 +6,215 @@ const User = require('../models/userModel');
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Blog
+ *     description: Blog CRUD operations
+ */
+
+/**
+ * @swagger
+ * /api/blog:
+ *   get:
+ *     summary: Get all blogs with pagination
+ *     tags: [Blog]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: number
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *           default: 10
+ *         description: Items per page (max 100)
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           default: createdAt
+ *         description: Field to sort by
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *     responses:
+ *       200:
+ *         description: List of blogs with pagination
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Blog'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage: { type: number }
+ *                     totalPages: { type: number }
+ *                     totalItems: { type: number }
+ *                     itemsPerPage: { type: number }
+ *                     hasNextPage: { type: boolean }
+ *                     hasPrevPage: { type: boolean }
+ */
+
+/**
+ * @swagger
+ * /api/blog:
+ *   post:
+ *     summary: Create a new blog (requires authentication)
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [title, content]
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 minLength: 5
+ *               blog_content:
+ *                 type: string
+ *                 minLength: 20
+ *               short_description:
+ *                 type: string
+ *               category:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               status:
+ *                 type: string
+ *                 enum: [draft, published, scheduled]
+ *     responses:
+ *       201:
+ *         description: Blog created successfully
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/blog/{id}:
+ *   get:
+ *     summary: Get a single blog by ID
+ *     tags: [Blog]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *     responses:
+ *       200:
+ *         description: Blog details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Blog'
+ *       404:
+ *         description: Blog not found
+ */
+
+/**
+ * @swagger
+ * /api/blog/{id}:
+ *   put:
+ *     summary: Update a blog (requires authentication)
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title: { type: string }
+ *               blog_content: { type: string }
+ *               short_description: { type: string }
+ *               category: { type: array }
+ *               status: { type: string, enum: [draft, published, scheduled] }
+ *     responses:
+ *       200:
+ *         description: Blog updated
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Blog not found
+ */
+
+/**
+ * @swagger
+ * /api/blog/{id}:
+ *   delete:
+ *     summary: Delete a blog (requires authentication)
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Blog deleted
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Blog not found
+ */
+
+/**
+ * @swagger
+ * /api/blog/{id}/like:
+ *   post:
+ *     summary: Like a blog (requires authentication)
+ *     tags: [Blog]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Blog liked successfully
+ *       401:
+ *         description: Unauthorized
+ */
+
 // ✅ PAGINATION HELPER FUNCTION
 const getPagination = (page = 1, limit = 10) => {
   const validPage = Math.max(1, parseInt(page) || 1);

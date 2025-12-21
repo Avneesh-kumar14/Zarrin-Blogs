@@ -6,8 +6,200 @@ const generateToken = require('../utils/generateToken');
 const { auth, admin } = require('../middleware/auth');
 const { generateOTP, sendOTPEmail, sendWelcomeEmail } = require('../utils/emailService');
 const { validateAuth } = require('../middleware/security');
+const logger = require('../utils/logger');
+const {
+  validateSignup,
+  validateLogin,
+  validateOTP,
+  validateVerifyEmail,
+  validateResetPassword,
+  validateNewPassword,
+} = require('../utils/validators');
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Authentication
+ *     description: User authentication endpoints
+ */
+
+/**
+ * @swagger
+ * /api/auth/signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email, password]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 3
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *                 description: Must contain uppercase, lowercase, and number
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user: { $ref: '#/components/schemas/User' }
+ *                 token: { type: string }
+ *       400:
+ *         description: Invalid input or email already exists
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user: { $ref: '#/components/schemas/User' }
+ *                 token: { type: string }
+ *       401:
+ *         description: Invalid credentials
+ */
+
+/**
+ * @swagger
+ * /api/auth/send-otp:
+ *   post:
+ *     summary: Send OTP for email verification
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: OTP sent successfully
+ *       400:
+ *         description: Invalid email
+ */
+
+/**
+ * @swagger
+ * /api/auth/verify-email:
+ *   post:
+ *     summary: Verify email with OTP
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, otp]
+ *             properties:
+ *               email:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Email verified
+ *       400:
+ *         description: Invalid or expired OTP
+ */
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset email sent
+ *       400:
+ *         description: User not found
+ */
+
+/**
+ * @swagger
+ * /api/auth/reset-password/{token}:
+ *   post:
+ *     summary: Reset password with token
+ *     tags: [Authentication]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [password]
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid or expired token
+ */
+
 
 // Password reset for existing users (rehash with bcryptjs)
 router.post('/reset-password', async (req, res) => {
@@ -45,16 +237,11 @@ router.get('/validate', auth, (req, res) => {
 });
 
 // ✅ SIGNUP - Send OTP to Email
-router.post('/signup', validateAuth, async (req, res) => {
+router.post('/signup', validateSignup, validateAuth, async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    console.log('Signup attempt for email:', email);
+    logger.info('Signup attempt', { email, name });
 
-    if (!name || !email || !password) {
-      console.log('Missing required fields');
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-    
     // Normalize email and trim password
     const normalizedEmail = email.toLowerCase().trim();
     const trimmedPassword = password.trim();
@@ -62,7 +249,7 @@ router.post('/signup', validateAuth, async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
-      console.log('User already exists with email:', normalizedEmail);
+      logger.warn('Signup failed: user already exists', { email: normalizedEmail });
       return res.status(400).json({ message: 'User already exists. Please login instead.' });
     }
 
@@ -71,7 +258,7 @@ router.post('/signup', validateAuth, async (req, res) => {
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Create user with OTP (email not verified yet)
-    console.log('Creating new user with OTP...');
+    logger.debug('Creating new user with OTP', { email: normalizedEmail });
     const user = new User({ 
       name, 
       email: normalizedEmail, 
@@ -229,31 +416,27 @@ router.post('/resend-otp', async (req, res) => {
 });
 
 // ✅ LOGIN
-router.post('/login', validateAuth, async (req, res) => {
+router.post('/login', validateLogin, validateAuth, async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('Login attempt for email:', email);
-
-    if (!email || !password) {
-      console.log('Missing email or password');
-      return res.status(400).json({ message: 'Email and password are required' });
-    }
+    logger.info('Login attempt', { email });
 
     // Normalize email and trim password
     const normalizedEmail = email.toLowerCase().trim();
     const trimmedPassword = password.trim();
     
-    console.log('Looking for user with email:', normalizedEmail);
+    logger.debug('Looking for user', { email: normalizedEmail });
     
     // Find user
     const foundUser = await User.findOne({ email: normalizedEmail });
     if (!foundUser) {
-        console.log('No user found with email:', normalizedEmail);
+        logger.warn('Login failed: user not found', { email: normalizedEmail });
         return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     // ✅ Check if email is verified
     if (!foundUser.isEmailVerified) {
+      logger.warn('Login failed: email not verified', { email: normalizedEmail });
       return res.status(403).json({ 
         message: 'Email not verified. Please verify your email first.',
         requiresVerification: true,

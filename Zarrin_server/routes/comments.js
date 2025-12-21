@@ -2,8 +2,85 @@ const express = require('express');
 const { auth } = require('../middleware/auth');
 const Comment = require('../models/comment');
 const Blog = require('../models/blog');
+const { sendCommentNotification } = require('../services/emailService');
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Comments
+ *     description: Blog comment operations
+ */
+
+/**
+ * @swagger
+ * /api/comments/blog/{blogId}:
+ *   get:
+ *     summary: Get all comments for a blog
+ *     tags: [Comments]
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of comments
+ */
+
+/**
+ * @swagger
+ * /api/comments/blog/{blogId}:
+ *   post:
+ *     summary: Add a comment to a blog
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [text]
+ *             properties:
+ *               text:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Comment created
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/comments/{commentId}:
+ *   delete:
+ *     summary: Delete a comment
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Comment deleted
+ *       401:
+ *         description: Unauthorized
+ */
 
 // Get all comments for a blog
 router.get('/blog/:blogId', async (req, res) => {
@@ -31,7 +108,7 @@ router.post('/', auth, async (req, res) => {
     }
 
     // Check if blog exists
-    const blog = await Blog.findById(blogId);
+    const blog = await Blog.findById(blogId).populate('author', 'name email');
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }
@@ -43,6 +120,24 @@ router.post('/', auth, async (req, res) => {
     });
 
     const populatedComment = await comment.populate('author', 'name email');
+
+    // Send email notification to blog author (if author != commenter and email exists)
+    if (blog.author && blog.author._id.toString() !== req.user._id.toString() && blog.author.email) {
+      try {
+        const preview = content.substring(0, 100);
+        await sendCommentNotification({
+          commenterName: req.user.name || 'Someone',
+          blogTitle: blog.title,
+          blogId: blogId,
+          userEmail: blog.author.email,
+          commentPreview: preview,
+        });
+      } catch (emailError) {
+        console.error('Email notification failed (but comment was created):', emailError);
+        // Don't fail the request if email fails
+      }
+    }
+
     res.status(201).json(populatedComment);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

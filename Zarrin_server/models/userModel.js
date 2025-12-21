@@ -2,6 +2,7 @@
 
 const { Schema, model, default: mongoose } = require('mongoose')
 const bcrypt = require('bcryptjs');
+const logger = require('../utils/logger');
 
 const UserSchema = new Schema({
     name: {
@@ -65,6 +66,11 @@ const UserSchema = new Schema({
     timestamps: true
 })
 
+// ✅ Database Indexes for optimal query performance
+// Note: email index is already created by unique: true
+UserSchema.index({ createdAt: -1 }); // Sort by creation date
+UserSchema.index({ role: 1 }); // Filter by role
+
 // Hash password before saving
 UserSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
@@ -73,10 +79,10 @@ UserSchema.pre('save', async function(next) {
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
-        console.log('Password hashed successfully');
+        logger.info('Password hashed successfully');
         next();
     } catch (error) {
-        console.error('Error hashing password:', error);
+        logger.error('Error hashing password:', { error: error.message });
         next(error);
     }
 });
@@ -84,14 +90,15 @@ UserSchema.pre('save', async function(next) {
 // Method to compare password
 UserSchema.methods.comparePassword = async function(candidatePassword) {
     try {
-        console.log('Comparing passwords:');
-        console.log('Candidate password length:', candidatePassword.length);
-        console.log('Stored hash length:', this.password.length);
+        logger.debug('Comparing passwords', {
+            candidateLength: candidatePassword.length,
+            storedHashLength: this.password.length,
+        });
         const isMatch = await bcrypt.compare(candidatePassword, this.password);
-        console.log('Password comparison result:', isMatch);
+        logger.debug('Password comparison result', { isMatch });
         return isMatch;
     } catch (error) {
-        console.error('Error comparing passwords:', error);
+        logger.error('Error comparing passwords:', { error: error.message });
         throw error;
     }
 }

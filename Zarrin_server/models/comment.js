@@ -9,5 +9,9 @@ const CommentSchema = new Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
+// ✅ Database Indexes for optimal query performance
+CommentSchema.index({ blog: 1, createdAt: -1 }); // Get comments for a blog
+CommentSchema.index({ author: 1 }); // Get comments by user
+
 const Comment = model('comment', CommentSchema);
 module.exports = Comment;

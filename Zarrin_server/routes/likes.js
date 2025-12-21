@@ -2,8 +2,82 @@ const express = require('express');
 const { auth } = require('../middleware/auth');
 const Like = require('../models/like');
 const Blog = require('../models/blog');
+const User = require('../models/userModel');
+const { sendLikeNotification } = require('../services/emailService');
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Likes
+ *     description: Blog like operations
+ */
+
+/**
+ * @swagger
+ * /api/likes/count/{blogId}:
+ *   get:
+ *     summary: Get like count for a blog
+ *     tags: [Likes]
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Like count
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 count: { type: number }
+ */
+
+/**
+ * @swagger
+ * /api/likes/{blogId}:
+ *   post:
+ *     summary: Like a blog
+ *     tags: [Likes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Blog liked
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/likes/{blogId}:
+ *   delete:
+ *     summary: Unlike a blog
+ *     tags: [Likes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Blog unliked
+ *       401:
+ *         description: Unauthorized
+ */
 
 // Get like count for a blog
 router.get('/count/:blogId', async (req, res) => {
@@ -29,7 +103,7 @@ router.get('/check/:blogId', auth, async (req, res) => {
 router.post('/:blogId', auth, async (req, res) => {
   try {
     // Check if blog exists
-    const blog = await Blog.findById(req.params.blogId);
+    const blog = await Blog.findById(req.params.blogId).populate('author', 'name email');
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }
@@ -46,6 +120,23 @@ router.post('/:blogId', auth, async (req, res) => {
     });
 
     const count = await Like.countDocuments({ blog: req.params.blogId });
+
+    // Send email notification to blog author (if author != liker and email exists)
+    if (blog.author && blog.author._id.toString() !== req.user._id.toString() && blog.author.email) {
+      try {
+        await sendLikeNotification({
+          likerName: req.user.name || 'Someone',
+          blogTitle: blog.title,
+          blogId: req.params.blogId,
+          userEmail: blog.author.email,
+          totalLikes: count,
+        });
+      } catch (emailError) {
+        console.error('Email notification failed (but like was successful):', emailError);
+        // Don't fail the request if email fails
+      }
+    }
+
     res.status(201).json({ message: 'Blog liked', count });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

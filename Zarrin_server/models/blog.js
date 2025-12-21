@@ -18,5 +18,13 @@ const BlogSchema = new Schema({
   readingTime: { type: Number, default: 0 }
 }, { timestamps: true });
 
+// ✅ Database Indexes for optimal query performance
+BlogSchema.index({ title: 'text', short_description: 'text' }); // Full text search
+BlogSchema.index({ category: 1 }); // Filter by category
+BlogSchema.index({ author: 1 }); // Filter by author
+BlogSchema.index({ createdAt: -1 }); // Sort by date
+BlogSchema.index({ views: -1 }); // Sort by views
+BlogSchema.index({ status: 1 }); // Filter by status
+
 const Blog = model('blog', BlogSchema);
 module.exports = Blog;

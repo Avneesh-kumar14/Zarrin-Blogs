@@ -5,6 +5,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+const logger = require('./utils/logger');
+const { swaggerUi, swaggerSpec } = require('./swagger');
 const connectDB = require('./connection');
 const authRoutes = require('./routes/auth');
 const blogRoutes = require('./routes/blog');
@@ -19,6 +21,8 @@ const searchRoutes = require('./routes/search');
 const trendingRoutes = require('./routes/trending');
 const relatedRoutes = require('./routes/related');
 const usersRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin');
+const readingProgressRoutes = require('./routes/readingProgress');
 
 // Security middleware
 const {
@@ -71,6 +75,13 @@ app.use(generalLimiter);
 // 7. Write Operations Rate Limiter
 app.use(writeLimiter);
 
+// ✅ SWAGGER API DOCUMENTATION
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  swaggerOptions: {
+    persistAuthorization: true
+  }
+}));
+
 const PORT = process.env.PORT || 8200;
 
 // ✅ API ROUTES with specific rate limiters
@@ -98,6 +109,12 @@ app.use('/api/trending', trendingRoutes);
 app.use('/api/related', relatedRoutes);
 app.use('/api/users', usersRoutes);
 
+// ✅ Admin routes (protected by auth middleware)
+app.use('/api/admin', adminRoutes);
+
+// ✅ Reading Progress routes (protected by auth middleware)
+app.use('/api/reading-progress', readingProgressRoutes);
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -116,12 +133,14 @@ const startServer = async () => {
   try {
     await connectDB();
     app.listen(PORT, () => {
-      console.log(`✅ Backend API running on http://localhost:${PORT}`);
-      console.log('📊 MongoDB Connection State:', mongoose.connection.readyState);
-      console.log('🔧 Environment:', process.env.NODE_ENV || 'development');
+      logger.info('✅ Backend API running', {
+        url: `http://localhost:${PORT}`,
+        mongoState: mongoose.connection.readyState,
+        environment: process.env.NODE_ENV || 'development',
+      });
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    logger.error('❌ Failed to start server:', { error: error.message, stack: error.stack });
     process.exit(1);
   }
 };

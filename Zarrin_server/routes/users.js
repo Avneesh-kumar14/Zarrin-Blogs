@@ -2,6 +2,7 @@ const express = require('express');
 const { auth } = require('../middleware/auth');
 const User = require('../models/userModel');
 const Blog = require('../models/blog');
+const { sendFollowNotification } = require('../services/emailService');
 
 const router = express.Router();
 
@@ -131,6 +132,21 @@ router.post('/:userId/follow', auth, async (req, res) => {
     const currentUser = await User.findById(req.user._id);
     currentUser.following.push(req.params.userId);
     await currentUser.save();
+
+    // Send email notification to followed user
+    if (targetUser.email) {
+      try {
+        await sendFollowNotification({
+          followerName: req.user.name || 'Someone',
+          followerEmail: req.user.email,
+          userId: req.user._id,
+          userEmail: targetUser.email,
+        });
+      } catch (emailError) {
+        console.error('Email notification failed (but follow was successful):', emailError);
+        // Don't fail the request if email fails
+      }
+    }
 
     res.json({ message: 'Followed successfully' });
   } catch (err) {

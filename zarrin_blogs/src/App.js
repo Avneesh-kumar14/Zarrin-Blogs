@@ -28,6 +28,7 @@ import UserProfile from './Pages/UserProfile.jsx';
 import Drafts from './Pages/Drafts.jsx';
 import Followers from './Pages/Followers.jsx';
 import Following from './Pages/Following.jsx';
+import AdminDashboard from './Pages/AdminDashboard.jsx';
 
 // ✅ Safe JSON parse helper
 const safeJsonParse = (jsonString, fallback = {}) => {
@@ -63,6 +64,7 @@ function AppWrapper() {
         <Route path='/login' element={<Login />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password/:token' element={<ResetPassword />} />
+        <Route path='/admin' element={<AdminDashboard isAuthenticated={!!localStorage.getItem('token')} currentUser={safeJsonParse(localStorage.getItem('user'))} />} />
         <Route path="/*" element={<Error />} />
         <Route path='/dashboard' element={<AuthenticatedLayout />}>
           <Route path='/dashboard/analytics' element={<Dashboard />} />
