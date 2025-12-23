@@ -3,7 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();
+require('dotenv').config({ silent: true });
 
 const logger = require('./utils/logger');
 const { swaggerUi, swaggerSpec } = require('./swagger');

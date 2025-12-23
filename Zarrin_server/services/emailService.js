@@ -1,6 +1,22 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Gmail transporter with your credentials
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_EMAIL,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
+
+// Verify transporter connection on startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.warn('⚠️  Email service configuration error:', error.message);
+  } else {
+    console.log('✅ Email service ready - Gmail SMTP connected');
+  }
+});
 
 /**
  * Send email when a user is followed
@@ -13,8 +29,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
  */
 const sendFollowNotification = async ({ followerName, followerEmail, userId, userEmail }) => {
   try {
-    const result = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'noreply@zarrin-blogs.com',
+    const result = await transporter.sendMail({
+      from: process.env.GMAIL_EMAIL,
       to: userEmail,
       subject: `${followerName} started following you! 👋`,
       html: `
@@ -61,8 +77,8 @@ const sendFollowNotification = async ({ followerName, followerEmail, userId, use
  */
 const sendCommentNotification = async ({ commenterName, blogTitle, blogId, userEmail, commentPreview }) => {
   try {
-    const result = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'noreply@zarrin-blogs.com',
+    const result = await transporter.sendMail({
+      from: process.env.GMAIL_EMAIL,
       to: userEmail,
       subject: `${commenterName} commented on "${blogTitle}" 💬`,
       html: `
@@ -114,8 +130,8 @@ const sendCommentNotification = async ({ commenterName, blogTitle, blogId, userE
  */
 const sendLikeNotification = async ({ likerName, blogTitle, blogId, userEmail, totalLikes }) => {
   try {
-    const result = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'noreply@zarrin-blogs.com',
+    const result = await transporter.sendMail({
+      from: process.env.GMAIL_EMAIL,
       to: userEmail,
       subject: `${likerName} liked your blog "${blogTitle}" ❤️`,
       html: `

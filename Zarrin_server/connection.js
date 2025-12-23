@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
-dotenv.config();
+dotenv.config({ silent: true });
 
 const connectDB = async () => {
   try {
