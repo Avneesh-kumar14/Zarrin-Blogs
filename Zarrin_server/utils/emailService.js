@@ -2,10 +2,16 @@
 // EMAIL SERVICE - Send OTP via Email
 // ================================================
 
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-// ✅ Configure Resend Email Service
-const resend = new Resend(process.env.RESEND_API_KEY || 're_test_key');
+// ✅ Configure Gmail SMTP Service using Nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_EMAIL || 'your-email@gmail.com',
+    pass: process.env.GMAIL_APP_PASSWORD || 'your-app-password'
+  }
+});
 
 // ✅ Generate 6-digit OTP
 const generateOTP = () => {
@@ -15,8 +21,8 @@ const generateOTP = () => {
 // ✅ Send OTP Email
 const sendOTPEmail = async (email, otp) => {
   try {
-    const response = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+    const mailOptions = {
+      from: process.env.GMAIL_EMAIL || 'your-email@gmail.com',
       to: email,
       subject: '🔐 Zarrin Blogs - Email Verification OTP',
       html: `
@@ -71,16 +77,13 @@ const sendOTPEmail = async (email, otp) => {
           </body>
         </html>
       `
-    });
+    };
 
-    if (response.error) {
-      console.error('Resend OTP error:', response.error);
-      return { success: false, message: 'Failed to send OTP', error: response.error.message };
-    }
-
+    await transporter.sendMail(mailOptions);
+    console.log('✅ OTP email sent successfully to:', email);
     return { success: true, message: 'OTP sent successfully' };
   } catch (error) {
-    console.error('Error sending OTP email:', error);
+    console.error('❌ Error sending OTP email:', error);
     return { success: false, message: 'Failed to send OTP', error: error.message };
   }
 };
@@ -88,8 +91,8 @@ const sendOTPEmail = async (email, otp) => {
 // ✅ Send Welcome Email (after verification)
 const sendWelcomeEmail = async (email, name) => {
   try {
-    const response = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+    const mailOptions = {
+      from: process.env.GMAIL_EMAIL || 'your-email@gmail.com',
       to: email,
       subject: '🎉 Welcome to Zarrin Blogs!',
       html: `
@@ -141,16 +144,13 @@ const sendWelcomeEmail = async (email, name) => {
           </body>
         </html>
       `
-    });
+    };
 
-    if (response.error) {
-      console.error('Resend welcome email error:', response.error);
-      return { success: false, message: 'Failed to send welcome email', error: response.error.message };
-    }
-
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Welcome email sent successfully to:', email);
     return { success: true, message: 'Welcome email sent' };
   } catch (error) {
-    console.error('Error sending welcome email:', error);
+    console.error('❌ Error sending welcome email:', error);
     return { success: false, message: 'Failed to send welcome email', error: error.message };
   }
 };
@@ -158,8 +158,8 @@ const sendWelcomeEmail = async (email, name) => {
 // ✅ Send Password Reset Email
 const sendPasswordResetEmail = async (email, resetLink) => {
   try {
-    const response = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+    const mailOptions = {
+      from: process.env.GMAIL_EMAIL || 'your-email@gmail.com',
       to: email,
       subject: '🔑 Zarrin Blogs - Password Reset Request',
       html: `
@@ -203,16 +203,13 @@ const sendPasswordResetEmail = async (email, resetLink) => {
           </body>
         </html>
       `
-    });
+    };
 
-    if (response.error) {
-      console.error('Resend password reset error:', response.error);
-      return { success: false, message: 'Failed to send password reset email', error: response.error.message };
-    }
-
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Password reset email sent successfully to:', email);
     return { success: true, message: 'Password reset email sent' };
   } catch (error) {
-    console.error('Error sending password reset email:', error);
+    console.error('❌ Error sending password reset email:', error);
     return { success: false, message: 'Failed to send password reset email', error: error.message };
   }
 };
