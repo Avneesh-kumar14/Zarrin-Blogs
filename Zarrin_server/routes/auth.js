@@ -224,16 +224,25 @@ router.post('/reset-password', async (req, res) => {
 
 // Validate token
 router.get('/validate', auth, (req, res) => {
-  // If the auth middleware passes, the token is valid
-  res.status(200).json({ 
-    valid: true, 
-    user: {
-      id: req.user._id,
-      name: req.user.name,
-      email: req.user.email,
-      role: req.user.role
-    }
-  });
+  try {
+    // If the auth middleware passes, the token is valid
+    res.status(200).json({ 
+      valid: true, 
+      user: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+        isEmailVerified: req.user.isEmailVerified
+      }
+    });
+  } catch (err) {
+    console.error('Validate endpoint error:', err);
+    res.status(500).json({ 
+      message: 'Server error during validation', 
+      error: err.message 
+    });
+  }
 });
 
 // ✅ SIGNUP - Send OTP to Email
@@ -416,7 +425,7 @@ router.post('/resend-otp', async (req, res) => {
 });
 
 // ✅ LOGIN
-router.post('/login', validateLogin, validateAuth, async (req, res) => {
+router.post('/login', validateLogin, async (req, res) => {
   try {
     const { email, password } = req.body;
     logger.info('Login attempt', { email });

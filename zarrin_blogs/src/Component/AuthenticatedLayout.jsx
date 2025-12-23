@@ -24,7 +24,7 @@ export default function AuthenticatedLayout() {
 
       try {
         // Validate token with backend
-        const response = await fetch('/api/auth/validate', {
+        const response = await fetch('http://localhost:8200/api/auth/validate', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -36,6 +36,9 @@ export default function AuthenticatedLayout() {
           throw new Error('Token validation failed');
         }
 
+        const data = await response.json();
+        console.log('✅ Token validated:', data);
+        
         const user = JSON.parse(userStr);
         if (!user.id || !user.email) {
           throw new Error('Invalid user data');

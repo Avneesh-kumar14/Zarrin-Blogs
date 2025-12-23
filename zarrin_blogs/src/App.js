@@ -14,6 +14,7 @@ import BlogEditPage from './Component/Main Component/EditBlog.jsx';
 import Login from './Component/Common/Loginpage.jsx';
 import ForgotPassword from './Component/Common/ForgotPassword.jsx';
 import ResetPassword from './Component/Common/ResetPassword.jsx';
+import OTPVerify from './Component/Common/OTPVerify.jsx';
 import Dashboard from './Component/Main Component/Dashboard.jsx';
 import Blog from './Pages/Blog.jsx';
 import Contact from './Pages/Contact.jsx';
@@ -62,6 +63,7 @@ function AppWrapper() {
         <Route path="/contact" element={<Contact />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/verify-otp' element={<OTPVerify />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password/:token' element={<ResetPassword />} />
         <Route path='/admin' element={<AdminDashboard isAuthenticated={!!localStorage.getItem('token')} currentUser={safeJsonParse(localStorage.getItem('user'))} />} />

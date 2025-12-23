@@ -61,9 +61,13 @@ const OTPVerify = () => {
         throw new Error(data.message || 'OTP verification failed');
       }
 
-      setAlert({ type: 'success', message: 'Email verified successfully! Redirecting to login...' });
+      // Save token and user data to localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      setAlert({ type: 'success', message: 'Email verified! Redirecting to dashboard...' });
       setTimeout(() => {
-        navigate('/login');
+        navigate('/dashboard/analytics');
       }, 1500);
     } catch (err) {
       setAlert({ type: 'error', message: err.message });

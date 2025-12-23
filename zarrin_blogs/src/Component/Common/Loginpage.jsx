@@ -41,6 +41,8 @@ const Login = () => {
         password: trimmedPassword
       };
       
+      console.log('📤 Login attempt with:', { email: loginData.email, password: '***' });
+      
       const res = await fetch('http://localhost:8200/api/auth/login', {
         method: 'POST',
         headers: { 
@@ -50,6 +52,7 @@ const Login = () => {
       });
       
       let data = await res.json();
+      console.log('📥 Login response:', res.status, data);
       
       // Handle rate limiting (429)
       if (res.status === 429) {
@@ -66,14 +69,15 @@ const Login = () => {
         });
         setLoading(false);
         setTimeout(() => {
-          navigate('/otp-verify', { state: { email: trimmedEmail } });
+          navigate('/verify-otp', { state: { email: trimmedEmail } });
         }, 2000);
         return;
       }
 
       // Handle other errors
       if (!res.ok) {
-        throw new Error(data.message || 'Invalid credentials');
+        console.error('❌ Login error details:', data);
+        throw new Error(data.message || data.details?.[0]?.message || 'Invalid credentials');
       }
       
       if (!data.token || !data.user) {

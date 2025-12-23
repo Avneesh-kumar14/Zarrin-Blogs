@@ -52,9 +52,10 @@ const authLimiter = rateLimit({
   message: 'Too many authentication attempts, please try again in 15 minutes',
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.body.email || req.ip, // Rate limit by email if provided, otherwise IP
+  keyGenerator: (req) => (req.body && req.body.email) ? req.body.email : req.ip, // Rate limit by email if provided, otherwise IP
   handler: (req, res) => {
-    console.warn(`Rate limit exceeded for ${req.body.email || req.ip} on ${req.path}`);
+    const identifier = (req.body && req.body.email) ? req.body.email : req.ip;
+    console.warn(`Rate limit exceeded for ${identifier} on ${req.path}`);
     res.status(429).json({ 
       message: 'Too many authentication attempts. Please wait 15 minutes before trying again.',
       retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)

@@ -54,12 +54,12 @@ const Signup = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Signup failed');
       
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      setAlert({ type: 'success', message: 'Signup successful! Redirecting to dashboard...' });
+      // Signup successful - redirect to OTP verification page
+      setAlert({ type: 'success', message: 'Account created! Check your email for OTP.' });
       setTimeout(() => {
-        navigate('/dashboard/analytics');
+        navigate('/verify-otp', { 
+          state: { email: email.toLowerCase().trim() } 
+        });
       }, 1500);
     } catch (err) {
       setAlert({ type: 'error', message: err.message });
