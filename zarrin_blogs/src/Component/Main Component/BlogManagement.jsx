@@ -19,24 +19,45 @@ const BlogManagement = ({ showAll = false }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const userData = JSON.parse(localStorage.getItem('user'));
+      const userString = localStorage.getItem('user');
+      
+      if (!token || !userString) {
+        setAlert({ type: 'error', message: 'User not authenticated. Please login again.' });
+        return;
+      }
+      
+      const userData = JSON.parse(userString);
       let endpoint;
       
       if (showAll) {
         endpoint = 'http://localhost:8200/api/blogs';
       } else {
         // For MyBlogs, get user's own blogs
+        if (!userData.id) {
+          setAlert({ type: 'error', message: 'Invalid user data. Please login again.' });
+          return;
+        }
         endpoint = `http://localhost:8200/api/blogs/user/${userData.id}`;
       }
       
+      console.log('Fetching blogs from:', endpoint);
       const res = await fetch(endpoint, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      if (!res.ok) throw new Error('Failed to fetch blogs');
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `HTTP ${res.status}: Failed to fetch blogs`);
+      }
+      
       const data = await res.json();
-      setBlogs(data);
+      console.log('Response received:', data);
+      
+      // Handle different response structures
+      const blogsList = data.data || data;
+      setBlogs(Array.isArray(blogsList) ? blogsList : []);
     } catch (err) {
       setAlert({ type: 'error', message: 'Failed to fetch blogs: ' + err.message });
       console.error('Fetch blogs error:', err);

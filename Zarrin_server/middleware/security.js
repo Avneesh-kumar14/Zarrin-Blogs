@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const { validationResult, body, query, param } = require('express-validator');
 const xss = require('xss');
+const mongoose = require('mongoose');
 
 // ✅ 1. HELMET.JS - Set Security HTTP Headers
 const securityHeaders = helmet({
@@ -46,9 +47,10 @@ const generalLimiter = rateLimit({
 });
 
 // Rate limiter for authentication routes (login, signup, forgot-password, verify-otp)
+// Allows 10 people to login concurrently (10 attempts per 15 minutes per IP)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30, // 30 requests per 15 minutes per email/IP (increased from 5)
+  max: 10, // Allow 10 login attempts per 15 minutes per IP (for 10 concurrent users)
   message: 'Too many authentication attempts, please try again in 15 minutes',
   standardHeaders: true,
   legacyHeaders: false,
@@ -212,19 +214,36 @@ const validateSearch = [
   }
 ];
 
-// Validation middleware for MongoDB ObjectId
+// Validation middleware for MongoDB ObjectId - checks both 'id' and 'userId' parameters
 const validateObjectId = [
-  param('id')
-    .isMongoId().withMessage('Invalid ID format'),
-  
   (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    const idToValidate = req.params.id || req.params.userId;
+    
+    console.log('ObjectId Validation:', { 
+      idToValidate, 
+      paramId: req.params.id, 
+      paramUserId: req.params.userId,
+      path: req.path
+    });
+    
+    if (!idToValidate) {
       return res.status(400).json({ 
         message: 'Invalid ID',
-        errors: errors.array() 
+        errors: [{ msg: 'ID parameter is required' }]
       });
     }
+    
+    // Check if it's a valid MongoDB ObjectId (24 hex characters)
+    const isValid = mongoose.Types.ObjectId.isValid(idToValidate);
+    console.log('ObjectId Valid?', { idToValidate, isValid });
+    
+    if (!isValid) {
+      return res.status(400).json({ 
+        message: 'Invalid ID',
+        errors: [{ msg: 'Invalid ID format' }]
+      });
+    }
+    
     next();
   }
 ];

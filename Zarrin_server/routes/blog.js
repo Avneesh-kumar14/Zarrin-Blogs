@@ -270,7 +270,37 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get single blog with validation
+// Get all blogs by user with pagination (MUST come before /:id route)
+router.get('/user/:userId', validateObjectId, async (req, res) => {
+  try {
+    const { skip, limit, page } = getPagination(req.query.page, req.query.limit);
+    
+    const total = await Blog.countDocuments({ author: req.params.userId });
+    
+    const blogs = await Blog.find({ author: req.params.userId })
+      .populate('author', 'name email avatar')
+      .populate('category', 'name slug')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-__v');
+    
+    res.json({
+      success: true,
+      data: blogs,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+        itemsPerPage: limit
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Get single blog with validation (after /user/:userId route)
 router.get('/:id', validateObjectId, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id)
@@ -320,36 +350,6 @@ router.post('/', auth, validateBlog, async (req, res) => {
     res.status(201).json({ success: true, data: populatedBlog });
   } catch (err) {
     console.error('Blog creation error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-});
-
-// Get all blogs by user with pagination
-router.get('/user/:userId', validateObjectId, async (req, res) => {
-  try {
-    const { skip, limit, page } = getPagination(req.query.page, req.query.limit);
-    
-    const total = await Blog.countDocuments({ author: req.params.userId });
-    
-    const blogs = await Blog.find({ author: req.params.userId })
-      .populate('author', 'name email avatar')
-      .populate('category', 'name slug')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .select('-__v');
-    
-    res.json({
-      success: true,
-      data: blogs,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(total / limit),
-        totalItems: total,
-        itemsPerPage: limit
-      }
-    });
-  } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
