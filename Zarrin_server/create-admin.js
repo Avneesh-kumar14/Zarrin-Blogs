@@ -20,11 +20,11 @@ const createAdmin = async () => {
     const User = mongoose.model('user', userSchema);
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash('Raj@1234', 10);
+    const hashedPassword = await bcrypt.hash('email.@admin008', 10);
     console.log('Password hashed successfully');
 
     // Check if admin already exists
-    const existingAdmin = await User.findOne({ email: 'Admin@gmail.com' });
+    const existingAdmin = await User.findOne({ email: 'kumarajneesh008@gmail.com' });
     if (existingAdmin) {
       console.log('❌ Admin account with this email already exists!');
       await mongoose.connection.close();
@@ -33,8 +33,8 @@ const createAdmin = async () => {
 
     // Create admin user
     const admin = await User.create({
-      name: 'Rajneesh Kumar',
-      email: 'Admin@gmail.com',
+      name: 'Avneesh Kumar',
+      email: 'kumarajneesh008@gmail.com',
       password: hashedPassword,
       role: 'admin',
       blog: []
@@ -45,7 +45,7 @@ const createAdmin = async () => {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('Name:', admin.name);
     console.log('Email:', admin.email);
-    console.log('Password: Raj@1234');
+    console.log('Password: email.@admin008');
     console.log('Role:', admin.role);
     console.log('ID:', admin._id);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');

@@ -86,8 +86,8 @@ const PORT = process.env.PORT || 8200;
 
 // ✅ API ROUTES with specific rate limiters
 
-// Auth routes with strict rate limiting
-app.use('/api/auth', authLimiter, authRoutes);
+// Auth routes - rate limiting applied per endpoint, not globally
+app.use('/api/auth', authRoutes);
 
 // Blog routes
 app.use('/api/blogs', blogRoutes);

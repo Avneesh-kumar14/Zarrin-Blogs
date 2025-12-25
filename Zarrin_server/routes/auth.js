@@ -1,6 +1,7 @@
 
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const rateLimit = require('express-rate-limit');
 const User = require('../models/userModel');
 const generateToken = require('../utils/generateToken');
 const { auth, admin } = require('../middleware/auth');
@@ -17,6 +18,25 @@ const {
 } = require('../utils/validators');
 
 const router = express.Router();
+
+// ✅ Rate limiter for sensitive auth endpoints (login, signup, OTP, password reset)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Allow 10 attempts per 15 minutes per IP
+  message: 'Too many authentication attempts, please try again in 15 minutes',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => (req.body && req.body.email) ? req.body.email : req.ip,
+  handler: (req, res) => {
+    const identifier = (req.body && req.body.email) ? req.body.email : req.ip;
+    console.warn(`Rate limit exceeded for ${identifier} on ${req.path}`);
+    res.status(429).json({ 
+      message: 'Too many authentication attempts. Please wait 15 minutes before trying again.',
+      retryAfter: Math.ceil(req.rateLimit.resetTime / 1000)
+    });
+  },
+  skip: (req) => req.ip === '127.0.0.1' || req.ip === '::1', // Skip localhost
+});
 
 /**
  * @swagger
@@ -246,7 +266,7 @@ router.get('/validate', auth, (req, res) => {
 });
 
 // ✅ SIGNUP - Send OTP to Email
-router.post('/signup', validateSignup, validateAuth, async (req, res) => {
+router.post('/signup', authLimiter, validateSignup, validateAuth, async (req, res) => {
   try {
     const { name, email, password } = req.body;
     logger.info('Signup attempt', { email, name });
@@ -303,7 +323,7 @@ router.post('/signup', validateSignup, validateAuth, async (req, res) => {
 });
 
 // ✅ VERIFY OTP - Confirm Email
-router.post('/verify-otp', async (req, res) => {
+router.post('/verify-otp', authLimiter, async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -366,7 +386,7 @@ router.post('/verify-otp', async (req, res) => {
 });
 
 // ✅ RESEND OTP - Send New OTP (No auth validator needed)
-router.post('/resend-otp', async (req, res) => {
+router.post('/resend-otp', authLimiter, async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -425,7 +445,7 @@ router.post('/resend-otp', async (req, res) => {
 });
 
 // ✅ LOGIN
-router.post('/login', validateLogin, async (req, res) => {
+router.post('/login', authLimiter, validateLogin, async (req, res) => {
   try {
     const { email, password } = req.body;
     logger.info('Login attempt', { email });
@@ -520,7 +540,7 @@ router.get('/all', auth, admin, async (req, res) => {
 });
 
 // ✅ FORGOT PASSWORD - Send reset link to email (No auth validator needed)
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', authLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     

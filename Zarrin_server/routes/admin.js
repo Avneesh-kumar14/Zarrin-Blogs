@@ -3,6 +3,7 @@ const { auth } = require('../middleware/auth');
 const User = require('../models/userModel');
 const Blog = require('../models/blog');
 const Category = require('../models/blogCategory');
+const Comment = require('../models/comment');
 
 const router = express.Router();
 
@@ -412,6 +413,91 @@ router.get('/analytics', auth, adminOnly, async (req, res) => {
       blogTrend,
       userTrend,
       topCategories
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Delete specific comment
+router.delete('/comments/:commentId', auth, adminOnly, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+    await Comment.findByIdAndDelete(req.params.commentId);
+
+    res.json({ message: 'Comment deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Delete all comments on a blog
+router.delete('/blogs/:blogId/comments', auth, adminOnly, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.blogId);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+
+    const result = await Comment.deleteMany({ blog: req.params.blogId });
+
+    res.json({ 
+      message: `${result.deletedCount} comments deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Delete all comments by a user
+router.delete('/users/:userId/comments', auth, adminOnly, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const result = await Comment.deleteMany({ author: req.params.userId });
+
+    res.json({ 
+      message: `${result.deletedCount} comments deleted successfully`,
+      deletedCount: result.deletedCount
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Get all comments (for moderation)
+router.get('/comments', auth, adminOnly, async (req, res) => {
+  try {
+    const { page = 1, limit = 20, search = '' } = req.query;
+    const skip = (page - 1) * limit;
+
+    let filter = {};
+    if (search) {
+      filter = {
+        $or: [
+          { content: { $regex: search, $options: 'i' } }
+        ]
+      };
+    }
+
+    const comments = await Comment.find(filter)
+      .populate('author', 'name email avatar')
+      .populate('blog', 'title')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Comment.countDocuments(filter);
+
+    res.json({
+      comments,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / limit),
+        totalComments: total
+      }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

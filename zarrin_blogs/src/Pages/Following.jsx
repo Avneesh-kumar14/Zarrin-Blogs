@@ -95,6 +95,9 @@ const Following = () => {
         [userId]: !prev[userId]
       }));
       
+      // Refetch the user's following list to get updated data
+      await fetchFollowing();
+      
       setAlert({
         type: 'success',
         message: followingMap[userId] ? 'Unfollowed successfully' : 'Followed successfully'

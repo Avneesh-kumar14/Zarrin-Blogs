@@ -7,8 +7,12 @@ export default function AuthenticatedLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const [hasValidated, setHasValidated] = useState(false);
 
   useEffect(() => {
+    // Skip validation if already validated in this session
+    if (hasValidated) return;
+
     const validateToken = async () => {
       const token = localStorage.getItem('token');
       const userStr = localStorage.getItem('user');
@@ -19,6 +23,7 @@ export default function AuthenticatedLayout() {
         localStorage.removeItem('user');
         setIsAuthenticated(false);
         navigate('/login');
+        setHasValidated(true);
         return;
       }
 
@@ -45,17 +50,19 @@ export default function AuthenticatedLayout() {
         }
         
         setIsAuthenticated(true);
+        setHasValidated(true);
       } catch (err) {
         console.error('Auth validation failed:', err);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setIsAuthenticated(false);
         navigate('/login');
+        setHasValidated(true);
       }
     };
 
     validateToken();
-  }, [navigate]);
+  }, [hasValidated, navigate]);
 
   return (
     <div className="flex flex-col h-screen bg-white">
