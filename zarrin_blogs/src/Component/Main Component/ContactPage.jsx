@@ -1,7 +1,7 @@
 
 
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, ChevronDown, MessageCircle } from 'lucide-react';
 import Image from '../Common/Image';
 import Paragraph from '../Common/Paragraph';
 import Heading from '../Common/Heading';
@@ -18,6 +18,7 @@ const ContactPage = () => {
   });
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [expandedFAQ, setExpandedFAQ] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,6 +88,33 @@ const ContactPage = () => {
     },
   ];
 
+  const faqs = [
+    {
+      question: "How do I publish my first blog?",
+      answer: "Navigate to the create section, write your article using our rich editor, add tags and categories, then click publish. Your article will appear immediately on your profile and in the community feed."
+    },
+    {
+      question: "Can I schedule posts in advance?",
+      answer: "Yes! You can save drafts and schedule them to publish at a specific date and time. This helps you maintain a consistent publishing schedule."
+    },
+    {
+      question: "How do I grow my audience on Zarrin?",
+      answer: "Focus on quality content, engage with other writers' posts, use relevant tags, interact in the community, and share your articles on social media. Our algorithms also help surface great content."
+    },
+    {
+      question: "Is there an API for Zarrin?",
+      answer: "We're currently working on API access for developers. Contact us at rajneeshavneesh@gmail.com to learn more about our developer program."
+    },
+    {
+      question: "How is my data protected?",
+      answer: "We use industry-standard encryption and follow data protection best practices. Your articles and personal information are securely stored and never shared without your consent."
+    },
+    {
+      question: "What are the response times for support?",
+      answer: "Our team typically responds to support inquiries within 24 hours. For urgent issues, reach out via our Discord community for real-time help from both team members and the community."
+    }
+  ];
+
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16 overflow-hidden">
       {/* Animated Background Blobs */}
@@ -98,11 +126,25 @@ const ContactPage = () => {
         {/* Header */}
         <div className="text-center mb-16 animate-slide-up">
           <Heading type="h2" className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-            Get in Touch
+            We'd Love to Hear From You
           </Heading>
-          <Paragraph className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+          <Paragraph className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
+            Have questions? Feedback? Ideas? Let's talk! Our team reads every message and responds within 24 hours.
           </Paragraph>
+          <div className="flex flex-wrap justify-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+            <span className="inline-flex items-center gap-1">
+              <CheckCircle size={16} className="text-green-500" />
+              Fast response times
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <CheckCircle size={16} className="text-green-500" />
+              We value your feedback
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <CheckCircle size={16} className="text-green-500" />
+              Multiple contact options
+            </span>
+          </div>
         </div>
 
         {/* Info Cards */}
@@ -129,21 +171,6 @@ const ContactPage = () => {
               </div>
             );
           })}
-        </div>
-
-        {/* Map Section */}
-        <div className="relative mb-12 rounded-2xl overflow-hidden shadow-2xl h-screen md:h-[900px]">
-          <iframe
-            title="Google Map"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.1380000000003!2d80.98700000000001!3d26.850000000000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399be2d5e12a3f%3A0x0!2sGomti%20Nagar%2C%20Lucknow%2C%20India!5e0!3m2!1sen!2sin!4v1691563123456!5m2!1sen!2sin"
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="w-full h-full"
-          />
         </div>
 
         {/* Contact Form */}
@@ -247,6 +274,78 @@ const ContactPage = () => {
               </form>
             </div>
           </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="max-w-3xl mx-auto mt-20 border-t border-gray-200 dark:border-gray-700 pt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Can't find what you're looking for? Reach out to us directly!
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
+              >
+                <button
+                  onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
+                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <span className="font-semibold text-gray-900 dark:text-white pr-4">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    size={20}
+                    className={`flex-shrink-0 text-gray-600 dark:text-gray-400 transition-transform ${
+                      expandedFAQ === index ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                
+                {expandedFAQ === index && (
+                  <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-600">
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-center">
+            <MessageCircle size={24} className="mx-auto mb-3 text-blue-600 dark:text-blue-400" />
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              Still have questions? Join our Discord community to chat with the team and other writers in real-time!
+            </p>
+            <a
+              href="#"
+              className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              Join Discord Community
+            </a>
+          </div>
+        </div>
+
+        {/* Map Section */}
+        <div className="mt-20 relative rounded-2xl overflow-hidden shadow-2xl h-96 md:h-[500px]">
+          <iframe
+            title="Google Map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.1380000000003!2d80.98700000000001!3d26.850000000000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399be2d5e12a3f%3A0x0!2sGomti%20Nagar%2C%20Lucknow%2C%20India!5e0!3m2!1sen!2sin!4v1691563123456!5m2!1sen!2sin"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="w-full h-full"
+          />
         </div>
       </div>
     </section>
