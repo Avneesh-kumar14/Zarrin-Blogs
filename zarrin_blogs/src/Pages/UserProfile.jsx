@@ -131,7 +131,7 @@ const UserProfile = ({ currentUser, isAuthenticated }) => {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-16 sm:py-24">
+      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 dark:from-indigo-700 dark:via-pink-700 dark:to-amber-700 text-white py-16 sm:py-24">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>

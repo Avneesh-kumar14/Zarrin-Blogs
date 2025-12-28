@@ -19,10 +19,14 @@ module.exports = {
       },
       colors: {
         primary: 'var(--color-primary)',
-        dark: 'var(--color-dark)',
         secondary: 'var(--color-secondary)',
-        tertiary: 'var(--color-tertiary)',
-        secondaryGray: 'var(--color-secondaryGray)',
+        accent: 'var(--color-accent)',
+        success: 'var(--color-success)',
+        danger: 'var(--color-danger)',
+        dark: 'var(--color-dark)',
+        light: 'var(--color-light)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'border-color': 'var(--color-border)',
       },
       lineHeight: {
         'custom-para': '24px',

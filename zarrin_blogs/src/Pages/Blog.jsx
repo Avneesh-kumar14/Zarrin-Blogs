@@ -10,25 +10,25 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-20 sm:py-32">
+      <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white py-20 sm:py-32">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-amber-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-6">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all">
-              <Sparkles size={16} className="text-yellow-400" />
+              <Sparkles size={16} className="text-amber-400" />
               <span className="text-sm font-semibold">Discover Amazing Stories</span>
             </div>
 
             {/* Title */}
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-indigo-300 via-pink-300 to-amber-300 bg-clip-text text-transparent">
                 Discover Stories
               </span>
               <br />
@@ -43,15 +43,15 @@ const Blog = () => {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 max-w-md mx-auto pt-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400">10K+</div>
+                <div className="text-3xl font-bold text-indigo-300">10K+</div>
                 <div className="text-gray-400 text-sm">Articles</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400">100K+</div>
+                <div className="text-3xl font-bold text-pink-300">100K+</div>
                 <div className="text-gray-400 text-sm">Readers</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-pink-400">500+</div>
+                <div className="text-3xl font-bold text-amber-300">500+</div>
                 <div className="text-gray-400 text-sm">Authors</div>
               </div>
             </div>
@@ -113,8 +113,8 @@ const Blog = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Topic 1 */}
-            <div className="group relative bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-8 border border-blue-200 dark:border-blue-700 hover:shadow-lg transition-all">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg mb-4">
+            <div className="group relative bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-xl p-8 border border-indigo-300 dark:border-indigo-600 hover:shadow-lg transition-all hover:border-indigo-500">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-lg mb-4">
                 <span className="text-2xl">📚</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -123,14 +123,14 @@ const Blog = () => {
               <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">
                 Latest trends in technology and innovation
               </p>
-              <a href="/blog" className="text-blue-600 dark:text-blue-400 font-semibold text-sm hover:gap-2 inline-flex items-center gap-1">
+              <a href="/blog" className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm hover:gap-2 inline-flex items-center gap-1">
                 Explore <ArrowRight size={16} />
               </a>
             </div>
 
             {/* Topic 2 */}
-            <div className="group relative bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-8 border border-purple-200 dark:border-purple-700 hover:shadow-lg transition-all">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-600 rounded-lg mb-4">
+            <div className="group relative bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 rounded-xl p-8 border border-pink-300 dark:border-pink-600 hover:shadow-lg transition-all hover:border-pink-500">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-600 rounded-lg mb-4">
                 <span className="text-2xl">✨</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -139,14 +139,14 @@ const Blog = () => {
               <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">
                 Personal development and lifestyle tips
               </p>
-              <a href="/blog" className="text-purple-600 dark:text-purple-400 font-semibold text-sm hover:gap-2 inline-flex items-center gap-1">
+              <a href="/blog" className="text-pink-600 dark:text-pink-400 font-semibold text-sm hover:gap-2 inline-flex items-center gap-1">
                 Explore <ArrowRight size={16} />
               </a>
             </div>
 
             {/* Topic 3 */}
-            <div className="group relative bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20 rounded-xl p-8 border border-pink-200 dark:border-pink-700 hover:shadow-lg transition-all">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-600 rounded-lg mb-4">
+            <div className="group relative bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-xl p-8 border border-amber-300 dark:border-amber-600 hover:shadow-lg transition-all hover:border-amber-500">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-600 rounded-lg mb-4">
                 <span className="text-2xl">💼</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -155,14 +155,14 @@ const Blog = () => {
               <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">
                 Career advice and entrepreneurship stories
               </p>
-              <a href="/blog" className="text-pink-600 dark:text-pink-400 font-semibold text-sm hover:gap-2 inline-flex items-center gap-1">
+              <a href="/blog" className="text-amber-600 dark:text-amber-400 font-semibold text-sm hover:gap-2 inline-flex items-center gap-1">
                 Explore <ArrowRight size={16} />
               </a>
             </div>
 
             {/* Topic 4 */}
-            <div className="group relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-8 border border-green-200 dark:border-green-700 hover:shadow-lg transition-all">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-green-600 rounded-lg mb-4">
+            <div className="group relative bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-xl p-8 border border-emerald-300 dark:border-emerald-600 hover:shadow-lg transition-all hover:border-emerald-500">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-600 rounded-lg mb-4">
                 <span className="text-2xl">🌱</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -171,7 +171,7 @@ const Blog = () => {
               <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">
                 Mental and physical wellness insights
               </p>
-              <a href="/blog" className="text-green-600 dark:text-green-400 font-semibold text-sm hover:gap-2 inline-flex items-center gap-1">
+              <a href="/blog" className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm hover:gap-2 inline-flex items-center gap-1">
                 Explore <ArrowRight size={16} />
               </a>
             </div>

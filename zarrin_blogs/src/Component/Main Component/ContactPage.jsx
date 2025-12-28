@@ -72,19 +72,19 @@ const ContactPage = () => {
       icon: MapPin,
       title: 'Office',
       detail: 'GomtiNagar, Lucknow, India',
-      gradient: 'from-blue-600 to-cyan-600'
+      gradient: 'from-indigo-600 to-purple-600'
     },
     {
       icon: Mail,
       title: 'Email',
       detail: 'rajneeshavneesh@gmail.com',
-      gradient: 'from-purple-600 to-pink-600'
+      gradient: 'from-pink-600 to-rose-600'
     },
     {
       icon: Phone,
       title: 'Phone',
       detail: '6388860757',
-      gradient: 'from-orange-600 to-red-600'
+      gradient: 'from-amber-600 to-orange-600'
     },
   ];
 
@@ -118,14 +118,14 @@ const ContactPage = () => {
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16 overflow-hidden">
       {/* Animated Background Blobs */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-300 dark:bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob"></div>
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob animation-delay-2000"></div>
-      <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob animation-delay-4000"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-300 dark:bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob"></div>
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-amber-300 dark:bg-amber-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob animation-delay-4000"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16 animate-slide-up">
-          <Heading type="h2" className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+          <Heading type="h2" className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 dark:from-indigo-400 dark:via-pink-400 dark:to-amber-400 bg-clip-text text-transparent">
             We'd Love to Hear From You
           </Heading>
           <Paragraph className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
@@ -133,15 +133,15 @@ const ContactPage = () => {
           </Paragraph>
           <div className="flex flex-wrap justify-center gap-3 text-sm text-gray-600 dark:text-gray-400">
             <span className="inline-flex items-center gap-1">
-              <CheckCircle size={16} className="text-green-500" />
+              <CheckCircle size={16} className="text-emerald-500" />
               Fast response times
             </span>
             <span className="inline-flex items-center gap-1">
-              <CheckCircle size={16} className="text-green-500" />
+              <CheckCircle size={16} className="text-emerald-500" />
               We value your feedback
             </span>
             <span className="inline-flex items-center gap-1">
-              <CheckCircle size={16} className="text-green-500" />
+              <CheckCircle size={16} className="text-emerald-500" />
               Multiple contact options
             </span>
           </div>
@@ -177,7 +177,7 @@ const ContactPage = () => {
         <div className="max-w-3xl mx-auto">
           <div className="relative group">
             {/* Gradient Border Effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
             
             <div className="relative bg-white dark:bg-gray-800 p-8 md:p-12 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -188,7 +188,7 @@ const ContactPage = () => {
                     <input
                       type="text"
                       name="name"
-                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-blue-600 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-indigo-600 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                       placeholder="John Doe"
                       value={formData.name}
                       onChange={handleChange}
@@ -200,7 +200,7 @@ const ContactPage = () => {
                     <input
                       type="email"
                       name="email"
-                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-blue-600 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-indigo-600 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                       placeholder="your@email.com"
                       value={formData.email}
                       onChange={handleChange}
@@ -216,7 +216,7 @@ const ContactPage = () => {
                     <input
                       type="tel"
                       name="phone"
-                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-blue-600 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-pink-600 dark:focus:border-pink-400 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                       placeholder="+91 1234567890"
                       value={formData.phone}
                       onChange={handleChange}
@@ -228,7 +228,7 @@ const ContactPage = () => {
                     <input
                       type="text"
                       name="subject"
-                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-blue-600 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-amber-600 dark:focus:border-amber-400 focus:bg-white dark:focus:bg-gray-700 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                       placeholder="How can we help?"
                       value={formData.subject}
                       onChange={handleChange}
@@ -291,25 +291,25 @@ const ContactPage = () => {
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
+                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:border-emerald-400 dark:hover:border-emerald-500 transition-all"
               >
                 <button
                   onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
-                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-colors"
                 >
                   <span className="font-semibold text-gray-900 dark:text-white pr-4">
                     {faq.question}
                   </span>
                   <ChevronDown
                     size={20}
-                    className={`flex-shrink-0 text-gray-600 dark:text-gray-400 transition-transform ${
+                    className={`flex-shrink-0 text-emerald-600 dark:text-emerald-400 transition-transform ${
                       expandedFAQ === index ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
                 
                 {expandedFAQ === index && (
-                  <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-600">
+                  <div className="px-6 py-4 bg-emerald-50 dark:bg-emerald-900/20 border-t border-emerald-200 dark:border-emerald-700">
                     <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                       {faq.answer}
                     </p>

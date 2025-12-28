@@ -3,20 +3,34 @@
 @tailwind utilities;
 @tailwind screens;
 
-/* Theme Variables for Light and Dark Mode */
+/* Professional Vibrant Color Scheme */
 :root {
-  --color-primary: #2563EB;
-  --color-dark: #333333;
-  --color-secondary: #666666;
-  --color-tertiary: #FFFFFF;
-  --color-secondaryGray: #999999;
+  /* Primary Brand Colors */
+  --color-primary: #6366F1;        /* Indigo - Professional */
+  --color-secondary: #EC4899;      /* Pink - Vibrant */
+  --color-accent: #F59E0B;         /* Amber - Warm */
+  --color-success: #10B981;        /* Emerald - Growth */
+  --color-danger: #EF4444;         /* Red - Alerts */
+  
+  /* Neutral Colors */
+  --color-dark: #1F2937;           /* Dark Slate */
+  --color-light: #F9FAFB;          /* Off-white */
+  --color-text-secondary: #6B7280; /* Gray text */
+  --color-border: #E5E7EB;         /* Light border */
 }
+
 .dark {
-  --color-primary: #3B82F6;
-  --color-dark: #E5E7EB;
-  --color-secondary: #D1D5DB;
-  --color-tertiary: #1F2937;
-  --color-secondaryGray: #6B7280;
+  /* Dark Mode Colors */
+  --color-primary: #818CF8;        /* Lighter Indigo */
+  --color-secondary: #F472B6;      /* Lighter Pink */
+  --color-accent: #FBBF24;         /* Lighter Amber */
+  --color-success: #34D399;        /* Lighter Emerald */
+  --color-danger: #F87171;         /* Lighter Red */
+  
+  --color-dark: #F3F4F6;           /* Light text */
+  --color-light: #111827;          /* Dark background */
+  --color-text-secondary: #D1D5DB; /* Gray text */
+  --color-border: #4B5563;         /* Dark border */
 }
 
 /* Smooth Animations */

@@ -27,10 +27,10 @@ const AboutUS = () => {
   ]
 
   const stats = [
-    { icon: Users, label: 'Active Users', value: '50K+', color: 'from-blue-500 to-cyan-500' },
-    { icon: TrendingUp, label: 'Published Blogs', value: '10K+', color: 'from-purple-500 to-pink-500' },
-    { icon: Award, label: 'Featured Authors', value: '500+', color: 'from-orange-500 to-red-500' },
-    { icon: Heart, label: 'Community Loves', value: '100K+', color: 'from-green-500 to-teal-500' },
+    { icon: Users, label: 'Active Users', value: '50K+', color: 'from-indigo-500 to-purple-500' },
+    { icon: TrendingUp, label: 'Published Blogs', value: '10K+', color: 'from-pink-500 to-rose-500' },
+    { icon: Award, label: 'Featured Authors', value: '500+', color: 'from-amber-500 to-orange-500' },
+    { icon: Heart, label: 'Community Loves', value: '100K+', color: 'from-emerald-500 to-teal-500' },
   ]
 
   const values = [
@@ -42,22 +42,22 @@ const AboutUS = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-20 sm:py-32">
+      <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white py-20 sm:py-32">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-amber-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-6">
-              <Sparkles size={14} className="text-blue-400" />
+              <Sparkles size={14} className="text-amber-400" />
               <span className="text-xs font-semibold">Our Story</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              Empowering <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Creative Voices</span>
+              Empowering <span className="bg-gradient-to-r from-indigo-300 via-pink-300 to-amber-300 bg-clip-text text-transparent">Creative Voices</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl leading-relaxed">
               We believe everyone has a story worth telling. Zarrin Blogs is a platform dedicated to bringing writers, thinkers, and creators together to share ideas that inspire and transform.
@@ -109,7 +109,7 @@ const AboutUS = () => {
                 return (
                   <div key={idx} className="flex gap-4">
                     <div className="flex-shrink-0">
-                      <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
+                      <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-600 to-pink-600">
                         <Icon size={20} className="text-white" />
                       </div>
                     </div>
@@ -123,7 +123,7 @@ const AboutUS = () => {
             </div>
           </div>
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-600 rounded-2xl blur-2xl opacity-20 animate-pulse"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-400 to-pink-600 rounded-2xl blur-2xl opacity-20 animate-pulse"></div>
             <img
               src="/Assets/group.png"
               alt="Our Team"
@@ -136,12 +136,12 @@ const AboutUS = () => {
       {/* How We Work Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-gray-200 dark:border-slate-800">
         <div className="mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 dark:bg-purple-900/30 rounded-full border border-purple-200 dark:border-purple-800 mb-4">
-            <Sparkles size={14} className="text-purple-600 dark:text-purple-400" />
-            <span className="text-xs font-bold text-purple-700 dark:text-purple-300">Process</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-pink-100 dark:bg-pink-900/30 rounded-full border border-pink-200 dark:border-pink-800 mb-4">
+            <Sparkles size={14} className="text-pink-600 dark:text-pink-400" />
+            <span className="text-xs font-bold text-pink-700 dark:text-pink-300">Process</span>
           </div>
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            How We <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Work</span>
+            How We <span className="bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">Work</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl">
             Our proven process ensures every blog gets the platform it deserves
@@ -154,7 +154,7 @@ const AboutUS = () => {
               key={index}
               className={`group relative overflow-hidden rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 ${
                 step.highlighted
-                  ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-2xl ring-2 ring-blue-400 dark:ring-blue-300'
+                  ? 'bg-gradient-to-br from-indigo-600 to-pink-600 text-white shadow-2xl ring-2 ring-indigo-400 dark:ring-indigo-300'
                   : 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-lg hover:shadow-2xl border border-gray-100 dark:border-slate-700'
               }`}
             >
