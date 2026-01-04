@@ -500,26 +500,7 @@ const Home = () => {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 bg-gradient-to-r from-indigo-600 via-pink-600 to-purple-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Subscribe to Our Newsletter
-          </h2>
-          <p className="text-indigo-100 text-lg mb-8">
-            Get the latest stories and insights delivered to your inbox
-          </p>
-          <div className="flex gap-2 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 bg-white/10 border border-white/30 backdrop-blur-sm rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-pink-300"
-            />
-            <button className="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-emerald-50 transition-all hover:scale-105 transform duration-200">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </section>
+   x
 
       <style jsx>{`
         @keyframes blob {
