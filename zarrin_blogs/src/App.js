@@ -30,6 +30,8 @@ import Drafts from './Pages/Drafts.jsx';
 import Followers from './Pages/Followers.jsx';
 import Following from './Pages/Following.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
+import Notifications from './Pages/Notifications.jsx';
+import Settings from './Pages/Settings.jsx';
 
 // ✅ Safe JSON parse helper
 const safeJsonParse = (jsonString, fallback = {}) => {
@@ -59,6 +61,8 @@ function AppWrapper() {
         <Route path="/followers/:userId" element={<Followers />} />
         <Route path="/following/:userId" element={<Following />} />
         <Route path="/profile/:userId" element={<UserProfile currentUser={safeJsonParse(localStorage.getItem('user'))} isAuthenticated={!!localStorage.getItem('token')} />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path='/signup' element={<Signup />} />

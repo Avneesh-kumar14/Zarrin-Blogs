@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ArrowRight, Clock, User, Zap, BookOpen, Sparkles, Pen, Star, Share2, Shield } from 'lucide-react'
+import { ArrowRight, Clock, User, Zap, BookOpen, Sparkles, Pen, Star, Share2, Shield, TrendingUp, Heart, Eye, MessageCircle, Users, Award, Quote, CheckCircle, Play, Bookmark } from 'lucide-react'
 import TrendingBlogs from '../Component/Main Component/TrendingBlogs'
 
 const Home = () => {
@@ -19,7 +19,7 @@ const Home = () => {
         const blogs = data.blogs || data;
         if (Array.isArray(blogs) && blogs.length > 0) {
           setFeaturedBlog(blogs[0]);
-          setRecentBlogs(blogs.slice(1, 7));
+          setRecentBlogs(blogs.slice(1, 9));
         }
       }
     } catch (err) {
@@ -29,480 +29,588 @@ const Home = () => {
     }
   };
 
+  // Category data for section
+  const categories = [
+    { name: "Technology", icon: "💻", count: "2.3K articles", color: "from-[#6366F1] to-[#8B5CF6]" },
+    { name: "Design", icon: "🎨", count: "1.8K articles", color: "from-[#EC4899] to-[#F472B6]" },
+    { name: "Business", icon: "📈", count: "1.5K articles", color: "from-[#06B6D4] to-[#6366F1]" },
+    { name: "Lifestyle", icon: "✨", count: "1.2K articles", color: "from-[#FB923C] to-[#F472B6]" }
+  ];
+
+  // Top writers data
+  const topWriters = [
+    {
+      name: "Sarah Chen",
+      username: "@sarahchen",
+      followers: "15.2K",
+      articles: 156,
+      specialty: "Tech & Innovation",
+      verified: true
+    },
+    {
+      name: "Alex Rivera",
+      username: "@alexrivera",
+      followers: "12.8K",
+      articles: 128,
+      specialty: "Web Development",
+      verified: true
+    },
+    {
+      name: "Maya Patel",
+      username: "@mayapatel",
+      followers: "10.5K",
+      articles: 94,
+      specialty: "Design Systems",
+      verified: true
+    }
+  ];
+
+  // Platform stats
+  const platformStats = [
+    { icon: BookOpen, value: "50K+", label: "Articles Published", color: "from-[#6366F1] to-[#8B5CF6]" },
+    { icon: Users, value: "1M+", label: "Active Readers", color: "from-[#EC4899] to-[#F472B6]" },
+    { icon: TrendingUp, value: "10K+", label: "Writers", color: "from-[#06B6D4] to-[#6366F1]" },
+    { icon: Award, value: "4.9/5", label: "User Rating", color: "from-[#FB923C] to-[#F472B6]" }
+  ];
+
+  // Features
+  const features = [
+    { icon: Sparkles, title: "AI-Powered Editor", description: "Write better with intelligent suggestions and formatting" },
+    { icon: TrendingUp, title: "Advanced Analytics", description: "Track your growth with detailed insights and metrics" },
+    { icon: Users, title: "Engaged Community", description: "Connect with readers and writers who share your interests" },
+    { icon: Award, title: "Monetization", description: "Earn from your content with our partner program" }
+  ];
+
+  // Testimonials
+  const testimonials = [
+    {
+      quote: "BlogSphere has transformed how I share my knowledge. The platform is intuitive, beautiful, and the community is incredibly supportive.",
+      author: "Jessica Williams",
+      role: "Senior Developer at TechCorp",
+      rating: 5
+    },
+    {
+      quote: "I've tried many platforms, but BlogSphere stands out with its clean design and powerful features. It's perfect for professional writers.",
+      author: "Michael Brown",
+      role: "UX Designer & Author",
+      rating: 5
+    },
+    {
+      quote: "The analytics dashboard helps me understand my audience better. I've grown my following by 300% in just 3 months!",
+      author: "Emily Parker",
+      role: "Content Strategist",
+      rating: 5
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
-      {/* Hero Section with Featured Blog */}
-      {featuredBlog && (
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 pt-20 pb-20">
-          {/* Animated Background */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-            <div className="absolute top-40 right-10 w-72 h-72 bg-amber-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-            <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-emerald-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-          </div>
-
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Featured Content */}
-              <div className="space-y-8 animate-fade-in">
-                {/* Badge with Social Proof */}
-                <div className="space-y-4">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all">
-                    <Zap size={16} className="text-amber-300" />
-                    <span className="text-sm font-semibold text-white">Featured Story</span>
-                  </div>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-                    <Star size={14} className="text-pink-300" />
-                    <span className="text-xs font-semibold text-white">Trusted by 50K+ Writers Worldwide</span>
-                  </div>
-                </div>
-
-                {/* Category & Meta */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-gradient-to-r from-indigo-400 to-pink-400 text-white text-xs font-bold rounded-lg">
-                      {featuredBlog.category || 'FEATURED'}
-                    </span>
-                    <div className="flex items-center gap-2 text-gray-300 text-sm">
-                      <Clock size={14} />
-                      {new Date(featuredBlog.createdAt).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Title */}
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight line-clamp-3">
-                    {featuredBlog.title}
-                  </h1>
-
-                  {/* Description */}
-                  <p className="text-gray-300 text-lg leading-relaxed line-clamp-3">
-                    {featuredBlog.description || 'Discover insights and stories from our community of writers and thinkers.'}
-                  </p>
-                  
-                  {/* Quick Stats */}
-                  <div className="grid grid-cols-3 gap-4 pt-2">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-indigo-200">10K+</div>
-                      <div className="text-xs text-gray-300">Articles</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-pink-200">100K+</div>
-                      <div className="text-xs text-gray-300">Readers</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-amber-200">500+</div>
-                      <div className="text-xs text-gray-300">Authors</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Meta Info & CTA */}
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                      <User size={20} className="text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-white">{featuredBlog.author?.name || 'Author'}</p>
-                      <p className="text-gray-400 text-sm">{featuredBlog.readingTime || '5 min'} read</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4 pt-2">
-                    <a 
-                      href={`/blog/${featuredBlog._id}/preview`}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white font-semibold rounded-lg transition-all hover:scale-105 transform duration-200"
-                    >
-                      Read Story
-                      <ArrowRight size={18} />
-                    </a>
-                    <a 
-                      href="/blog"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-all border border-white/20 backdrop-blur-sm"
-                    >
-                      Browse All
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* Featured Image */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-500"></div>
-                <img 
-                  src={featuredBlog.image || '/Assets/man.png'} 
-                  alt={featuredBlog.title}
-                  className="relative w-full h-96 object-cover rounded-2xl shadow-2xl group-hover:shadow-3xl transition-all duration-500 transform group-hover:scale-105"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Why Choose Zarrin Section */}
-      <section className="py-20 bg-gradient-to-b from-indigo-50 to-white dark:from-slate-900 dark:to-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full border border-indigo-200 dark:border-indigo-800 mb-4">
-              <Sparkles size={16} className="text-indigo-600 dark:text-indigo-400" />
-              <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">Why Writers Choose Zarrin</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Everything You Need to Share Your Voice
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Zarrin gives you the platform, the audience, and the tools to share your ideas with the world
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Card 1 - Indigo */}
-            <div className="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 border-2 border-indigo-200 dark:border-indigo-700 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300 hover:shadow-xl">
-              <div className="relative z-10">
-                <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Pen size={28} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Write Freely</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  No limits, no restrictions. Unlimited content length, rich formatting, and complete creative freedom.
-                </p>
-                <div className="mt-4 pt-4 border-t-2 border-indigo-200 dark:border-indigo-700">
-                  <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">✓ Unlimited posts</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2 - Pink */}
-            <div className="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 border-2 border-pink-200 dark:border-pink-700 hover:border-pink-500 dark:hover:border-pink-400 transition-all duration-300 hover:shadow-xl">
-              <div className="relative z-10">
-                <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Share2 size={28} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Reach Readers</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  Connect with engaged readers hungry for quality content. Grow your followers organically.
-                </p>
-                <div className="mt-4 pt-4 border-t-2 border-pink-200 dark:border-pink-700">
-                  <span className="text-xs font-semibold text-pink-600 dark:text-pink-400">✓ 100K+ community</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3 - Amber */}
-            <div className="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 border-2 border-amber-200 dark:border-amber-700 hover:border-amber-500 dark:hover:border-amber-400 transition-all duration-300 hover:shadow-xl">
-              <div className="relative z-10">
-                <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Star size={28} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Build Authority</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  Establish yourself as a trusted voice. Build credibility and influence in your niche.
-                </p>
-                <div className="mt-4 pt-4 border-t-2 border-amber-200 dark:border-amber-700">
-                  <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">✓ Author profiles</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4 - Emerald */}
-            <div className="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 border-2 border-emerald-200 dark:border-emerald-700 hover:border-emerald-500 dark:hover:border-emerald-400 transition-all duration-300 hover:shadow-xl">
-              <div className="relative z-10">
-                <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Shield size={28} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Stay Private</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  Your content, your rules. Full control over privacy, visibility, and sharing permissions.
-                </p>
-                <div className="mt-4 pt-4 border-t-2 border-emerald-200 dark:border-emerald-700">
-                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">✓ Privacy controls</span>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background dark:bg-slate-950">
+      {/* Hero Section with Animated Background */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#EC4899] pt-20 pb-20">
+        {/* Animated Aurora Background */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-[#6366F1]/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#EC4899]/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#8B5CF6]/10 rounded-full blur-3xl"></div>
         </div>
-      </section>
 
-      {/* Trending Section */}
-      <section className="py-20 bg-white dark:bg-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <TrendingBlogs />
-        </div>
-      </section>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="text-center lg:text-left space-y-8">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all w-fit mx-auto lg:mx-0">
+                <Sparkles size={16} className="text-amber-300" />
+                <span className="text-sm font-semibold text-white">#1 Platform for Modern Writers</span>
+              </div>
 
-      {/* Featured Stories Section */}
-      <section className="py-20 bg-white dark:bg-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full border border-indigo-200 dark:border-indigo-800 mb-6">
-              <Sparkles size={16} className="text-indigo-600 dark:text-indigo-400" />
-              <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">Curated Selection</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Discover Featured Stories
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Hand-picked articles that inspire, educate, and entertain. Explore stories worth reading.
-            </p>
-          </div>
+              {/* Main Heading */}
+              <div className="space-y-4">
+                <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+                  Share Your{' '}
+                  <span className="block mt-2 bg-gradient-to-r from-white via-pink-200 to-amber-200 bg-clip-text text-transparent">
+                    Ideas with the World
+                  </span>
+                </h1>
+              </div>
 
-          {/* Blog Grid */}
-          {loading ? (
-            <div className="flex justify-center items-center py-16">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-          ) : recentBlogs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {recentBlogs.map((blog, index) => (
-                <article 
-                  key={blog._id}
-                  className="group relative bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-3 border-2 border-indigo-200 dark:border-indigo-800 hover:border-pink-400 dark:hover:border-pink-500"
+              {/* Description */}
+              <p className="text-xl text-white/90 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                Join 50,000+ writers sharing stories, building audiences, and earning from their content on the most beautiful blogging platform.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                <a
+                  href="/blog/create"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-white to-pink-100 hover:from-pink-50 hover:to-white text-purple-700 font-bold rounded-lg transition-all hover:shadow-2xl hover:shadow-white/25 group"
                 >
-                  {/* Badge */}
-                  <div className="absolute top-4 left-4 z-20">
-                    <span className="px-3 py-1 bg-gradient-to-r from-indigo-600 to-pink-600 text-white text-xs font-bold rounded-full">
-                      {blog.category || 'Featured'}
-                    </span>
-                  </div>
+                  Start Writing Free
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </a>
+                <a
+                  href="/blog"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white hover:bg-white/10 text-white font-bold rounded-lg transition-all backdrop-blur-sm group"
+                >
+                  <Play className="w-5 h-5" />
+                  Explore Articles
+                </a>
+              </div>
 
+              {/* Trust Badges */}
+              <div className="flex items-center justify-center lg:justify-start gap-6 text-sm pt-4 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-300" />
+                  <span className="text-white/90">Free forever</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-300" />
+                  <span className="text-white/90">No credit card</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-300" />
+                  <span className="text-white/90">Cancel anytime</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Content - Featured Article Card */}
+            {featuredBlog && (
+              <div className="relative hidden lg:block">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#6366F1]/20 to-[#EC4899]/20 rounded-3xl blur-3xl"></div>
+                <div className="relative group overflow-hidden border-0 shadow-2xl rounded-3xl cursor-pointer bg-white dark:bg-slate-800 hover:shadow-3xl transition-all interactive-card">
                   {/* Image */}
-                  <div className="relative overflow-hidden h-56 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-slate-700 dark:to-slate-600">
-                    <img 
-                      src={blog.image || '/Assets/beach.png'} 
-                      alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  <div className="relative h-80 overflow-hidden">
+                    <img
+                      src={featuredBlog.image || '/Assets/beach.png'}
+                      alt={featuredBlog.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+
+                    {/* Badge */}
+                    <div className="absolute top-4 left-4 px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white text-xs font-bold rounded-full">
+                      {featuredBlog.category || 'Featured'}
+                    </div>
                   </div>
 
                   {/* Content */}
-                  <div className="p-8 space-y-4 flex flex-col h-full">
-                    {/* Date & Reading Time */}
-                    <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-                      <Clock size={14} />
-                      <span>{new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                      <span>•</span>
-                      <span>{blog.readingTime || '5 min'} read</span>
-                    </div>
-
+                  <div className="p-6 space-y-4">
                     {/* Title */}
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
-                      {blog.title}
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white line-clamp-2">
+                      {featuredBlog.title}
                     </h3>
 
-                    {/* Description */}
-                    <p className="text-gray-600 dark:text-gray-400 line-clamp-3 flex-grow">
-                      {blog.description || 'Discover an insightful story worth reading...'}
-                    </p>
+                    {/* Meta */}
+                    <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                      <span>{new Date(featuredBlog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                      <span>{featuredBlog.readingTime || '5'} min read</span>
+                    </div>
 
-                    {/* Author Info & CTA */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700 mt-auto">
-                      <div className="flex items-center gap-3">
-                        {blog.author && (
-                          <>
-                            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
-                              {blog.author.name?.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{blog.author.name}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-500">Author</p>
-                            </div>
-                          </>
-                        )}
+                    {/* Author */}
+                    <div className="flex items-center gap-3 pt-2 border-t border-gray-200 dark:border-slate-700">
+                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {featuredBlog.author?.name?.charAt(0) || 'A'}
                       </div>
-                      <a 
-                        href={`/blog/${blog._id}/preview`}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
-                      >
-                        Read
-                        <ArrowRight size={16} />
-                      </a>
+                      <div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{featuredBlog.author?.name || 'Author'}</p>
+                        <p className="text-xs text-gray-500">Featured Article</p>
+                      </div>
                     </div>
                   </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <BookOpen size={48} className="mx-auto text-gray-400 mb-4" />
-              <p className="text-gray-600 dark:text-gray-400">No blog posts available yet.</p>
-            </div>
-          )}
-
-          {/* View All Button */}
-          {recentBlogs.length > 0 && (
-            <div className="flex justify-center mt-12">
-              <a 
-                href="/blog"
-                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all hover:scale-105 transform duration-200 shadow-lg hover:shadow-xl"
-              >
-                Explore All Stories
-                <ArrowRight size={18} />
-              </a>
-            </div>
-          )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Getting Started Section */}
+      {/* Platform Stats */}
+      <section className="py-16 border-y border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {platformStats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="text-center group">
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${stat.color} mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+                  <div className={`text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Trending Articles */}
+      <section className="py-20 bg-white dark:bg-slate-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <TrendingUp className="w-8 h-8 text-[#6366F1]" />
+                <h2 className="text-4xl font-bold text-gray-900 dark:text-white">Trending Now</h2>
+              </div>
+              <p className="text-lg text-gray-600 dark:text-gray-400">Most popular articles this week</p>
+            </div>
+            <a href="/blog" className="hidden md:flex gap-2 items-center px-6 py-3 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition-all text-gray-900 dark:text-white font-semibold">
+              View All
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {recentBlogs.slice(0, 3).map((blog, index) => {
+              const gradients = [
+                "from-[#6366F1] to-[#8B5CF6]",
+                "from-[#EC4899] to-[#F472B6]",
+                "from-[#06B6D4] to-[#6366F1]"
+              ];
+              return (
+                <a key={blog._id} href={`/blog/${blog._id}/preview`} className={`group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl bg-white dark:bg-slate-800`}>
+                  <div className={`h-1 bg-gradient-to-r ${gradients[index % 3]}`}></div>
+                  
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={blog.image || '/Assets/beach.png'}
+                      alt={blog.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className={`absolute top-4 left-4 px-3 py-1 bg-gradient-to-r ${gradients[index % 3]} text-white text-xs font-bold rounded-full`}>
+                      {blog.category || 'Featured'}
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-4">
+                    <h3 className="text-xl font-bold line-clamp-2 group-hover:text-[#6366F1] transition-colors text-gray-900 dark:text-white">
+                      {blog.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      {blog.description || 'Discover an insightful story...'}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          {blog.author?.name?.charAt(0) || 'A'}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{blog.author?.name || 'Author'}</p>
+                          <p className="text-xs text-gray-500">{blog.readingTime || '5'} min</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                        <Heart className="w-4 h-4 text-pink-500" />
+                        <span>{Math.floor(Math.random() * 1000)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-20 bg-gray-50 dark:bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Explore by Category</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Discover amazing content across different topics
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {categories.map((category, index) => (
+              <a key={category.name} href="/blog" className={`group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl relative h-40`}>
+                <div className="relative h-full overflow-hidden">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-90 group-hover:opacity-100 transition-opacity`}></div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                    <div className="text-5xl mb-3">{category.icon}</div>
+                    <h3 className="text-2xl font-bold mb-1">{category.name}</h3>
+                    <p className="text-sm text-white/90">{category.count}</p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
       <section className="py-20 bg-white dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1]/10 rounded-full border border-[#6366F1]/20 mb-4">
+              <Zap className="w-4 h-4 text-[#6366F1]" />
+              <span className="text-sm text-[#6366F1] font-semibold">Powerful Features</span>
+            </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Get Started in 3 Simple Steps
+              Everything You Need to{' '}
+              <span className="block mt-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] bg-clip-text text-transparent">
+                Succeed as a Writer
+              </span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Share your first story with the Zarrin community today
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Professional tools and features designed to help you create, grow, and monetize your content
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Step 1 */}
-            <div className="relative">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-6 text-white font-bold text-2xl shadow-lg">
-                  1
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              const gradients = [
+                "from-[#6366F1] to-[#8B5CF6]",
+                "from-[#EC4899] to-[#F472B6]",
+                "from-[#06B6D4] to-[#6366F1]",
+                "from-[#FB923C] to-[#F472B6]"
+              ];
+              return (
+                <div key={index} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card p-6 rounded-2xl bg-white dark:bg-slate-800 group">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradients[index]} flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{feature.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                  Create Your Account
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Join our community in seconds. No credit card required. Start writing immediately.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-600 to-amber-600 rounded-full flex items-center justify-center mb-6 text-white font-bold text-2xl shadow-lg">
-                  2
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                  Write Your First Blog
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Use our intuitive editor with rich formatting. Add images, videos, and more.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-emerald-600 rounded-full flex items-center justify-center mb-6 text-white font-bold text-2xl shadow-lg">
-                  3
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                  Publish & Share
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Share with the world and grow your readership. Build your following today.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <a 
-              href="/blog"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white font-semibold rounded-lg transition-all hover:scale-105 transform duration-200 shadow-lg"
-            >
-              Start Your Journey Now
-              <ArrowRight size={20} />
-            </a>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Featured Writers */}
+      <section className="py-20 bg-gray-50 dark:bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <Award className="w-8 h-8 text-[#6366F1]" />
+                <h2 className="text-4xl font-bold text-gray-900 dark:text-white">Featured Writers</h2>
+              </div>
+              <p className="text-lg text-gray-600 dark:text-gray-400">Join our community of talented creators</p>
+            </div>
+            <a href="/following" className="hidden md:flex gap-2 items-center px-6 py-3 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition-all text-gray-900 dark:text-white font-semibold">
+              View All Writers
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {topWriters.map((writer, index) => (
+              <div key={index} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card overflow-hidden rounded-2xl bg-white dark:bg-slate-800">
+                <div className="h-24 bg-gradient-to-br from-[#6366F1] via-[#EC4899] to-[#8B5CF6]"></div>
+                <div className="p-6 -mt-12 relative">
+                  <div className="relative inline-block mb-4">
+                    <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-white dark:border-slate-800 shadow-xl">
+                      {writer.name?.charAt(0)}
+                    </div>
+                    {writer.verified && (
+                      <div className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800">
+                        <CheckCircle className="w-4 h-4 text-white fill-white" />
+                      </div>
+                    )}
+                  </div>
+
+                  <h3 className="text-xl font-bold mb-1 text-gray-900 dark:text-white">{writer.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{writer.username}</p>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white text-xs font-semibold rounded-full mb-4">
+                    {writer.specialty}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mb-4 text-center">
+                    <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-3">
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">{writer.followers}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Followers</p>
+                    </div>
+                    <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-3">
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">{writer.articles}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Articles</p>
+                    </div>
+                  </div>
+
+                  <button className="w-full px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white font-semibold rounded-lg transition-all">
+                    Follow
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Recent Articles Grid */}
+      <section className="py-20 bg-white dark:bg-slate-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <Clock className="w-8 h-8 text-[#6366F1]" />
+                <h2 className="text-4xl font-bold text-gray-900 dark:text-white">Latest Articles</h2>
+              </div>
+              <p className="text-lg text-gray-600 dark:text-gray-400">Fresh content from our community</p>
+            </div>
+            <a href="/blog" className="hidden md:flex gap-2 items-center px-6 py-3 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition-all text-gray-900 dark:text-white font-semibold">
+              View All
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {recentBlogs.slice(3, 6).map((article) => (
+              <a key={article._id} href={`/blog/${article._id}/preview`} className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl bg-white dark:bg-slate-800 flex flex-col h-full">
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={article.image || '/Assets/beach.png'}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute top-4 right-4">
+                    <button className="h-8 w-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center">
+                      <Bookmark className="w-4 h-4 text-gray-900" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 flex-grow space-y-4">
+                  <div className="inline-flex px-3 py-1 bg-[#6366F1]/10 text-[#6366F1] text-xs font-bold rounded-full">
+                    {article.category || 'Featured'}
+                  </div>
+
+                  <h3 className="text-xl font-bold line-clamp-2 group-hover:text-[#6366F1] transition-colors text-gray-900 dark:text-white">
+                    {article.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                    {article.description || 'Discover an insightful story...'}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700 mt-auto">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        {article.author?.name?.charAt(0) || 'A'}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{article.author?.name || 'Author'}</p>
+                        <p className="text-xs text-gray-500">{article.readingTime || '5'} min</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-1">
+                        <Heart className="w-4 h-4" />
+                        {Math.floor(Math.random() * 1000)}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MessageCircle className="w-4 h-4" />
+                        {Math.floor(Math.random() * 100)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
       <section className="py-20 bg-gray-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Loved by Our Community
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Hear what writers are saying about their Zarrin experience
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1]/10 rounded-full border border-[#6366F1]/20 mb-4">
+              <Star className="w-4 h-4 text-[#6366F1] fill-[#6366F1]" />
+              <span className="text-sm text-[#6366F1] font-semibold">Loved by Writers</span>
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">What Our Community Says</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Join thousands of happy writers who've found their home on Zarrin
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-lg hover:shadow-xl transition-all border-l-4 border-indigo-500 hover:border-pink-500">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} className="fill-indigo-500 text-indigo-500" />
-                ))}
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
-                "Zarrin helped me find my voice. Now I have thousands of readers. The platform is intuitive and the community is amazing!"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                  S
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="border-0 shadow-lg hover:shadow-xl transition-all p-6 rounded-2xl bg-white dark:bg-slate-800">
+                <div className="flex gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
+                  ))}
                 </div>
-                <div>
-                  <p className="font-semibold text-pink-600 dark:text-pink-400">Sarah Chen</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">2.3K followers</p>
-                </div>
-              </div>
-            </div>
 
-            {/* Testimonial 2 */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-lg hover:shadow-xl transition-all border-l-4 border-pink-500 hover:border-amber-500">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} className="fill-pink-500 text-pink-500" />
-                ))}
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
-                "As a freelancer, having a platform to showcase my expertise has been invaluable. Zarrin makes it so easy!"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-amber-500 rounded-full flex items-center justify-center text-white font-bold">
-                  M
-                </div>
-                <div>
-                  <p className="font-semibold text-amber-600 dark:text-amber-400">Marcus Davis</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">1.8K followers</p>
-                </div>
-              </div>
-            </div>
+                <Quote className="w-10 h-10 text-[#6366F1]/20 mb-4" />
 
-            {/* Testimonial 3 */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-lg hover:shadow-xl transition-all border-l-4 border-emerald-500 hover:border-indigo-500">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} className="fill-emerald-500 text-emerald-500" />
-                ))}
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
-                "The community support on Zarrin is incredible. Everyone is genuinely interested in helping each other grow."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold">
-                  E
-                </div>
-                <div>
-                  <p className="font-semibold text-emerald-600 dark:text-emerald-400">Emily Rodriguez</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">3.1K followers</p>
+                <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                    {testimonial.author[0]}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">{testimonial.author}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{testimonial.role}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Newsletter Section */}
-   x
+      {/* CTA Section */}
+      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#EC4899]">
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        </div>
 
-      <style jsx>{`
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 rounded-full border border-white/20 mb-6">
+            <Sparkles className="w-4 h-4 text-white" />
+            <span className="text-sm font-semibold text-white">Start Your Journey Today</span>
+          </div>
+
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            Ready to Share{' '}
+            <span className="block mt-2">Your Story?</span>
+          </h2>
+
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Join our community of passionate writers and start building your audience today.{' '}
+            It's free, easy, and takes less than a minute.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/blog/create"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-pink-50 text-purple-700 font-bold rounded-lg transition-all hover:shadow-2xl hover:shadow-white/25 group"
+            >
+              Get Started Free
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </a>
+            <a
+              href="/blog"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white hover:bg-white/10 text-white font-bold rounded-lg transition-all"
+            >
+              Explore Articles
+            </a>
+          </div>
+
+          <p className="text-sm text-white/80 mt-6">
+            No credit card required • Free forever • 50,000+ active writers
+          </p>
+        </div>
+      </section>
+
+      <style>{`
         @keyframes blob {
           0%, 100% {
             transform: translate(0, 0) scale(1);

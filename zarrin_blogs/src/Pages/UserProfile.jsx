@@ -232,7 +232,7 @@ const UserProfile = ({ currentUser, isAuthenticated }) => {
                 </div>
 
                 <button 
-                  onClick={() => navigate(`/followers/${user._id}`)}
+                  onClick={() => navigate(`/followers/${user._id || user.id}`)}
                   className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/10 rounded-2xl p-6 border border-purple-200 dark:border-purple-800 hover:shadow-lg transition-all group"
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -245,7 +245,7 @@ const UserProfile = ({ currentUser, isAuthenticated }) => {
                 </button>
 
                 <button 
-                  onClick={() => navigate(`/following/${user._id}`)}
+                  onClick={() => navigate(`/following/${user._id || user.id}`)}
                   className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-900/10 rounded-2xl p-6 border border-pink-200 dark:border-pink-800 hover:shadow-lg transition-all group"
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -346,7 +346,7 @@ const UserProfile = ({ currentUser, isAuthenticated }) => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes blob {
           0%, 100% {
             transform: translate(0, 0) scale(1);

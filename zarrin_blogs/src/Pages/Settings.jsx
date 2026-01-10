@@ -1,0 +1,518 @@
+import React, { useState } from 'react';
+import { User, Shield, Bell, Palette, Upload, Eye, EyeOff } from 'lucide-react';
+import Alert from '../Component/Common/Alert';
+
+const Settings = () => {
+  const [activeTab, setActiveTab] = useState('profile');
+  const [alert, setAlert] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: 'John',
+    lastName: 'Doe',
+    username: '@johndoe',
+    bio: 'Passionate developer with expertise in full-stack development.',
+    website: 'https://example.com',
+    location: 'San Francisco, CA',
+    email: 'john@example.com',
+    allowComments: true,
+    showReadingTime: true,
+    autoSaveDrafts: true,
+    profileVisibility: true,
+    showActivity: true,
+    emailFollowers: true,
+    emailComments: true,
+    emailLikes: false,
+    emailDigest: true,
+    pushNotifications: true,
+    pushMentions: true
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
+
+  const handleSaveProfile = () => {
+    setAlert({ type: 'success', message: 'Profile settings saved successfully!' });
+  };
+
+  const handleChangePassword = () => {
+    setAlert({ type: 'success', message: 'Password changed successfully!' });
+  };
+
+  const TabButton = ({ tab, icon: Icon, label }) => (
+    <button
+      onClick={() => setActiveTab(tab)}
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+        activeTab === tab
+          ? 'bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white'
+          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+      }`}
+    >
+      <Icon className="w-4 h-4" />
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-slate-950 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-1 h-10 bg-gradient-to-b from-[#6366F1] to-[#EC4899] rounded-full" />
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Settings</h1>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 text-lg">
+            Manage your account settings and preferences
+          </p>
+        </div>
+
+        {/* Alert */}
+        {alert && (
+          <div className="mb-6">
+            <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} duration={3000} />
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8 flex-wrap">
+          <TabButton tab="profile" icon={User} label="Profile" />
+          <TabButton tab="account" icon={Shield} label="Account" />
+          <TabButton tab="notifications" icon={Bell} label="Notifications" />
+          <TabButton tab="appearance" icon={Palette} label="Appearance" />
+        </div>
+
+        {/* Profile Settings */}
+        {activeTab === 'profile' && (
+          <div className="space-y-6">
+            {/* Public Profile Card */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#6366F1] to-[#EC4899] rounded-full" />
+                Public Profile
+              </h2>
+
+              {/* Avatar */}
+              <div className="flex items-center gap-6 mb-6 pb-6 border-b border-gray-200 dark:border-slate-700">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#6366F1] to-[#EC4899] flex items-center justify-center text-white text-2xl font-bold">
+                  JD
+                </div>
+                <div>
+                  <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg mb-2">
+                    <Upload className="w-4 h-4" />
+                    Upload new photo
+                  </button>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    JPG, GIF or PNG. Max size 2MB
+                  </p>
+                </div>
+              </div>
+
+              {/* Form Fields */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Bio
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    rows="4"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                    placeholder="Tell us about yourself..."
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Brief description for your profile. Max 160 characters.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Website
+                  </label>
+                  <input
+                    type="url"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                    placeholder="https://yourwebsite.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3">
+                <button className="px-6 py-2 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700">
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveProfile}
+                  className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+
+            {/* Writing Preferences */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#EC4899] to-[#F472B6] rounded-full" />
+                Writing Preferences
+              </h2>
+
+              <div className="space-y-4">
+                {[
+                  { key: 'allowComments', label: 'Allow comments on articles', desc: 'Let readers comment on your posts' },
+                  { key: 'showReadingTime', label: 'Show reading time', desc: 'Display estimated reading time on articles' },
+                  { key: 'autoSaveDrafts', label: 'Auto-save drafts', desc: 'Automatically save your work as you write' }
+                ].map((item) => (
+                  <div key={item.key}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="font-medium text-gray-900 dark:text-white">{item.label}</label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        name={item.key}
+                        checked={formData[item.key]}
+                        onChange={handleInputChange}
+                        className="w-5 h-5 rounded cursor-pointer"
+                      />
+                    </div>
+                    {item !== [
+                  { key: 'allowComments', label: 'Allow comments on articles', desc: 'Let readers comment on your posts' },
+                  { key: 'showReadingTime', label: 'Show reading time', desc: 'Display estimated reading time on articles' },
+                  { key: 'autoSaveDrafts', label: 'Auto-save drafts', desc: 'Automatically save your work as you write' }
+                ][2] && <div className="border-b border-gray-200 dark:border-slate-700 mt-4" />}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Account Settings */}
+        {activeTab === 'account' && (
+          <div className="space-y-6">
+            {/* Account Information */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#6366F1] to-[#EC4899] rounded-full" />
+                Account Information
+              </h2>
+
+              <div className="space-y-4 pb-6 border-b border-gray-200 dark:border-slate-700">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                  />
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Your email is verified <span className="inline-block ml-2 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-xs font-medium">Verified</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Change Password */}
+              <div className="pt-6">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4">Change Password</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Current Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                      />
+                      <button
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Confirm New Password
+                    </label>
+                    <input
+                      type="password"
+                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleChangePassword}
+                    className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg"
+                  >
+                    Update Password
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Privacy & Security */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#EC4899] to-[#F472B6] rounded-full" />
+                Privacy & Security
+              </h2>
+
+              <div className="space-y-4">
+                {[
+                  { key: 'profileVisibility', label: 'Profile visibility', desc: 'Make your profile visible to everyone' },
+                  { key: 'showActivity', label: 'Show activity status', desc: 'Let others see when you\'re active' }
+                ].map((item, idx) => (
+                  <div key={item.key}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="font-medium text-gray-900 dark:text-white">{item.label}</label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        name={item.key}
+                        checked={formData[item.key]}
+                        onChange={handleInputChange}
+                        className="w-5 h-5 rounded cursor-pointer"
+                      />
+                    </div>
+                    {idx === 0 && <div className="border-b border-gray-200 dark:border-slate-700 mt-4" />}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Notifications Settings */}
+        {activeTab === 'notifications' && (
+          <div className="space-y-6">
+            {/* Email Notifications */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#6366F1] to-[#EC4899] rounded-full" />
+                Email Notifications
+              </h2>
+
+              <div className="space-y-4">
+                {[
+                  { key: 'emailFollowers', label: 'New followers', desc: 'Get notified when someone follows you' },
+                  { key: 'emailComments', label: 'Comments on your articles', desc: 'Get notified when someone comments' },
+                  { key: 'emailLikes', label: 'Article likes', desc: 'Get notified when someone likes your article' },
+                  { key: 'emailDigest', label: 'Weekly digest', desc: 'Receive a weekly summary of activity' }
+                ].map((item, idx) => (
+                  <div key={item.key}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="font-medium text-gray-900 dark:text-white">{item.label}</label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        name={item.key}
+                        checked={formData[item.key]}
+                        onChange={handleInputChange}
+                        className="w-5 h-5 rounded cursor-pointer"
+                      />
+                    </div>
+                    {idx < 3 && <div className="border-b border-gray-200 dark:border-slate-700 mt-4" />}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Push Notifications */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#EC4899] to-[#F472B6] rounded-full" />
+                Push Notifications
+              </h2>
+
+              <div className="space-y-4">
+                {[
+                  { key: 'pushNotifications', label: 'Enable push notifications', desc: 'Receive notifications on your device' },
+                  { key: 'pushMentions', label: 'Mentions and replies', desc: 'Get notified when someone mentions you' }
+                ].map((item, idx) => (
+                  <div key={item.key}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="font-medium text-gray-900 dark:text-white">{item.label}</label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        name={item.key}
+                        checked={formData[item.key]}
+                        onChange={handleInputChange}
+                        className="w-5 h-5 rounded cursor-pointer"
+                      />
+                    </div>
+                    {idx === 0 && <div className="border-b border-gray-200 dark:border-slate-700 mt-4" />}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Appearance Settings */}
+        {activeTab === 'appearance' && (
+          <div className="space-y-6">
+            {/* Theme */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#6366F1] to-[#EC4899] rounded-full" />
+                Theme
+              </h2>
+
+              <div className="grid grid-cols-3 gap-4">
+                {['Light', 'Dark', 'Auto'].map((theme) => (
+                  <div
+                    key={theme}
+                    className="p-4 border-2 border-gray-200 dark:border-slate-700 rounded-lg cursor-pointer hover:border-[#6366F1] transition-all"
+                  >
+                    <div className="w-full h-20 rounded bg-gray-100 dark:bg-gray-800 mb-2"></div>
+                    <p className="font-medium text-center text-gray-900 dark:text-white">{theme}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Display */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#EC4899] to-[#F472B6] rounded-full" />
+                Display
+              </h2>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Font Size
+                  </label>
+                  <div className="flex gap-2">
+                    {['Small', 'Medium', 'Large'].map((size, idx) => (
+                      <button
+                        key={size}
+                        className={`px-4 py-2 rounded-lg border ${
+                          idx === 1
+                            ? 'bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white border-0'
+                            : 'border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Reading Width
+                  </label>
+                  <div className="flex gap-2">
+                    {['Narrow', 'Standard', 'Wide'].map((width, idx) => (
+                      <button
+                        key={width}
+                        className={`px-4 py-2 rounded-lg border ${
+                          idx === 1
+                            ? 'bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white border-0'
+                            : 'border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {width}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Settings;

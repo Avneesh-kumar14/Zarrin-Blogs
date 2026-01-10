@@ -8,7 +8,7 @@ const Following = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [following, setFollowing] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const [followingMap, setFollowingMap] = useState({});
   const [userName, setUserName] = useState('');
@@ -19,21 +19,19 @@ const Following = () => {
   
   const getUserId = (user) => user?._id || user?.id;
 
-  useEffect(() => {
-    if (userId) {
-      fetchFollowing();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
-
   const fetchFollowing = async () => {
     try {
       setLoading(true);
-      console.log('Fetching following for user:', userId);
+      console.log('🔍 DEBUG: fetchFollowing called');
+      console.log('userId from useParams:', userId);
+      console.log('Type of userId:', typeof userId);
+      console.log('Full URL will be:', `http://localhost:8200/api/users/${userId}`);
 
       const res = await fetch(`http://localhost:8200/api/users/${userId}`);
+      console.log('API Response Status:', res.status, res.statusText);
       if (!res.ok) throw new Error('Failed to fetch user');
       const userData = await res.json();
+      console.log('User data received:', userData);
       
       setUserName(userData.name);
       
@@ -52,7 +50,7 @@ const Following = () => {
               
               // Check if logged in user is following this person
               if (token) {
-                followMap[followedUserId] = fullUserData.followers?.some(f => getUserId(f) === getUserId(loggedInUser)) || false;
+                followMap[followedUserId] = loggedInUser.following?.some(f => getUserId(f) === followedUserId) || false;
               }
             }
           } catch (err) {
@@ -72,6 +70,21 @@ const Following = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log('🔍 Following useEffect triggered');
+    console.log('userId from useParams():', userId);
+    console.log('typeof userId:', typeof userId);
+    
+    if (userId && userId !== 'undefined') {
+      console.log('✅ Valid userId, calling fetchFollowing');
+      fetchFollowing();
+    } else {
+      console.warn('❌ Invalid userId:', userId);
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const handleFollowToggle = async (userId) => {
     if (!token) {
@@ -113,6 +126,23 @@ const Following = () => {
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-gray-200 dark:border-slate-700 border-t-blue-600 mb-4"></div>
           <Paragraph className="text-gray-600 dark:text-gray-400 text-lg">Loading following list...</Paragraph>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userId || userId === 'undefined') {
+    return (
+      <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center px-4">
+        <div className="text-center bg-white dark:bg-slate-800 p-12 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700">
+          <Users size={48} className="mx-auto text-gray-300 dark:text-slate-600 mb-4" />
+          <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">Invalid or missing user ID</p>
+          <button 
+            onClick={() => navigate('/')} 
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
+          >
+            Go Back to Home
+          </button>
         </div>
       </div>
     );
@@ -300,7 +330,7 @@ const Following = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes blob {
           0%, 100% {
             transform: translate(0, 0) scale(1);

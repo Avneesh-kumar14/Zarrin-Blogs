@@ -418,7 +418,7 @@ const AboutUS = () => {
       </div>
 
       {/* Animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes blob {
           0%,100%{transform:translate(0,0) scale(1);}
           33%{transform:translate(30px,-40px) scale(1.1);}

@@ -1,483 +1,3 @@
-// // import React, { useState, useRef, useEffect, useContext } from 'react';
-// // import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-// // import Heading from '../Common/Heading';
-// // import { Search, Menu, X, LogOut, BookOpen, Info, Mail, LogIn, Bookmark, Moon, Sun } from 'lucide-react';
-// // import Button from '../Common/Button';
-// // import Logo from '../Common/Logo';
-// // import { ThemeContext } from '../../context/ThemeContext';
-
-// // const Navbar = () => {
-// //   const [isOpen, setIsOpen] = useState(false);
-// //   const [showSearch, setShowSearch] = useState(false);
-// //   const [searchQuery, setSearchQuery] = useState('');
-// //   const [isLoggedIn, setIsLoggedIn] = useState(false);
-// //   const [user, setUser] = useState(null);
-// //   const searchInputRef = useRef(null);
-// //   const location = useLocation();
-// //   const navigate = useNavigate();
-// //   const { isDark, toggleTheme } = useContext(ThemeContext);
-
-// //   useEffect(() => {
-// //     if (showSearch && searchInputRef.current) {
-// //       searchInputRef.current.focus();
-// //     }
-// //   }, [showSearch]);
-
-// //   useEffect(() => {
-// //     const token = localStorage.getItem('token');
-// //     const userData = localStorage.getItem('user');
-// //     setIsLoggedIn(!!token);
-// //     if (userData) {
-// //       try {
-// //         setUser(JSON.parse(userData));
-// //       } catch (e) {
-// //         console.error('Error parsing user data:', e);
-// //       }
-// //     }
-// //   }, [location]);
-
-// //   const handleLogout = () => {
-// //     localStorage.removeItem('token');
-// //     localStorage.removeItem('user');
-// //     setIsLoggedIn(false);
-// //     setUser(null);
-// //     window.location.href = '/';
-// //   };
-
-// //   const handleSearch = (e) => {
-// //     if (e.key === 'Enter' && searchQuery.trim()) {
-// //       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-// //       setShowSearch(false);
-// //       setSearchQuery('');
-// //     }
-// //   };
-
-// //   const navLinks = [
-// //     { name: 'Blog', path: '/blog', icon: BookOpen },
-// //     { name: 'About', path: '/about', icon: Info },
-// //     { name: 'Contact', path: '/contact', icon: Mail },
-// //   ];
-
-// //   return (
-// //     <nav className="sticky top-0 w-full z-50 bg-gradient-to-r from-white to-indigo-50 dark:from-gray-900 dark:to-indigo-900/20 border-b border-gray-200 dark:border-indigo-700 shadow-sm backdrop-blur-md bg-white/80 dark:bg-gray-900/80">
-// //       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-// //         <div className="flex justify-between items-center h-16">
-// //           {/* Logo */}
-// //           <NavLink to="/" className="flex items-center gap-2 group hover:scale-105 transition-transform duration-300">
-// //             <Logo size="text-3xl" className="group-hover:rotate-12 transition-transform" />
-// //             <Heading type="h4" className="hidden sm:block text-2xl font-bold bg-gradient-to-r from-indigo-600 dark:from-indigo-400 to-pink-600 dark:to-pink-400 bg-clip-text text-transparent">
-// //               Zarrin
-// //             </Heading>
-// //           </NavLink>
-
-// //           {/* Desktop Navigation */}
-// //           <div className="hidden md:flex items-center gap-1">
-// //             {navLinks.map((link) => {
-// //               const Icon = link.icon;
-// //               const isActive = location.pathname === link.path;
-// //               return (
-// //                 <NavLink
-// //                   key={link.path}
-// //                   to={link.path}
-// //                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-300 group ${
-// //                     isActive
-// //                       ? 'bg-gradient-to-r from-indigo-600 dark:from-indigo-700 to-pink-600 dark:to-pink-700 text-white shadow-lg'
-// //                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-// //                   }`}
-// //                 >
-// //                   <Icon size={18} className="group-hover:scale-110 transition-transform" />
-// //                   <span>{link.name}</span>
-// //                 </NavLink>
-// //               );
-// //             })}
-// //           </div>
-
-// //           {/* Search & Auth Section */}
-// //           <div className="flex items-center gap-4">
-// //             {/* Search */}
-// //             <div className="hidden md:flex items-center relative group">
-// //               <button
-// //                 onClick={() => setShowSearch(!showSearch)}
-// //                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-300 text-gray-700 dark:text-gray-300"
-// //               >
-// //                 <Search size={20} className="group-hover:scale-110 transition-transform" />
-// //               </button>
-// //               {showSearch && (
-// //                 <input
-// //                   ref={searchInputRef}
-// //                   type="text"
-// //                   placeholder="Search blogs..."
-// //                   value={searchQuery}
-// //                   onChange={(e) => setSearchQuery(e.target.value)}
-// //                   onKeyPress={handleSearch}
-// //                   className="absolute right-10 w-48 px-4 py-2 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-indigo-600 dark:focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 transition-all duration-300 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-lg animate-slide-down"
-// //                 />
-// //               )}
-// //             </div>
-
-// //             {/* Theme Toggle */}
-// //             <button
-// //               onClick={toggleTheme}
-// //               className="p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all duration-300 text-indigo-600 dark:text-indigo-400"
-// //               title={isDark ? 'Light Mode' : 'Dark Mode'}
-// //             >
-// //               {isDark ? <Sun size={20} /> : <Moon size={20} />}
-// //             </button>
-
-// //             {/* Auth Buttons */}
-// //             {isLoggedIn ? (
-// //               <div className="flex items-center gap-4">
-// //                 <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 dark:from-indigo-900/20 to-pink-50 dark:to-pink-900/20 rounded-lg">
-// //                   <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-// //                     {user?.name?.[0]?.toUpperCase() || 'U'}
-// //                   </div>
-// //                   <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{user?.name || 'User'}</span>
-// //                 </div>
-// //                 <NavLink to="/bookmarks" className="p-2 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400" title="Bookmarks">
-// //                   <Bookmark size={20} />
-// //                 </NavLink>
-// //                 <NavLink to="/dashboard/analytics">
-// //                   <Button
-// //                     text="Dashboard"
-// //                     variant="primary"
-// //                     size="sm"
-// //                     className="hidden sm:inline-block"
-// //                   />
-// //                 </NavLink>
-// //                 <button
-// //                   onClick={handleLogout}
-// //                   className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400"
-// //                   title="Logout"
-// //                 >
-// //                   <LogOut size={20} />
-// //                 </button>
-// //               </div>
-// //             ) : (
-// //               <div className="hidden md:flex items-center gap-3">
-// //                 <NavLink to="/login">
-// //                   <Button
-// //                     text="Login"
-// //                     variant="outline"
-// //                     size="sm"
-// //                     icon={LogIn}
-// //                   />
-// //                 </NavLink>
-// //                 <NavLink to="/signup">
-// //                   <Button
-// //                     text="Sign Up"
-// //                     variant="primary"
-// //                     size="sm"
-// //                   />
-// //                 </NavLink>
-// //               </div>
-// //             )}
-
-// //             {/* Mobile Menu Button */}
-// //             <button
-// //               onClick={() => setIsOpen(!isOpen)}
-// //               className="md:hidden p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all duration-300"
-// //             >
-// //               {isOpen ? (
-// //                 <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-// //               ) : (
-// //                 <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-// //               )}
-// //             </button>
-// //           </div>
-// //         </div>
-// //       </div>
-
-// //       {/* Mobile Navigation */}
-// //       <div
-// //         className={`md:hidden fixed top-16 right-0 h-[calc(100vh-64px)] w-full bg-white dark:bg-gray-900 shadow-lg z-40 transform transition-all duration-300 ease-in-out overflow-y-auto ${
-// //           isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
-// //         }`}
-// //       >
-// //         <div className="flex flex-col gap-2 p-4">
-// //           {/* Mobile Nav Links */}
-// //           {navLinks.map((link) => {
-// //             const Icon = link.icon;
-// //             const isActive = location.pathname === link.path;
-// //             return (
-// //               <NavLink
-// //                 key={link.path}
-// //                 to={link.path}
-// //                 onClick={() => setIsOpen(false)}
-// //                 className={`flex items-center gap-3 px-4 py-3 rounded-lg font-semibold transition-all duration-300 ${
-// //                   isActive
-// //                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-// //                     : 'text-gray-700 hover:bg-gray-100'
-// //                 }`}
-// //               >
-// //                 <Icon size={20} />
-// //                 <span>{link.name}</span>
-// //               </NavLink>
-// //             );
-// //           })}
-
-// //           {/* Mobile Search */}
-// //           <div className="px-4 py-3">
-// //             <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2">
-// //               <Search size={18} className="text-gray-600" />
-// //               <input
-// //                 type="text"
-// //                 placeholder="Search blogs..."
-// //                 value={searchQuery}
-// //                 onChange={(e) => setSearchQuery(e.target.value)}
-// //                 onKeyPress={handleSearch}
-// //                 className="bg-transparent flex-1 outline-none text-sm text-gray-700 placeholder-gray-500"
-// //               />
-// //             </div>
-// //           </div>
-
-// //           {/* Mobile Auth */}
-// //           <div className="border-t border-gray-200 pt-4 mt-4">
-// //             {isLoggedIn ? (
-// //               <div className="space-y-2">
-// //                 {user && (
-// //                   <div className="px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
-// //                     <p className="text-sm font-semibold text-gray-700">Logged in as</p>
-// //                     <p className="text-lg font-bold text-gray-900">{user.name}</p>
-// //                   </div>
-// //                 )}
-// //                 <NavLink to="/bookmarks" onClick={() => setIsOpen(false)}>
-// //                   <Button 
-// //                     text="My Bookmarks" 
-// //                     variant="outline" 
-// //                     fullWidth 
-// //                     size="md"
-// //                     icon={Bookmark}
-// //                   />
-// //                 </NavLink>
-// //                 <NavLink to="/dashboard/analytics" onClick={() => setIsOpen(false)}>
-// //                   <Button text="Go to Dashboard" variant="primary" fullWidth size="md" />
-// //                 </NavLink>
-// //                 <button
-// //                   onClick={() => {
-// //                     handleLogout();
-// //                     setIsOpen(false);
-// //                   }}
-// //                   className="w-full px-4 py-2 bg-red-50 text-red-600 font-semibold rounded-lg hover:bg-red-100 transition-all duration-300 flex items-center justify-center gap-2"
-// //                 >
-// //                   <LogOut size={18} />
-// //                   Logout
-// //                 </button>
-// //               </div>
-// //             ) : (
-// //               <div className="space-y-2">
-// //                 <NavLink to="/login" onClick={() => setIsOpen(false)}>
-// //                   <Button text="Login" variant="outline" fullWidth size="md" />
-// //                 </NavLink>
-// //                 <NavLink to="/signup" onClick={() => setIsOpen(false)}>
-// //                   <Button text="Sign Up" variant="primary" fullWidth size="md" />
-// //                 </NavLink>
-// //               </div>
-// //             )}
-// //           </div>
-// //         </div>
-// //       </div>
-// //     </nav>
-// //   );
-// // };
-
-// // export default Navbar;
-// import React, { useState, useRef, useEffect, useContext } from 'react';
-// import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-// import {
-//   Search,
-//   Menu,
-//   X,
-//   LogOut,
-//   BookOpen,
-//   Info,
-//   Mail,
-//   LogIn,
-//   Bookmark,
-//   Moon,
-//   Sun
-// } from 'lucide-react';
-// import Heading from '../Common/Heading';
-// import Button from '../Common/Button';
-// import Logo from '../Common/Logo';
-// import { ThemeContext } from '../../context/ThemeContext';
-
-// const Navbar = () => {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const [showSearch, setShowSearch] = useState(false);
-//   const [searchQuery, setSearchQuery] = useState('');
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
-//   const [user, setUser] = useState(null);
-
-//   const searchRef = useRef(null);
-//   const location = useLocation();
-//   const navigate = useNavigate();
-//   const { isDark, toggleTheme } = useContext(ThemeContext);
-
-//   useEffect(() => {
-//     if (showSearch && searchRef.current) searchRef.current.focus();
-//   }, [showSearch]);
-
-//   useEffect(() => {
-//     const token = localStorage.getItem('token');
-//     const userData = localStorage.getItem('user');
-//     setIsLoggedIn(!!token);
-//     if (userData) setUser(JSON.parse(userData));
-//   }, [location]);
-
-//   const handleLogout = () => {
-//     localStorage.clear();
-//     window.location.href = '/';
-//   };
-
-//   const handleSearch = (e) => {
-//     if (e.key === 'Enter' && searchQuery.trim()) {
-//       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-//       setSearchQuery('');
-//       setShowSearch(false);
-//     }
-//   };
-
-//   const navLinks = [
-//     { name: 'Blog', path: '/blog', icon: BookOpen },
-//     { name: 'About', path: '/about', icon: Info },
-//     { name: 'Contact', path: '/contact', icon: Mail },
-//   ];
-
-//   return (
-//     <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/70 dark:bg-gray-950/70 border-b border-gray-200 dark:border-gray-800">
-//       <div className="max-w-7xl mx-auto px-6">
-//         <div className="h-16 flex items-center justify-between">
-
-//           {/* Brand */}
-//           <NavLink to="/" className="flex items-center gap-2">
-//             <Logo size="text-3xl" />
-//             <Heading
-//               type="h4"
-//               className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"
-//             >
-//               Zarrin
-//             </Heading>
-//           </NavLink>
-
-//           {/* Desktop Nav */}
-//           <div className="hidden md:flex items-center gap-8">
-//             {navLinks.map(({ name, path }) => (
-//               <NavLink
-//                 key={path}
-//                 to={path}
-//                 className={({ isActive }) =>
-//                   `relative text-sm font-medium transition ${
-//                     isActive
-//                       ? 'text-indigo-600 dark:text-indigo-400'
-//                       : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
-//                   }`
-//                 }
-//               >
-//                 {({ isActive }) => (
-//                   <>
-//                     {name}
-//                     {isActive && (
-//                       <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-indigo-600 dark:bg-indigo-400 rounded-full" />
-//                     )}
-//                   </>
-//                 )}
-//               </NavLink>
-//             ))}
-//           </div>
-
-//           {/* Actions */}
-//           <div className="flex items-center gap-3">
-
-//             {/* Search */}
-//             <div className="relative hidden md:block">
-//               <button
-//                 onClick={() => setShowSearch(!showSearch)}
-//                 className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-//               >
-//                 <Search size={18} />
-//               </button>
-
-//               {showSearch && (
-//                 <input
-//                   ref={searchRef}
-//                   type="text"
-//                   placeholder="Search articles..."
-//                   value={searchQuery}
-//                   onChange={(e) => setSearchQuery(e.target.value)}
-//                   onKeyDown={handleSearch}
-//                   className="absolute right-0 mt-2 w-56 px-4 py-2 text-sm rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-//                 />
-//               )}
-//             </div>
-
-//             {/* Theme */}
-//             <button
-//               onClick={toggleTheme}
-//               className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-//             >
-//               {isDark ? <Sun size={18} /> : <Moon size={18} />}
-//             </button>
-
-//             {/* Auth */}
-//             {isLoggedIn ? (
-//               <>
-//                 <NavLink to="/bookmarks" className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
-//                   <Bookmark size={18} />
-//                 </NavLink>
-
-//                 <NavLink to="/dashboard/analytics">
-//                   <Button text="Dashboard" size="sm" />
-//                 </NavLink>
-
-//                 <button
-//                   onClick={handleLogout}
-//                   className="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
-//                 >
-//                   <LogOut size={18} />
-//                 </button>
-//               </>
-//             ) : (
-//               <div className="hidden md:flex gap-2">
-//                 <NavLink to="/login">
-//                   <Button text="Login" variant="outline" size="sm" />
-//                 </NavLink>
-//                 <NavLink to="/signup">
-//                   <Button text="Sign up" size="sm" />
-//                 </NavLink>
-//               </div>
-//             )}
-
-//             {/* Mobile */}
-//             <button
-//               onClick={() => setIsOpen(!isOpen)}
-//               className="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-//             >
-//               {isOpen ? <X /> : <Menu />}
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Mobile Drawer */}
-//       {isOpen && (
-//         <div className="md:hidden bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 px-6 py-4 space-y-3">
-//           {navLinks.map(({ name, path }) => (
-//             <NavLink
-//               key={path}
-//               to={path}
-//               onClick={() => setIsOpen(false)}
-//               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-//             >
-//               {name}
-//             </NavLink>
-//           ))}
-//         </div>
-//       )}
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -492,12 +12,16 @@ import {
   Moon,
   Sun,
   ChevronDown,
-  User
+  User,
+  LogIn,
+  UserPlus,
+  Sparkles,
+  TrendingUp,
+  Bell,
+  Settings,
+  ArrowRight
 } from 'lucide-react';
 import Heading from '../Common/Heading';
-import { LogIn, UserPlus } from "lucide-react";
-
-import Button from '../Common/Button';
 import Logo from '../Common/Logo';
 import { ThemeContext } from '../../context/ThemeContext';
 
@@ -543,161 +67,417 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact', icon: Mail },
   ];
 
+  const trendingTopics = [
+    { name: "Web Development", count: "2.3K articles", icon: "💻", color: "from-[#6366F1] to-[#8B5CF6]" },
+    { name: "UI/UX Design", count: "1.8K articles", icon: "🎨", color: "from-[#EC4899] to-[#F472B6]" },
+    { name: "AI & Machine Learning", count: "1.5K articles", icon: "🤖", color: "from-[#06B6D4] to-[#6366F1]" },
+    { name: "Mobile Development", count: "1.2K articles", icon: "📱", color: "from-[#FB923C] to-[#F472B6]" }
+  ];
+
+  const quickLinks = [
+    { title: "Getting Started", desc: "New to blogging?" },
+    { title: "Writing Guide", desc: "Tips for great content" },
+    { title: "Community Guidelines", desc: "Our community rules" },
+    { title: "Success Stories", desc: "Inspiring journeys" }
+  ];
+
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/70 dark:bg-gray-950/70 border-b border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="h-16 flex items-center justify-between">
-
-          {/* Logo */}
-          <NavLink to="/" className="flex items-center gap-2">
-            <Logo size="text-3xl" />
-            <Heading
-              type="h4"
-              className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"
-            >
-              Zarrin
-            </Heading>
-          </NavLink>
-
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map(({ name, path }) => (
-              <NavLink
-                key={path}
-                to={path}
-                className={({ isActive }) =>
-                  `relative text-sm font-medium transition ${
-                    isActive
-                      ? 'text-indigo-600 dark:text-indigo-400'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    {name}
-                    {isActive && (
-                      <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-indigo-600 dark:bg-indigo-400 rounded-full" />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-
-            {/* Search */}
-            <div className="relative hidden md:block">
-              <button
-                onClick={() => setShowSearch(!showSearch)}
-                className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                <Search size={18} />
-              </button>
-
-              {showSearch && (
-                <input
-                  ref={searchRef}
-                  type="text"
-                  placeholder="Search articles..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleSearch}
-                  className="absolute right-0 mt-2 w-56 px-4 py-2 text-sm rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              )}
-            </div>
-
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-
-            {/* Auth Section */}
-            {isLoggedIn ? (
-              <div className="flex items-center gap-3">
-
-                {/* Bookmarks */}
-                <NavLink
-                  to="/bookmarks"
-                  className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <Bookmark size={18} />
-                </NavLink>
-
-                {/* USER DASHBOARD BUTTON */}
-                <button
-                  onClick={() => navigate('/dashboard/analytics')}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-                >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-semibold">
-                    {user?.name?.[0]?.toUpperCase() || <User size={16} />}
-                  </div>
-
-                  <span className="hidden sm:block text-sm font-medium text-gray-800 dark:text-gray-200">
-                    {user?.name}
-                  </span>
-
-                  <ChevronDown size={16} className="text-gray-500 hidden sm:block" />
-                </button>
-              </div>
-            ) : (
-              // <div className="hidden md:flex gap-2">
-              //   <NavLink to="/login">
-              //     <Button text="Login" variant="outline" size="sm" />
-              //   </NavLink>
-              //   <NavLink to="/signup">
-              //     <Button text="Sign up" size="sm" />
-              //   </NavLink>
-            // </div>
-            <div className="hidden md:flex items-center gap-3">
-  {/* Login */}
-  <NavLink to="/login">
-    <button
-      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold
-      text-gray-700 dark:text-gray-300
-      border border-gray-300 dark:border-gray-700
-      rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800
-      transition-all duration-200"
-    >
-      <LogIn size={16} />
-      Login
-    </button>
-  </NavLink>
-
-  {/* Sign Up */}
-  <NavLink to="/signup">
-    <button
-      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold
-      text-white rounded-lg
-      bg-indigo-600 hover:bg-indigo-700
-      shadow-md hover:shadow-lg
-      transition-all duration-200"
-    >
-      <UserPlus size={16} />
-      Sign up
-    </button>
-  </NavLink>
-</div>
-
-            )}
-
-            {/* Mobile Menu */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {isOpen ? <X /> : <Menu />}
-            </button>
-          </div>
+    <>
+      {/* Top Announcement Bar */}
+      <div className="bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] text-white py-2 px-4 text-center text-sm">
+        <div className="flex items-center justify-center gap-2">
+          <Sparkles className="w-4 h-4" />
+          <span className="font-medium">New: AI-powered article assistant is now available!</span>
+          <button className="underline hover:no-underline ml-2 transition">Learn More</button>
         </div>
       </div>
-    </nav>
+
+      {/* Main Navbar */}
+      <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/70 dark:bg-slate-950/70 border-b border-gray-200 dark:border-slate-800 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="h-16 flex items-center justify-between">
+
+            {/* Logo with Pulse Animation */}
+            <NavLink 
+              to="/" 
+              className="flex items-center gap-2 group hover:scale-105 transition-transform duration-300"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#6366F1] via-[#EC4899] to-[#8B5CF6] rounded-lg blur-md group-hover:blur-lg transition-all opacity-50" />
+                <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                  Z
+                </div>
+              </div>
+              <Heading
+                type="h4"
+                className="hidden sm:block text-lg font-bold bg-gradient-to-r from-[#6366F1] to-[#EC4899] dark:from-[#6366F1] dark:to-[#8B5CF6] bg-clip-text text-transparent"
+              >
+                Zarrin
+              </Heading>
+            </NavLink>
+
+            {/* Desktop Navigation with Mega Menu */}
+            <div className="hidden md:flex items-center gap-1">
+              {navLinks.map(({ name, path, icon: Icon }) => {
+                const isActive = location.pathname === path;
+                return (
+                  <NavLink
+                    key={path}
+                    to={path}
+                    className="relative group"
+                  >
+                    <button className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white shadow-lg'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                    }`}>
+                      <Icon size={18} className="group-hover:scale-110 transition-transform" />
+                      <span>{name}</span>
+                    </button>
+
+                    {/* Mega Menu for Blog */}
+                    {name === 'Blog' && (
+                      <div className="absolute top-full left-0 mt-0 w-[500px] bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-2xl rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                        <div className="p-6">
+                          <div className="grid grid-cols-2 gap-6">
+                            {/* Trending Topics */}
+                            <div>
+                              <h3 className="font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
+                                <TrendingUp className="w-4 h-4 text-[#6366F1]" />
+                                Trending Topics
+                              </h3>
+                              <div className="space-y-2">
+                                {trendingTopics.slice(0, 2).map((topic) => (
+                                  <button
+                                    key={topic.name}
+                                    onClick={() => navigate('/blog')}
+                                    className="w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors group/item"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${topic.color} flex items-center justify-center text-lg group-hover/item:scale-110 transition-transform`}>
+                                        {topic.icon}
+                                      </div>
+                                      <div>
+                                        <p className="font-medium text-sm text-gray-900 dark:text-white">{topic.name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">{topic.count}</p>
+                                      </div>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Quick Links */}
+                            <div>
+                              <h3 className="font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
+                                <Sparkles className="w-4 h-4 text-[#EC4899]" />
+                                Quick Links
+                              </h3>
+                              <div className="space-y-2">
+                                {quickLinks.map((link) => (
+                                  <button
+                                    key={link.title}
+                                    className="w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                                  >
+                                    <p className="font-medium text-sm text-gray-900 dark:text-white">{link.title}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{link.desc}</p>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-slate-800 p-4 border-t border-gray-200 dark:border-slate-700">
+                          <button 
+                            onClick={() => navigate('/blog')}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white font-semibold rounded-lg transition-all"
+                          >
+                            <BookOpen className="w-4 h-4" />
+                            Browse All Articles
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </NavLink>
+                );
+              })}
+            </div>
+
+            {/* Right Section */}
+            <div className="flex items-center gap-3">
+
+              {/* Search Bar */}
+              <div className="relative hidden md:block group">
+                <button
+                  onClick={() => setShowSearch(!showSearch)}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-300 text-gray-700 dark:text-gray-300 group-hover:text-[#6366F1] dark:group-hover:text-[#8B5CF6]"
+                >
+                  <Search size={20} className="group-hover:scale-110 transition-transform" />
+                </button>
+
+                {showSearch && (
+                  <input
+                    ref={searchRef}
+                    type="text"
+                    placeholder="Search articles..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearch}
+                    className="absolute right-0 mt-2 w-64 px-4 py-3 text-sm rounded-xl bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:outline-none focus:ring-2 focus:ring-[#6366F1]/10 dark:focus:ring-[#8B5CF6]/10 shadow-lg transition-all duration-300"
+                  />
+                )}
+              </div>
+
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg hover:bg-gradient-to-br hover:from-[#6366F1]/10 hover:to-[#EC4899]/10 dark:hover:bg-slate-800 transition-all duration-300 text-[#6366F1] dark:text-[#8B5CF6]"
+                title={isDark ? 'Light Mode' : 'Dark Mode'}
+              >
+                {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+
+              {/* Auth Section */}
+              {isLoggedIn ? (
+                <div className="flex items-center gap-3">
+                  {/* Bookmarks */}
+                  <NavLink
+                    to="/bookmarks"
+                    className="p-2 rounded-lg hover:bg-gradient-to-br hover:from-amber-50 hover:to-amber-100 dark:hover:from-slate-800 dark:hover:to-slate-700 transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400"
+                    title="Bookmarks"
+                  >
+                    <Bookmark size={20} />
+                  </NavLink>
+
+                  {/* Notifications */}
+                  <NavLink
+                    to="/notifications"
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-300 text-gray-700 dark:text-gray-300 relative hidden sm:block"
+                    title="Notifications"
+                  >
+                    <Bell size={20} />
+                    <span className="absolute top-1 right-0 w-2 h-2 bg-gradient-to-r from-[#EC4899] to-[#F472B6] rounded-full animate-pulse" />
+                  </NavLink>
+
+                  {/* User Profile Dropdown */}
+                  <div className="relative group">
+                    <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#6366F1]/10 to-[#EC4899]/10 dark:from-slate-800 dark:to-slate-700 hover:from-[#6366F1]/20 hover:to-[#EC4899]/20 dark:hover:from-slate-700 dark:hover:to-slate-600 transition-all duration-300 border border-[#6366F1]/20 dark:border-slate-700 hover:border-[#6366F1]/50 group-hover:shadow-lg z-40">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm">
+                        {user?.name?.[0]?.toUpperCase() || <User size={16} />}
+                      </div>
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        {user?.name?.split(' ')[0] || 'User'}
+                      </span>
+                      <ChevronDown size={16} className="text-gray-500 dark:text-gray-400 group-hover:rotate-180 transition-transform" />
+                    </button>
+
+                    {/* User Dropdown Menu */}
+                    <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-2xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all overflow-hidden z-50">
+                      {/* Profile Section */}
+                      <div className="p-4 bg-gradient-to-br from-[#6366F1]/10 to-[#EC4899]/10 dark:from-slate-800 dark:to-slate-700 border-b border-gray-200 dark:border-slate-700">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold">
+                            {user?.name?.[0]?.toUpperCase() || 'U'}
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-900 dark:text-white">{user?.name || 'User'}</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">{user?.email || 'user@email.com'}</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
+                            <p className="font-bold text-gray-900 dark:text-white">12</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">Posts</p>
+                          </div>
+                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
+                            <p className="font-bold text-gray-900 dark:text-white">256</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">Followers</p>
+                          </div>
+                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
+                            <p className="font-bold text-gray-900 dark:text-white">98</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400">Following</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
+                      <div className="py-2">
+                        <NavLink
+                          to="/dashboard/analytics"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-gray-700 dark:text-gray-300"
+                        >
+                          <User size={16} />
+                          <span className="text-sm">Dashboard</span>
+                        </NavLink>
+                        <NavLink
+                          to="/bookmarks"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-gray-700 dark:text-gray-300"
+                        >
+                          <Bookmark size={16} />
+                          <span className="text-sm">My Bookmarks</span>
+                        </NavLink>
+                        <NavLink
+                          to="/settings"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-gray-700 dark:text-gray-300"
+                        >
+                          <Settings size={16} />
+                          <span className="text-sm">Settings</span>
+                        </NavLink>
+                      </div>
+
+                      {/* Logout Button */}
+                      <div className="border-t border-gray-200 dark:border-slate-700 p-2">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-3 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-sm"
+                        >
+                          <LogOut size={16} />
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mobile Logout */}
+                  <button
+                    onClick={handleLogout}
+                    className="md:hidden p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300 text-red-600 dark:text-red-400"
+                    title="Logout"
+                  >
+                    <LogOut size={20} />
+                  </button>
+                </div>
+              ) : (
+                <div className="hidden md:flex items-center gap-3">
+                  {/* Login Button */}
+                  <NavLink to="/login">
+                    <button className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 hover:border-[#6366F1] dark:hover:border-[#8B5CF6] transition-all duration-300">
+                      <LogIn size={16} />
+                      Login
+                    </button>
+                  </NavLink>
+
+                  {/* Sign Up Button */}
+                  <NavLink to="/signup">
+                    <button className="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white rounded-lg bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group">
+                      <UserPlus size={16} className="group-hover:scale-110 transition-transform" />
+                      Sign up
+                    </button>
+                  </NavLink>
+                </div>
+              )}
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-300"
+              >
+                {isOpen ? (
+                  <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                ) : (
+                  <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Menu */}
+        {isOpen && (
+          <div className="md:hidden border-t border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+            <div className="px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+              {/* Mobile Search */}
+              <div className="mb-4">
+                <div className="flex items-center gap-2 bg-gray-100 dark:bg-slate-800 rounded-lg px-3 py-2 border border-gray-200 dark:border-slate-700">
+                  <Search size={18} className="text-gray-600 dark:text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search blogs..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearch}
+                    className="bg-transparent flex-1 outline-none text-sm text-gray-700 dark:text-gray-300 placeholder-gray-500 dark:placeholder-gray-500"
+                  />
+                </div>
+              </div>
+
+              {/* Mobile Nav Links */}
+              {navLinks.map(({ name, path, icon: Icon }) => {
+                const isActive = location.pathname === path;
+                return (
+                  <NavLink
+                    key={path}
+                    to={path}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white shadow-lg'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    <Icon size={20} />
+                    <span>{name}</span>
+                  </NavLink>
+                );
+              })}
+
+              {/* Divider */}
+              <div className="border-t border-gray-200 dark:border-slate-800 my-2" />
+
+              {/* Mobile Auth Section */}
+              {isLoggedIn ? (
+                <div className="space-y-3">
+                  {user && (
+                    <div className="px-4 py-3 bg-gradient-to-r from-[#6366F1]/10 to-[#EC4899]/10 dark:from-slate-800 dark:to-slate-700 rounded-lg border border-[#6366F1]/20 dark:border-slate-700">
+                      <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">Logged in as</p>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">{user.name}</p>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      navigate('/dashboard/analytics');
+                      setIsOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white font-semibold rounded-lg hover:from-[#5558E3] hover:to-[#7C4EE8] transition-all shadow-lg"
+                  >
+                    <Sparkles size={18} />
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-semibold rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-all border border-red-200 dark:border-red-900/40"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <NavLink
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-3 text-center rounded-lg font-semibold text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all"
+                  >
+                    Login
+                  </NavLink>
+                  <NavLink
+                    to="/signup"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-3 text-center rounded-lg font-bold text-white bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] transition-all shadow-lg"
+                  >
+                    Sign up
+                  </NavLink>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </nav>
+    </>
   );
 };
 

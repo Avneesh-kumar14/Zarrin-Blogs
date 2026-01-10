@@ -9,7 +9,7 @@ const Followers = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [followers, setFollowers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const [followingMap, setFollowingMap] = useState({});
   const [userName, setUserName] = useState('');
@@ -21,23 +21,39 @@ const Followers = () => {
   const getUserId = (user) => user?._id || user?.id;
 
   useEffect(() => {
-    if (userId) {
+    console.log('🔍 Followers useEffect triggered');
+    console.log('userId from useParams():', userId);
+    console.log('typeof userId:', typeof userId);
+    
+    if (userId && userId !== 'undefined') {
+      console.log('✅ Valid userId, calling fetchFollowers');
       fetchFollowers();
+    } else {
+      console.warn('❌ Invalid userId:', userId);
+      setLoading(false);
     }
   }, [userId]);
 
   const fetchFollowers = async () => {
     try {
+      console.log('🔍 DEBUG: fetchFollowers called');
+      console.log('userId:', userId);
+      
+      if (!userId || userId === 'undefined') {
+        throw new Error('userId is not defined');
+      }
+      
       setLoading(true);
-      console.log('Fetching followers for user:', userId);
+      console.log('Fetching from API with userId:', userId);
+      console.log('Full URL:', `http://localhost:8200/api/users/${userId}`);
 
       const res = await fetch(`http://localhost:8200/api/users/${userId}`);
-      if (!res.ok) throw new Error('Failed to fetch user');
+      console.log('API Response Status:', res.status, res.statusText);
+      if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
       const userData = await res.json();
+      console.log('User data received:', userData);
       
       setUserName(userData.name);
-      
-      // Fetch full details for each follower
       if (userData.followers && Array.isArray(userData.followers)) {
         const followersDetails = [];
         const followMap = {};
@@ -52,7 +68,7 @@ const Followers = () => {
               
               // Check if logged in user is following this person
               if (token) {
-                followMap[followerId] = fullUserData.followers?.some(f => getUserId(f) === getUserId(loggedInUser)) || false;
+                followMap[followerId] = loggedInUser.following?.some(f => getUserId(f) === followerId) || false;
               }
             }
           } catch (err) {
@@ -113,6 +129,23 @@ const Followers = () => {
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-gray-200 dark:border-slate-700 border-t-blue-600 mb-4"></div>
           <Paragraph className="text-gray-600 dark:text-gray-400 text-lg">Loading followers...</Paragraph>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userId || userId === 'undefined') {
+    return (
+      <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center px-4">
+        <div className="text-center bg-white dark:bg-slate-800 p-12 rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700">
+          <Users size={48} className="mx-auto text-gray-300 dark:text-slate-600 mb-4" />
+          <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">Invalid or missing user ID</p>
+          <button 
+            onClick={() => navigate('/')} 
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
+          >
+            Go Back to Home
+          </button>
         </div>
       </div>
     );
@@ -300,7 +333,7 @@ const Followers = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes blob {
           0%, 100% {
             transform: translate(0, 0) scale(1);
