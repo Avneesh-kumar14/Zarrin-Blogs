@@ -3,34 +3,44 @@
 @tailwind utilities;
 @tailwind screens;
 
-/* Professional Vibrant Color Scheme */
+/* Elegant Cyan + Light Minimalistic Color Scheme */
 :root {
-  /* Primary Brand Colors */
-  --color-primary: #6366F1;        /* Indigo - Professional */
-  --color-secondary: #EC4899;      /* Pink - Vibrant */
-  --color-accent: #F59E0B;         /* Amber - Warm */
-  --color-success: #10B981;        /* Emerald - Growth */
-  --color-danger: #EF4444;         /* Red - Alerts */
+  /* Primary Brand Colors - Cyan Focus */
+  --color-primary: #06B6D4;        /* Cyan - Primary */
+  --color-secondary: #0891B2;      /* Darker Cyan - Secondary */
+  --color-accent: #14B8A6;         /* Teal - Accent */
+  --color-success: #10B981;        /* Emerald - Success */
+  --color-danger: #DC2626;         /* Red - Alerts */
   
-  /* Neutral Colors */
-  --color-dark: #1F2937;           /* Dark Slate */
-  --color-light: #F9FAFB;          /* Off-white */
-  --color-text-secondary: #6B7280; /* Gray text */
-  --color-border: #E5E7EB;         /* Light border */
+  /* Neutral Colors - Light & Airy */
+  --color-dark: #0C4A6E;           /* Dark Slate Blue */
+  --color-light: #F0F9FC;          /* Very Light Cyan */
+  --color-text-secondary: #475569; /* Slate Gray */
+  --color-border: #CFFAFE;         /* Very Light Cyan Border */
+  
+  /* Additional Palette */
+  --color-bg-primary: #FFFFFF;     /* Pure White */
+  --color-bg-secondary: #ECFDF5;   /* Ultra Light Cyan */
+  --color-bg-tertiary: #E0F2FE;    /* Light Blue */
 }
 
 .dark {
-  /* Dark Mode Colors */
-  --color-primary: #818CF8;        /* Lighter Indigo */
-  --color-secondary: #F472B6;      /* Lighter Pink */
-  --color-accent: #FBBF24;         /* Lighter Amber */
-  --color-success: #34D399;        /* Lighter Emerald */
-  --color-danger: #F87171;         /* Lighter Red */
+  /* Dark Mode Colors - Elegant Cyan */
+  --color-primary: #06B6D4;        /* Cyan */
+  --color-secondary: #00D9FF;      /* Bright Cyan */
+  --color-accent: #14B8A6;         /* Teal */
+  --color-success: #34D399;        /* Emerald */
+  --color-danger: #F87171;         /* Light Red */
   
-  --color-dark: #F3F4F6;           /* Light text */
-  --color-light: #111827;          /* Dark background */
-  --color-text-secondary: #D1D5DB; /* Gray text */
-  --color-border: #4B5563;         /* Dark border */
+  --color-dark: #ECFDF5;           /* Light text */
+  --color-light: #082F49;          /* Very Dark Blue */
+  --color-text-secondary: #A7F3D0; /* Light Teal Text */
+  --color-border: #164E63;         /* Dark Cyan Border */
+  
+  /* Dark Mode Background */
+  --color-bg-primary: #0F172A;     /* Dark Navy */
+  --color-bg-secondary: #134E4A;   /* Dark Teal */
+  --color-bg-tertiary: #0C4A6E;    /* Dark Cyan-Blue */
 }
 
 /* Smooth Animations */
@@ -136,34 +146,34 @@
   @apply transition-colors duration-200;
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling - Elegant Cyan */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #F0F9FC;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #06B6D4;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #0891B2;
 }
 
-/* Selection Color */
+/* Selection Color - Cyan Theme */
 ::selection {
-  background: linear-gradient(to right, #2563eb, #9333ea);
+  background: linear-gradient(to right, #06B6D4, #0891B2);
   color: white;
 }
 
-/* Focus visible outline */
+/* Focus visible outline - Elegant Cyan */
 *:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid #06B6D4;
   outline-offset: 2px;
 }
 
@@ -172,25 +182,25 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Form elements styling */
+/* Form elements styling - Cyan Focus */
 input:focus,
 textarea:focus,
 select:focus {
-  @apply ring-2 ring-blue-500 ring-opacity-50;
+  @apply ring-2 ring-cyan-500 ring-opacity-50;
 }
 
 /* Custom text selection */
 @layer components {
   .btn-primary {
-    @apply px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95;
+    @apply px-6 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95;
   }
 
   .btn-secondary {
-    @apply px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95;
+    @apply px-6 py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95;
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent;
   }
 
   .card-hover {
@@ -198,6 +208,6 @@ select:focus {
   }
 
   .glass-effect {
-    @apply bg-white/30 backdrop-blur-md border border-white/20 rounded-xl;
+    @apply bg-white/40 backdrop-blur-lg border border-cyan-200/40 rounded-xl shadow-xl;
   }
 }

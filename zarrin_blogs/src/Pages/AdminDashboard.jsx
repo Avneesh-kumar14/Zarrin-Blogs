@@ -103,7 +103,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-cyan-50 to-teal-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <Paragraph className="text-gray-600">Loading Admin Dashboard...</Paragraph>
@@ -114,18 +114,18 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
 
   if (!dashboard) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+      <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-teal-50">
         <Alert message="Failed to load dashboard" type="error" />
       </div>
     );
   }
 
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+  const COLORS = ['#06B6D4', '#14B8A6', '#0891B2', '#0E7490', '#06B6D4'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-purple-700 dark:via-blue-700 dark:to-indigo-700 text-white py-8 md:py-12">
+      <div className="bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-700 dark:from-cyan-700 dark:via-teal-700 dark:to-cyan-800 text-white py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-4">
             <button onClick={() => navigate('/')} className="hover:bg-white/20 p-2 rounded">
@@ -207,7 +207,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
                       {(dashboard.stats.totalViews || 0).toLocaleString()}
                     </p>
                   </div>
-                  <Eye size={40} className="text-purple-500" />
+                  <Eye size={40} className="text-cyan-500" />
                 </div>
               </div>
 

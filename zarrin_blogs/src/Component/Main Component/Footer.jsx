@@ -45,12 +45,12 @@ const Footer = () => {
   return (
     <footer className="relative bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-300 overflow-hidden">
       {/* Background glow */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl" />
+      <div className="absolute -top-32 -right-32 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl" />
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl" />
 
       {/* Newsletter */}
       <div className="relative max-w-7xl mx-auto px-6 pt-24">
-        <div className="bg-gradient-to-br from-indigo-600 via-pink-500 to-purple-600 rounded-3xl p-10 grid md:grid-cols-2 gap-8 items-center">
+        <div className="bg-gradient-to-br from-cyan-500 via-teal-500 to-cyan-600 rounded-3xl p-10 grid md:grid-cols-2 gap-8 items-center">
           <div className="text-white">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles size={18} />
@@ -91,7 +91,7 @@ const Footer = () => {
             const Icon = s.icon;
             return (
               <div key={s.label}>
-                <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center mb-3">
+                <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center mb-3">
                   <Icon className="text-white" />
                 </div>
                 <div className="text-3xl font-bold text-white">{s.value}</div>
@@ -125,7 +125,7 @@ const Footer = () => {
                   <a
                     key={i}
                     href="#"
-                    className="w-9 h-9 rounded-lg bg-zinc-800 hover:bg-indigo-600 flex items-center justify-center transition"
+                    className="w-9 h-9 rounded-lg bg-zinc-800 hover:bg-cyan-600 flex items-center justify-center transition"
                   >
                     <Icon size={14} />
                   </a>
@@ -188,7 +188,7 @@ const Footer = () => {
           {topics.map((t) => (
             <span
               key={t}
-              className="px-4 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500 text-sm text-white hover:scale-105 transition cursor-pointer"
+              className="px-4 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 text-sm text-white hover:scale-105 transition cursor-pointer"
             >
               {t}
             </span>
@@ -199,13 +199,13 @@ const Footer = () => {
       {/* Bottom */}
       <div className="border-t border-white/10 py-8 text-center text-sm text-zinc-500">
         © {year} <span className="text-white">Zarrin</span>. Made with{" "}
-        <Heart size={12} className="inline text-pink-500" /> for thoughtful readers.
+        <Heart size={12} className="inline text-cyan-500" /> for thoughtful readers.
       </div>
 
       {/* Back to top */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 to-pink-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition z-50"
+        className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-gradient-to-r from-cyan-600 to-teal-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition z-50"
       >
         <ArrowUp size={18} />
       </button>
