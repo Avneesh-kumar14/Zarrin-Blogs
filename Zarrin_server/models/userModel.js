@@ -61,7 +61,26 @@ const UserSchema = new Schema({
     following: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
-    }]
+    }],
+    // ✅ Notification Preferences
+    notificationPreferences: {
+        emailFollowers: { type: Boolean, default: true },
+        emailComments: { type: Boolean, default: true },
+        emailLikes: { type: Boolean, default: false },
+        emailDigest: { type: Boolean, default: true },
+        pushNotifications: { type: Boolean, default: true },
+        pushMentions: { type: Boolean, default: true }
+    },
+    // ✅ Profile Settings
+    profileSettings: {
+        website: { type: String, default: '' },
+        location: { type: String, default: '' },
+        allowComments: { type: Boolean, default: true },
+        showReadingTime: { type: Boolean, default: true },
+        autoSaveDrafts: { type: Boolean, default: true },
+        profileVisibility: { type: Boolean, default: true },
+        showActivity: { type: Boolean, default: true }
+    }
 }, {
     timestamps: true
 })

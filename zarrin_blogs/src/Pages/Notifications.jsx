@@ -1,111 +1,158 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, UserPlus, Bookmark, TrendingUp, Check, Settings, Bell } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: "like",
-      icon: Heart,
-      color: "text-red-500",
-      bgColor: "bg-red-100 dark:bg-red-900/20",
-      user: {
-        name: "Emily Parker",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
-      },
-      action: "liked your article",
-      target: "The Future of Web Development",
-      time: "5 minutes ago",
-      unread: true
-    },
-    {
-      id: 2,
-      type: "comment",
-      icon: MessageCircle,
-      color: "text-blue-500",
-      bgColor: "bg-blue-100 dark:bg-blue-900/20",
-      user: {
-        name: "David Kim",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
-      },
-      action: "commented on your article",
-      target: "Building Scalable Applications",
-      comment: "Great insights! This really helped me understand the concept better.",
-      time: "2 hours ago",
-      unread: true
-    },
-    {
-      id: 3,
-      type: "follow",
-      icon: UserPlus,
-      color: "text-purple-500",
-      bgColor: "bg-purple-100 dark:bg-purple-900/20",
-      user: {
-        name: "Sarah Chen",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
-      },
-      action: "started following you",
-      time: "5 hours ago",
-      unread: true
-    },
-    {
-      id: 4,
-      type: "bookmark",
-      icon: Bookmark,
-      color: "text-orange-500",
-      bgColor: "bg-orange-100 dark:bg-orange-900/20",
-      user: {
-        name: "Michael Brown",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"
-      },
-      action: "bookmarked your article",
-      target: "TypeScript Best Practices",
-      time: "1 day ago",
-      unread: false
-    },
-    {
-      id: 5,
-      type: "trending",
-      icon: TrendingUp,
-      color: "text-green-500",
-      bgColor: "bg-green-100 dark:bg-green-900/20",
-      action: "Your article is trending!",
-      target: "Advanced React Patterns",
-      description: "Your article has reached 1,000 views",
-      time: "2 days ago",
-      unread: false
-    }
-  ]);
-
+  const [notifications, setNotifications] = useState([]);
+  const [stats, setStats] = useState({
+    likes: 0,
+    comments: 0,
+    followers: 0,
+    bookmarks: 0
+  });
   const [filter, setFilter] = useState('all');
   const [alert, setAlert] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8200/api';
+  const token = localStorage.getItem('token');
 
-  const handleMarkAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, unread: false })));
-    setAlert({ type: 'success', message: 'All notifications marked as read' });
+  useEffect(() => {
+    fetchNotifications();
+    fetchStats();
+  }, [filter]);
+
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/notifications?filter=${filter}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
+      }
+
+      const data = await response.json();
+      setNotifications(data.notifications);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      setAlert({ type: 'error', message: 'Failed to load notifications' });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const filteredNotifications = filter === 'all' 
-    ? notifications 
-    : filter === 'unread'
-    ? notifications.filter(n => n.unread)
-    : notifications.filter(n => n.type === filter);
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/notifications/stats`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+
+      const data = await response.json();
+      setStats(data.stats);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/notifications/read-all`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark all as read');
+      }
+
+      setAlert({ type: 'success', message: 'All notifications marked as read' });
+      fetchNotifications();
+    } catch (error) {
+      console.error('Error:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark as read');
+      }
+
+      fetchNotifications();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  const typeConfig = {
+    like: {
+      icon: Heart,
+      color: 'text-red-500',
+      bgColor: 'bg-red-100 dark:bg-red-900/20'
+    },
+    comment: {
+      icon: MessageCircle,
+      color: 'text-blue-500',
+      bgColor: 'bg-blue-100 dark:bg-blue-900/20'
+    },
+    follow: {
+      icon: UserPlus,
+      color: 'text-purple-500',
+      bgColor: 'bg-purple-100 dark:bg-purple-900/20'
+    },
+    bookmark: {
+      icon: Bookmark,
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-100 dark:bg-orange-900/20'
+    },
+    trending: {
+      icon: TrendingUp,
+      color: 'text-green-500',
+      bgColor: 'bg-green-100 dark:bg-green-900/20'
+    }
+  };
 
   const NotificationItem = ({ notification }) => {
-    const Icon = notification.icon;
+    const config = typeConfig[notification.type] || typeConfig.like;
+    const Icon = config.icon;
 
     return (
-      <div className={`flex gap-4 p-4 rounded-xl border transition-all ${
-        notification.unread 
-          ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800' 
-          : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:shadow-md'
-      }`}>
+      <div 
+        className={`flex gap-4 p-4 rounded-xl border transition-all cursor-pointer ${
+          notification.isRead 
+            ? 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:shadow-md' 
+            : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800'
+        }`}
+        onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}
+      >
         {/* Icon */}
-        <div className={`w-12 h-12 rounded-full ${notification.bgColor} flex items-center justify-center flex-shrink-0`}>
-          <Icon className={`w-6 h-6 ${notification.color}`} />
+        <div className={`w-12 h-12 rounded-full ${config.bgColor} flex items-center justify-center flex-shrink-0`}>
+          <Icon className={`w-6 h-6 ${config.color}`} />
         </div>
 
         {/* Content */}
@@ -113,38 +160,32 @@ const Notifications = () => {
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                {notification.user && (
+                {notification.sender && (
                   <>
-                    <span className="font-bold">{notification.user.name}</span>
-                    <span className="text-gray-600 dark:text-gray-400"> {notification.action}</span>
+                    <span className="font-bold">{notification.sender.name}</span>
+                    <span className="text-gray-600 dark:text-gray-400"> {notification.title}</span>
                   </>
                 )}
-                {!notification.user && <span>{notification.action}</span>}
-                {notification.target && (
-                  <span className="font-semibold"> "{notification.target}"</span>
+                {!notification.sender && <span>{notification.title}</span>}
+                {notification.blog && (
+                  <span className="font-semibold"> "{notification.blog.title}"</span>
                 )}
               </p>
             </div>
-            {notification.unread && (
+            {!notification.isRead && (
               <div className="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0 mt-1.5" />
             )}
           </div>
 
-          {notification.comment && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 p-2 rounded mb-2 italic">
-              "{notification.comment}"
-            </p>
-          )}
-
-          {notification.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              {notification.description}
-            </p>
-          )}
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            {notification.message}
+          </p>
 
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400">{notification.time}</p>
-            {notification.type === "follow" && (
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {new Date(notification.createdAt).toLocaleDateString()}
+            </p>
+            {notification.type === 'follow' && (
               <button className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E91E63] text-white rounded-lg transition-all">
                 Follow Back
               </button>
@@ -175,11 +216,11 @@ const Notifications = () => {
 
             <button
               onClick={handleMarkAllRead}
-              disabled={unreadCount === 0}
+              disabled={unreadCount === 0 || loading}
               className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E91E63] text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check className="w-4 h-4" />
-              Mark all read
+              {loading ? 'Loading...' : 'Mark all read'}
             </button>
           </div>
         </div>
@@ -188,25 +229,25 @@ const Notifications = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="p-4 rounded-xl bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-900/10 border border-red-200 dark:border-red-800">
             <Heart className="w-6 h-6 text-red-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">342</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">{stats.likes}</div>
             <div className="text-xs text-gray-600 dark:text-gray-400 text-center">Total Likes</div>
           </div>
 
           <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border border-blue-200 dark:border-blue-800">
             <MessageCircle className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">128</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">{stats.comments}</div>
             <div className="text-xs text-gray-600 dark:text-gray-400 text-center">Comments</div>
           </div>
 
           <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/10 border border-purple-200 dark:border-purple-800">
             <UserPlus className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">89</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">{stats.followers}</div>
             <div className="text-xs text-gray-600 dark:text-gray-400 text-center">New Followers</div>
           </div>
 
           <div className="p-4 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-900/10 border border-orange-200 dark:border-orange-800">
             <Bookmark className="w-6 h-6 text-orange-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">156</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">{stats.bookmarks}</div>
             <div className="text-xs text-gray-600 dark:text-gray-400 text-center">Bookmarks</div>
           </div>
         </div>
@@ -242,9 +283,14 @@ const Notifications = () => {
 
         {/* Notifications List */}
         <div className="space-y-3">
-          {filteredNotifications.length > 0 ? (
-            filteredNotifications.map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
+          {loading ? (
+            <div className="p-12 text-center rounded-xl bg-gray-50 dark:bg-slate-800">
+              <div className="inline-block w-8 h-8 border-4 border-gray-300 border-t-[#6366F1] rounded-full animate-spin"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading notifications...</p>
+            </div>
+          ) : notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <NotificationItem key={notification._id} notification={notification} />
             ))
           ) : (
             <div className="p-12 text-center rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
