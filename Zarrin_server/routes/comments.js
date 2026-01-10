@@ -2,6 +2,7 @@ const express = require('express');
 const { auth } = require('../middleware/auth');
 const Comment = require('../models/comment');
 const Blog = require('../models/blog');
+const Notification = require('../models/notification');
 const { sendCommentNotification } = require('../services/emailService');
 
 const router = express.Router();
@@ -120,6 +121,25 @@ router.post('/', auth, async (req, res) => {
     });
 
     const populatedComment = await comment.populate('author', 'name email');
+
+    // Create notification in database
+    if (blog.author && blog.author._id.toString() !== req.user._id.toString()) {
+      try {
+        await Notification.create({
+          recipient: blog.author._id,
+          sender: req.user._id,
+          type: 'comment',
+          title: `${req.user.name || 'Someone'} commented on your article`,
+          message: `${req.user.name || 'Someone'} commented: "${content.substring(0, 50)}..."`,
+          blog: blogId,
+          comment: comment._id,
+          data: { commentPreview: content.substring(0, 100) }
+        });
+      } catch (notifError) {
+        console.error('Failed to create notification:', notifError);
+        // Don't fail the request if notification creation fails
+      }
+    }
 
     // Send email notification to blog author (if author != commenter and email exists)
     if (blog.author && blog.author._id.toString() !== req.user._id.toString() && blog.author.email) {

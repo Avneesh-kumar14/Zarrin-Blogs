@@ -2,6 +2,7 @@ const express = require('express');
 const { auth } = require('../middleware/auth');
 const User = require('../models/userModel');
 const Blog = require('../models/blog');
+const Notification = require('../models/notification');
 const { sendFollowNotification } = require('../services/emailService');
 
 const router = express.Router();
@@ -132,6 +133,20 @@ router.post('/:userId/follow', auth, async (req, res) => {
     const currentUser = await User.findById(req.user._id);
     currentUser.following.push(req.params.userId);
     await currentUser.save();
+
+    // Create notification in database
+    try {
+      await Notification.create({
+        recipient: req.params.userId,
+        sender: req.user._id,
+        type: 'follow',
+        title: `${req.user.name || 'Someone'} started following you`,
+        message: `${req.user.name || 'Someone'} is now following your work`
+      });
+    } catch (notifError) {
+      console.error('Failed to create notification:', notifError);
+      // Don't fail the request
+    }
 
     // Send email notification to followed user
     if (targetUser.email) {

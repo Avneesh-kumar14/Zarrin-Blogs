@@ -2,6 +2,7 @@ const express = require('express');
 const { auth } = require('../middleware/auth');
 const Bookmark = require('../models/bookmark');
 const Blog = require('../models/blog');
+const Notification = require('../models/notification');
 
 const router = express.Router();
 
@@ -54,6 +55,23 @@ router.post('/:blogId', auth, async (req, res) => {
       path: 'blog',
       populate: { path: 'author', select: 'name email' }
     });
+
+    // Create notification for blog author
+    if (blog.author && blog.author.toString() !== req.user._id.toString()) {
+      try {
+        await Notification.create({
+          recipient: blog.author,
+          sender: req.user._id,
+          type: 'bookmark',
+          title: `${req.user.name || 'Someone'} bookmarked your article`,
+          message: `Your article "${blog.title}" was bookmarked`,
+          blog: req.params.blogId
+        });
+      } catch (notifError) {
+        console.error('Failed to create notification:', notifError);
+        // Don't fail the request
+      }
+    }
 
     res.status(201).json({ message: 'Blog bookmarked', bookmark: populated });
   } catch (err) {

@@ -23,6 +23,8 @@ const relatedRoutes = require('./routes/related');
 const usersRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin');
 const readingProgressRoutes = require('./routes/readingProgress');
+const settingsRoutes = require('./routes/settings');
+const notificationsRoutes = require('./routes/notifications');
 
 // Security middleware
 const {
@@ -111,6 +113,12 @@ app.use('/api/users', usersRoutes);
 
 // ✅ Admin routes (protected by auth middleware)
 app.use('/api/admin', adminRoutes);
+
+// ✅ Settings routes (protected by auth middleware)
+app.use('/api/settings', settingsRoutes);
+
+// ✅ Notifications routes (protected by auth middleware)
+app.use('/api/notifications', notificationsRoutes);
 
 // ✅ Reading Progress routes (protected by auth middleware)
 app.use('/api/reading-progress', readingProgressRoutes);

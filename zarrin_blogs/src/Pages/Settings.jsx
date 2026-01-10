@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Shield, Bell, Palette, Upload, Eye, EyeOff } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 
@@ -6,14 +6,23 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [alert, setAlert] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const [previewAvatar, setPreviewAvatar] = useState(null);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    username: '@johndoe',
-    bio: 'Passionate developer with expertise in full-stack development.',
-    website: 'https://example.com',
-    location: 'San Francisco, CA',
-    email: 'john@example.com',
+    firstName: '',
+    lastName: '',
+    username: '',
+    bio: '',
+    website: '',
+    location: '',
+    email: '',
+    avatar: '',
     allowComments: true,
     showReadingTime: true,
     autoSaveDrafts: true,
@@ -27,6 +36,56 @@ const Settings = () => {
     pushMentions: true
   });
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8200/api';
+  const token = localStorage.getItem('token');
+
+  // Fetch settings on mount
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch settings');
+      }
+
+      const data = await response.json();
+      setFormData({
+        firstName: data.profile.firstName,
+        lastName: data.profile.lastName,
+        username: data.profile.username,
+        email: data.profile.email,
+        bio: data.profile.bio,
+        website: data.profile.website,
+        location: data.profile.location,
+        allowComments: data.writing.allowComments,
+        showReadingTime: data.writing.showReadingTime,
+        autoSaveDrafts: data.writing.autoSaveDrafts,
+        profileVisibility: data.privacy.profileVisibility,
+        showActivity: data.privacy.showActivity,
+        emailFollowers: data.notifications.emailFollowers,
+        emailComments: data.notifications.emailComments,
+        emailLikes: data.notifications.emailLikes,
+        emailDigest: data.notifications.emailDigest,
+        pushNotifications: data.notifications.pushNotifications,
+        pushMentions: data.notifications.pushMentions
+      });
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+      setAlert({ type: 'error', message: 'Failed to load settings' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -35,12 +94,268 @@ const Settings = () => {
     });
   };
 
-  const handleSaveProfile = () => {
-    setAlert({ type: 'success', message: 'Profile settings saved successfully!' });
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData({
+      ...passwordData,
+      [name]: value
+    });
   };
 
-  const handleChangePassword = () => {
-    setAlert({ type: 'success', message: 'Password changed successfully!' });
+  const handleSaveProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          username: formData.username,
+          bio: formData.bio,
+          website: formData.website,
+          location: formData.location
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      setAlert({ type: 'success', message: 'Profile settings saved successfully!' });
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateWritingPreferences = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/writing`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          allowComments: formData.allowComments,
+          showReadingTime: formData.showReadingTime,
+          autoSaveDrafts: formData.autoSaveDrafts
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update preferences');
+      }
+
+      setAlert({ type: 'success', message: 'Writing preferences saved successfully!' });
+    } catch (error) {
+      console.error('Error:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePrivacy = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/privacy`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          profileVisibility: formData.profileVisibility,
+          showActivity: formData.showActivity
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update privacy settings');
+      }
+
+      setAlert({ type: 'success', message: 'Privacy settings saved successfully!' });
+    } catch (error) {
+      console.error('Error:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateNotificationPreferences = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/notifications`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          emailFollowers: formData.emailFollowers,
+          emailComments: formData.emailComments,
+          emailLikes: formData.emailLikes,
+          emailDigest: formData.emailDigest,
+          pushNotifications: formData.pushNotifications,
+          pushMentions: formData.pushMentions
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update notification preferences');
+      }
+
+      setAlert({ type: 'success', message: 'Notification preferences saved successfully!' });
+    } catch (error) {
+      console.error('Error:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setAlert({ type: 'error', message: 'Passwords do not match' });
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setAlert({ type: 'error', message: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+          confirmPassword: passwordData.confirmPassword
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to change password');
+      }
+
+      setAlert({ type: 'success', message: 'Password changed successfully!' });
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setAlert({ type: 'error', message: 'File size must be less than 2MB' });
+        return;
+      }
+
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        setAlert({ type: 'error', message: 'Only JPG, GIF or PNG files are allowed' });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPreviewAvatar(event.target?.result);
+      };
+      reader.readAsDataURL(file);
+
+      setFormData({
+        ...formData,
+        avatar: file
+      });
+    }
+  };
+
+  const handleAvatarUpload = async () => {
+    if (!formData.avatar) {
+      setAlert({ type: 'error', message: 'Please select an image first' });
+      return;
+    }
+
+    try {
+      setAvatarLoading(true);
+      const uploadFormData = new FormData();
+      uploadFormData.append('image', formData.avatar);
+
+      const uploadResponse = await fetch(`${API_URL}/upload/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: uploadFormData
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const uploadData = await uploadResponse.json();
+      const avatarUrl = uploadData.data.imageUrl;
+
+      const updateResponse = await fetch(`${API_URL}/settings/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          username: formData.username,
+          bio: formData.bio,
+          website: formData.website,
+          location: formData.location,
+          avatar: avatarUrl
+        })
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error('Failed to update profile with avatar');
+      }
+
+      setAlert({ type: 'success', message: 'Avatar updated successfully!' });
+      setPreviewAvatar(null);
+      setFormData({
+        ...formData,
+        avatar: ''
+      });
+
+      fetchSettings();
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setAvatarLoading(false);
+    }
   };
 
   const TabButton = ({ tab, icon: Icon, label }) => (
@@ -98,14 +413,41 @@ const Settings = () => {
 
               {/* Avatar */}
               <div className="flex items-center gap-6 mb-6 pb-6 border-b border-gray-200 dark:border-slate-700">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#6366F1] to-[#EC4899] flex items-center justify-center text-white text-2xl font-bold">
-                  JD
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#6366F1] to-[#EC4899] flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+                  {previewAvatar ? (
+                    <img src={previewAvatar} alt="Avatar preview" className="w-full h-full object-cover" />
+                  ) : (
+                    formData.firstName?.charAt(0).toUpperCase() || 'JD'
+                  )}
                 </div>
                 <div>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg mb-2">
-                    <Upload className="w-4 h-4" />
-                    Upload new photo
-                  </button>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/gif,image/png"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                    id="avatar-input"
+                  />
+                  <label htmlFor="avatar-input" className="inline-block">
+                    <button 
+                      onClick={() => document.getElementById('avatar-input')?.click()}
+                      type="button"
+                      disabled={avatarLoading}
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg mb-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Upload className="w-4 h-4" />
+                      {avatarLoading ? 'Uploading...' : 'Upload new photo'}
+                    </button>
+                  </label>
+                  {previewAvatar && (
+                    <button
+                      onClick={handleAvatarUpload}
+                      disabled={avatarLoading}
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg mb-2 ml-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {avatarLoading ? 'Saving...' : 'Save Avatar'}
+                    </button>
+                  )}
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     JPG, GIF or PNG. Max size 2MB
                   </p>
@@ -205,9 +547,10 @@ const Settings = () => {
                 </button>
                 <button
                   onClick={handleSaveProfile}
-                  className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg"
+                  disabled={loading}
+                  className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg disabled:opacity-50"
                 >
-                  Save Changes
+                  {loading ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -246,6 +589,16 @@ const Settings = () => {
                 ][2] && <div className="border-b border-gray-200 dark:border-slate-700 mt-4" />}
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700 flex justify-end">
+                <button
+                  onClick={handleUpdateWritingPreferences}
+                  disabled={loading}
+                  className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : 'Save Preferences'}
+                </button>
               </div>
             </div>
           </div>
@@ -290,6 +643,9 @@ const Settings = () => {
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
+                        name="currentPassword"
+                        value={passwordData.currentPassword}
+                        onChange={handlePasswordChange}
                         className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
                       />
                       <button
@@ -307,6 +663,9 @@ const Settings = () => {
                     </label>
                     <input
                       type="password"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
                       className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
                     />
                   </div>
@@ -317,15 +676,19 @@ const Settings = () => {
                     </label>
                     <input
                       type="password"
+                      name="confirmPassword"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordChange}
                       className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#6366F1]"
                     />
                   </div>
 
                   <button
                     onClick={handleChangePassword}
-                    className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg"
+                    disabled={loading}
+                    className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg disabled:opacity-50"
                   >
-                    Update Password
+                    {loading ? 'Updating...' : 'Update Password'}
                   </button>
                 </div>
               </div>
@@ -360,6 +723,16 @@ const Settings = () => {
                     {idx === 0 && <div className="border-b border-gray-200 dark:border-slate-700 mt-4" />}
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700 flex justify-end">
+                <button
+                  onClick={handleUpdatePrivacy}
+                  disabled={loading}
+                  className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : 'Save Settings'}
+                </button>
               </div>
             </div>
           </div>
@@ -399,6 +772,16 @@ const Settings = () => {
                     {idx < 3 && <div className="border-b border-gray-200 dark:border-slate-700 mt-4" />}
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700 flex justify-end">
+                <button
+                  onClick={handleUpdateNotificationPreferences}
+                  disabled={loading}
+                  className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white rounded-lg disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : 'Save Notifications'}
+                </button>
               </div>
             </div>
 

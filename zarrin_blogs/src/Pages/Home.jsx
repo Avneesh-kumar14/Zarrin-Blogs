@@ -5,25 +5,57 @@ import TrendingBlogs from '../Component/Main Component/TrendingBlogs'
 const Home = () => {
   const [featuredBlog, setFeaturedBlog] = useState(null);
   const [recentBlogs, setRecentBlogs] = useState([]);
+  const [trendingBlogs, setTrendingBlogs] = useState([]);
+  const [topWriters, setTopWriters] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8200/api';
+
   useEffect(() => {
-    fetchBlogs();
+    fetchAllData();
   }, []);
 
-  const fetchBlogs = async () => {
+  const fetchAllData = async () => {
     try {
-      const res = await fetch('http://localhost:8200/api/blogs?status=published');
-      if (res.ok) {
-        const data = await res.json();
+      setLoading(true);
+      
+      // Fetch blogs
+      const blogsRes = await fetch(`${API_URL}/blogs?status=published`);
+      if (blogsRes.ok) {
+        const data = await blogsRes.json();
         const blogs = data.blogs || data;
         if (Array.isArray(blogs) && blogs.length > 0) {
           setFeaturedBlog(blogs[0]);
           setRecentBlogs(blogs.slice(1, 9));
+          setTrendingBlogs(blogs.slice(0, 3));
+        }
+      }
+
+      // Fetch users to show as writers
+      const usersRes = await fetch(`${API_URL}/users`);
+      if (usersRes.ok) {
+        const users = await usersRes.json();
+        if (Array.isArray(users) && users.length > 0) {
+          // Top writers by followers/blogs
+          const sortedWriters = users
+            .filter(u => u.totalBlogs > 0)
+            .sort((a, b) => (b.followers?.length || 0) - (a.followers?.length || 0))
+            .slice(0, 3)
+            .map(user => ({
+              _id: user._id,
+              name: user.name,
+              username: `@${user.name?.toLowerCase().replace(/\s+/g, '')}`,
+              followers: `${user.followers?.length || 0}`,
+              articles: user.totalBlogs || 0,
+              specialty: user.bio || 'Content Creator',
+              verified: Math.random() > 0.3, // Random verified badge
+              avatar: user.avatar
+            }));
+          setTopWriters(sortedWriters);
         }
       }
     } catch (err) {
-      console.error('Error fetching blogs:', err);
+      console.error('Error fetching home data:', err);
     } finally {
       setLoading(false);
     }
@@ -35,34 +67,6 @@ const Home = () => {
     { name: "Design", icon: "🎨", count: "1.8K articles", color: "from-[#EC4899] to-[#F472B6]" },
     { name: "Business", icon: "📈", count: "1.5K articles", color: "from-[#06B6D4] to-[#6366F1]" },
     { name: "Lifestyle", icon: "✨", count: "1.2K articles", color: "from-[#FB923C] to-[#F472B6]" }
-  ];
-
-  // Top writers data
-  const topWriters = [
-    {
-      name: "Sarah Chen",
-      username: "@sarahchen",
-      followers: "15.2K",
-      articles: 156,
-      specialty: "Tech & Innovation",
-      verified: true
-    },
-    {
-      name: "Alex Rivera",
-      username: "@alexrivera",
-      followers: "12.8K",
-      articles: 128,
-      specialty: "Web Development",
-      verified: true
-    },
-    {
-      name: "Maya Patel",
-      username: "@mayapatel",
-      followers: "10.5K",
-      articles: 94,
-      specialty: "Design Systems",
-      verified: true
-    }
   ];
 
   // Platform stats
@@ -265,55 +269,61 @@ const Home = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {recentBlogs.slice(0, 3).map((blog, index) => {
-              const gradients = [
-                "from-[#6366F1] to-[#8B5CF6]",
-                "from-[#EC4899] to-[#F472B6]",
-                "from-[#06B6D4] to-[#6366F1]"
-              ];
-              return (
-                <a key={blog._id} href={`/blog/${blog._id}/preview`} className={`group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl bg-white dark:bg-slate-800`}>
-                  <div className={`h-1 bg-gradient-to-r ${gradients[index % 3]}`}></div>
-                  
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={blog.image || '/Assets/beach.png'}
-                      alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div className={`absolute top-4 left-4 px-3 py-1 bg-gradient-to-r ${gradients[index % 3]} text-white text-xs font-bold rounded-full`}>
-                      {blog.category || 'Featured'}
-                    </div>
-                  </div>
-
-                  <div className="p-6 space-y-4">
-                    <h3 className="text-xl font-bold line-clamp-2 group-hover:text-[#6366F1] transition-colors text-gray-900 dark:text-white">
-                      {blog.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                      {blog.description || 'Discover an insightful story...'}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                          {blog.author?.name?.charAt(0) || 'A'}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">{blog.author?.name || 'Author'}</p>
-                          <p className="text-xs text-gray-500">{blog.readingTime || '5'} min</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                        <Heart className="w-4 h-4 text-pink-500" />
-                        <span>{Math.floor(Math.random() * 1000)}</span>
+            {trendingBlogs.length > 0 ? (
+              trendingBlogs.map((blog, index) => {
+                const gradients = [
+                  "from-[#6366F1] to-[#8B5CF6]",
+                  "from-[#EC4899] to-[#F472B6]",
+                  "from-[#06B6D4] to-[#6366F1]"
+                ];
+                return (
+                  <a key={blog._id} href={`/blog/${blog._id}/preview`} className={`group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl bg-white dark:bg-slate-800`}>
+                    <div className={`h-1 bg-gradient-to-r ${gradients[index % 3]}`}></div>
+                    
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={blog.image || '/Assets/beach.png'}
+                        alt={blog.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <div className={`absolute top-4 left-4 px-3 py-1 bg-gradient-to-r ${gradients[index % 3]} text-white text-xs font-bold rounded-full`}>
+                        {blog.category || 'Featured'}
                       </div>
                     </div>
-                  </div>
-                </a>
-              );
-            })}
+
+                    <div className="p-6 space-y-4">
+                      <h3 className="text-xl font-bold line-clamp-2 group-hover:text-[#6366F1] transition-colors text-gray-900 dark:text-white">
+                        {blog.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                        {blog.description || 'Discover an insightful story...'}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            {blog.author?.name?.charAt(0) || 'A'}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">{blog.author?.name || 'Author'}</p>
+                            <p className="text-xs text-gray-500">{blog.readingTime || '5'} min</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                          <TrendingUp className="w-4 h-4 text-[#6366F1]" />
+                          <span>Trending</span>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                );
+              })
+            ) : (
+              <div className="col-span-3 p-12 text-center text-gray-500">
+                No trending articles yet
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -405,44 +415,54 @@ const Home = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {topWriters.map((writer, index) => (
-              <div key={index} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card overflow-hidden rounded-2xl bg-white dark:bg-slate-800">
-                <div className="h-24 bg-gradient-to-br from-[#6366F1] via-[#EC4899] to-[#8B5CF6]"></div>
-                <div className="p-6 -mt-12 relative">
-                  <div className="relative inline-block mb-4">
-                    <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-white dark:border-slate-800 shadow-xl">
-                      {writer.name?.charAt(0)}
-                    </div>
-                    {writer.verified && (
-                      <div className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800">
-                        <CheckCircle className="w-4 h-4 text-white fill-white" />
+            {topWriters.length > 0 ? (
+              topWriters.map((writer, index) => (
+                <div key={writer._id} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card overflow-hidden rounded-2xl bg-white dark:bg-slate-800">
+                  <div className="h-24 bg-gradient-to-br from-[#6366F1] via-[#EC4899] to-[#8B5CF6]"></div>
+                  <div className="p-6 -mt-12 relative">
+                    <div className="relative inline-block mb-4">
+                      <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-white dark:border-slate-800 shadow-xl">
+                        {writer.avatar ? (
+                          <img src={writer.avatar} alt={writer.name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          writer.name?.charAt(0)
+                        )}
                       </div>
-                    )}
-                  </div>
-
-                  <h3 className="text-xl font-bold mb-1 text-gray-900 dark:text-white">{writer.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{writer.username}</p>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white text-xs font-semibold rounded-full mb-4">
-                    {writer.specialty}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 mb-4 text-center">
-                    <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-3">
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">{writer.followers}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Followers</p>
+                      {writer.verified && (
+                        <div className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800">
+                          <CheckCircle className="w-4 h-4 text-white fill-white" />
+                        </div>
+                      )}
                     </div>
-                    <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-3">
-                      <p className="text-xl font-bold text-gray-900 dark:text-white">{writer.articles}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Articles</p>
-                    </div>
-                  </div>
 
-                  <button className="w-full px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white font-semibold rounded-lg transition-all">
-                    Follow
-                  </button>
+                    <h3 className="text-xl font-bold mb-1 text-gray-900 dark:text-white">{writer.name}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{writer.username}</p>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white text-xs font-semibold rounded-full mb-4">
+                      {writer.specialty}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4 text-center">
+                      <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-3">
+                        <p className="text-xl font-bold text-gray-900 dark:text-white">{writer.followers}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Followers</p>
+                      </div>
+                      <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-3">
+                        <p className="text-xl font-bold text-gray-900 dark:text-white">{writer.articles}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Articles</p>
+                      </div>
+                    </div>
+
+                    <button className="w-full px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white font-semibold rounded-lg transition-all">
+                      Follow
+                    </button>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="col-span-3 p-12 text-center text-gray-500">
+                No writers found yet
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
