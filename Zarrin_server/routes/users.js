@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 const Blog = require('../models/blog');
 const Notification = require('../models/notification');
 const { sendFollowNotification } = require('../services/emailService');
+const { notifyUserFollow } = require('../services/notificationService');
 
 const router = express.Router();
 
@@ -77,6 +78,27 @@ router.get('/', async (req, res) => {
   }
 });
 
+// ✅ ADDED: Get authenticated user profile (MUST be before /:userId)
+router.get('/me/profile', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select('-password')
+      .populate('followers', 'name email avatar')
+      .populate('following', 'name email avatar');
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const blogs = await Blog.countDocuments({ author: req.user._id, status: 'published' });
+    
+    res.json({
+      ...user.toObject(),
+      blogsCount: blogs
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
 // Get user profile
 router.get('/:userId', async (req, res) => {
   try {
@@ -134,15 +156,9 @@ router.post('/:userId/follow', auth, async (req, res) => {
     currentUser.following.push(req.params.userId);
     await currentUser.save();
 
-    // Create notification in database
+    // Create notification using notification service
     try {
-      await Notification.create({
-        recipient: req.params.userId,
-        sender: req.user._id,
-        type: 'follow',
-        title: `${req.user.name || 'Someone'} started following you`,
-        message: `${req.user.name || 'Someone'} is now following your work`
-      });
+      await notifyUserFollow(req.params.userId, req.user._id);
     } catch (notifError) {
       console.error('Failed to create notification:', notifError);
       // Don't fail the request

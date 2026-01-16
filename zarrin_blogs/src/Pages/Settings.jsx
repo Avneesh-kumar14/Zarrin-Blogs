@@ -152,8 +152,10 @@
 import React, { useState, useEffect } from 'react';
 import { User, Shield, Bell, Palette, Upload, Eye, EyeOff } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
+import { useUser } from '../context/UserContext';
 
 const Settings = () => {
+  const { user, updateAvatar, updateUserProfile } = useUser();
   const [activeTab, setActiveTab] = useState('profile');
   const [alert, setAlert] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -246,12 +248,51 @@ const Settings = () => {
   const handleAvatarUpload = async () => {
     try {
       setAvatarLoading(true);
-      // backend upload later
-      setTimeout(() => {
-        setAvatarLoading(false);
-        setAlert({ type: 'success', message: 'Avatar updated successfully!' });
-      }, 1000);
-    } catch {
+      
+      if (!previewAvatar) {
+        setAlert({ type: 'error', message: 'Please select an image first' });
+        return;
+      }
+
+      // Get the file from input
+      const fileInput = document.getElementById('avatar-input');
+      if (!fileInput || !fileInput.files[0]) {
+        setAlert({ type: 'error', message: 'No file selected' });
+        return;
+      }
+
+      const formDataToSend = new FormData();
+      formDataToSend.append('avatar', fileInput.files[0]);
+
+      const response = await fetch(`${API_URL}/settings/avatar`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formDataToSend
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to upload avatar');
+      }
+
+      const data = await response.json();
+      setFormData({
+        ...formData,
+        avatar: data.avatar
+      });
+      
+      // ✅ FIX: Update user context to sync navbar
+      updateAvatar(data.avatar);
+      
+      setPreviewAvatar(null);
+      fileInput.value = '';
+      setAlert({ type: 'success', message: 'Avatar updated successfully!' });
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
       setAvatarLoading(false);
     }
   };
@@ -273,24 +314,180 @@ const Settings = () => {
   };
 
   const handleSaveProfile = async () => {
-    setAlert({ type: 'success', message: 'Profile settings saved successfully!' });
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          username: formData.username,
+          bio: formData.bio,
+          website: formData.website,
+          location: formData.location
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      setAlert({ type: 'success', message: 'Profile settings saved successfully!' });
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleChangePassword = () => {
-    setAlert({ type: 'success', message: 'Password changed successfully!' });
+  const handleChangePassword = async () => {
+    try {
+      setLoading(true);
+      
+      // Validate
+      if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+        setAlert({ type: 'error', message: 'All password fields are required' });
+        setLoading(false);
+        return;
+      }
+
+      if (passwordData.newPassword !== passwordData.confirmPassword) {
+        setAlert({ type: 'error', message: 'New passwords do not match' });
+        setLoading(false);
+        return;
+      }
+
+      if (passwordData.newPassword.length < 6) {
+        setAlert({ type: 'error', message: 'Password must be at least 6 characters' });
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/settings/password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+          confirmPassword: passwordData.confirmPassword
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to change password');
+      }
+
+      setAlert({ type: 'success', message: 'Password changed successfully!' });
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ✅ ADDED: Missing handlers used by buttons
-  const handleUpdateWritingPreferences = () => {
-    setAlert({ type: 'success', message: 'Writing preferences saved!' });
+  const handleUpdateWritingPreferences = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/writing`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          allowComments: formData.allowComments,
+          showReadingTime: formData.showReadingTime,
+          autoSaveDrafts: formData.autoSaveDrafts
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update writing preferences');
+      }
+
+      setAlert({ type: 'success', message: 'Writing preferences saved!' });
+    } catch (error) {
+      console.error('Error updating writing preferences:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleUpdatePrivacy = () => {
-    setAlert({ type: 'success', message: 'Privacy settings saved!' });
+  const handleUpdatePrivacy = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/privacy`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          profileVisibility: formData.profileVisibility,
+          showActivity: formData.showActivity
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update privacy settings');
+      }
+
+      setAlert({ type: 'success', message: 'Privacy settings saved!' });
+    } catch (error) {
+      console.error('Error updating privacy settings:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleUpdateNotificationPreferences = () => {
-    setAlert({ type: 'success', message: 'Notification preferences saved!' });
+  const handleUpdateNotificationPreferences = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/settings/notifications`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          emailFollowers: formData.emailFollowers,
+          emailComments: formData.emailComments,
+          emailLikes: formData.emailLikes,
+          emailDigest: formData.emailDigest,
+          pushNotifications: formData.pushNotifications,
+          pushMentions: formData.pushMentions
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update notification preferences');
+      }
+
+      setAlert({ type: 'success', message: 'Notification preferences saved!' });
+    } catch (error) {
+      console.error('Error updating notification preferences:', error);
+      setAlert({ type: 'error', message: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const TabButton = ({ tab, icon: Icon, label }) => (

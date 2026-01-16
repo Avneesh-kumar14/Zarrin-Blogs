@@ -1,12 +1,14 @@
 const express = require('express');
 const { auth } = require('../middleware/auth');
+const { uploadMulter } = require('../middleware/upload');
 const {
   getSettings,
   updateProfile,
   updateWritingPreferences,
   updatePrivacy,
   updateNotificationPreferences,
-  changePassword
+  changePassword,
+  uploadAvatar
 } = require('../controllers/settings');
 
 const router = express.Router();
@@ -207,5 +209,35 @@ router.put('/notifications', auth, updateNotificationPreferences);
  *         description: Server error
  */
 router.put('/password', auth, changePassword);
+
+/**
+ * @swagger
+ * /api/settings/avatar:
+ *   post:
+ *     summary: Upload user avatar
+ *     tags: [Settings]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Avatar uploaded successfully
+ *       400:
+ *         description: Invalid file
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.post('/avatar', auth, uploadMulter.single('avatar'), uploadAvatar);
 
 module.exports = router;

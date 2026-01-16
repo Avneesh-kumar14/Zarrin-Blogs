@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const logger = require('../utils/logger');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
 
 /**
  * Get user settings
@@ -244,11 +245,70 @@ const changePassword = async (req, res) => {
   }
 };
 
+/**
+ * Upload user avatar
+ */
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file provided' });
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      return res.status(400).json({ message: 'Invalid file type. Only JPG, PNG, GIF allowed' });
+    }
+
+    // Validate file size (max 2MB)
+    if (req.file.size > 2 * 1024 * 1024) {
+      return res.status(400).json({ message: 'File size must be less than 2MB' });
+    }
+
+    // Get current user to check existing avatar
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Delete old avatar if exists
+    if (user.avatar) {
+      try {
+        const publicId = user.avatar.split('/').pop().split('.')[0];
+        await deleteFromCloudinary(publicId, 'avatars');
+      } catch (error) {
+        logger.warn('Could not delete old avatar', { error: error.message });
+      }
+    }
+
+    // Upload new avatar to Cloudinary
+    const result = await uploadToCloudinary(
+      req.file.buffer,
+      req.file.mimetype,
+      `avatars/user_${req.user._id}`
+    );
+
+    // Update user avatar URL
+    user.avatar = result.secure_url;
+    await user.save();
+
+    logger.info('Avatar uploaded successfully', { userId: req.user._id, url: result.secure_url });
+    res.json({
+      message: 'Avatar uploaded successfully',
+      avatar: result.secure_url
+    });
+  } catch (error) {
+    logger.error('Error uploading avatar:', { error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 module.exports = {
   getSettings,
   updateProfile,
   updateWritingPreferences,
   updatePrivacy,
   updateNotificationPreferences,
-  changePassword
+  changePassword,
+  uploadAvatar
 };

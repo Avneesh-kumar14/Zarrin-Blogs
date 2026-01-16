@@ -107,6 +107,48 @@ const Notifications = () => {
     }
   };
 
+  const handleDeleteNotification = async (notificationId) => {
+    try {
+      const response = await fetch(`${API_URL}/notifications/${notificationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete notification');
+      }
+
+      setAlert({ type: 'success', message: 'Notification deleted' });
+      fetchNotifications();
+    } catch (error) {
+      console.error('Error:', error);
+      setAlert({ type: 'error', message: 'Failed to delete notification' });
+    }
+  };
+
+  const handleFollowBack = async (notificationId, followerId) => {
+    try {
+      const response = await fetch(`${API_URL}/users/${followerId}/follow`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to follow user');
+      }
+
+      setAlert({ type: 'success', message: 'Following user!' });
+      fetchNotifications();
+    } catch (error) {
+      console.error('Error:', error);
+      setAlert({ type: 'error', message: 'Failed to follow user' });
+    }
+  };
+
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const typeConfig = {
@@ -143,22 +185,22 @@ const Notifications = () => {
 
     return (
       <div 
-        className={`flex gap-4 p-4 rounded-xl border transition-all cursor-pointer ${
+        className={`flex gap-4 p-4 rounded-xl border transition-all ${
           notification.isRead 
             ? 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:shadow-md' 
             : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800'
         }`}
-        onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}
       >
         {/* Icon */}
-        <div className={`w-12 h-12 rounded-full ${config.bgColor} flex items-center justify-center flex-shrink-0`}>
+        <div className={`w-12 h-12 rounded-full ${config.bgColor} flex items-center justify-center flex-shrink-0 cursor-pointer`}
+          onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}>
           <Icon className={`w-6 h-6 ${config.color}`} />
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex-1">
+            <div className="flex-1 cursor-pointer" onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}>
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {notification.sender && (
                   <>
@@ -172,12 +214,25 @@ const Notifications = () => {
                 )}
               </p>
             </div>
-            {!notification.isRead && (
-              <div className="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0 mt-1.5" />
-            )}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {!notification.isRead && (
+                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5" />
+              )}
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteNotification(notification._id);
+                }}
+                className="text-gray-400 hover:text-red-500 transition-colors"
+                title="Delete notification"
+              >
+                ×
+              </button>
+            </div>
           </div>
 
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 cursor-pointer hover:underline"
+            onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}>
             {notification.message}
           </p>
 
@@ -185,8 +240,13 @@ const Notifications = () => {
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {new Date(notification.createdAt).toLocaleDateString()}
             </p>
-            {notification.type === 'follow' && (
-              <button className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E91E63] text-white rounded-lg transition-all">
+            {notification.type === 'follow' && notification.sender && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFollowBack(notification._id, notification.sender._id);
+                }}
+                className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E91E63] text-white rounded-lg transition-all">
                 Follow Back
               </button>
             )}

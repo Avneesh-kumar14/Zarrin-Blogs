@@ -3,6 +3,7 @@ const { auth } = require('../middleware/auth');
 const Bookmark = require('../models/bookmark');
 const Blog = require('../models/blog');
 const Notification = require('../models/notification');
+const { notifyBlogBookmark } = require('../services/notificationService');
 
 const router = express.Router();
 
@@ -56,16 +57,12 @@ router.post('/:blogId', auth, async (req, res) => {
       populate: { path: 'author', select: 'name email' }
     });
 
-    // Create notification for blog author
+    // Create notification for blog author using notification service
     if (blog.author && blog.author.toString() !== req.user._id.toString()) {
       try {
-        await Notification.create({
-          recipient: blog.author,
-          sender: req.user._id,
-          type: 'bookmark',
-          title: `${req.user.name || 'Someone'} bookmarked your article`,
-          message: `Your article "${blog.title}" was bookmarked`,
-          blog: req.params.blogId
+        await notifyBlogBookmark(blog.author, req.params.blogId, {
+          user: req.user._id,
+          username: req.user.name || 'Someone'
         });
       } catch (notifError) {
         console.error('Failed to create notification:', notifError);

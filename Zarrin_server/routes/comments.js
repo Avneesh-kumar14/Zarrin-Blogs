@@ -4,6 +4,7 @@ const Comment = require('../models/comment');
 const Blog = require('../models/blog');
 const Notification = require('../models/notification');
 const { sendCommentNotification } = require('../services/emailService');
+const { notifyBlogComment } = require('../services/notificationService');
 
 const router = express.Router();
 
@@ -122,18 +123,13 @@ router.post('/', auth, async (req, res) => {
 
     const populatedComment = await comment.populate('author', 'name email');
 
-    // Create notification in database
+    // Create notification using notification service
     if (blog.author && blog.author._id.toString() !== req.user._id.toString()) {
       try {
-        await Notification.create({
-          recipient: blog.author._id,
-          sender: req.user._id,
-          type: 'comment',
-          title: `${req.user.name || 'Someone'} commented on your article`,
-          message: `${req.user.name || 'Someone'} commented: "${content.substring(0, 50)}..."`,
-          blog: blogId,
-          comment: comment._id,
-          data: { commentPreview: content.substring(0, 100) }
+        await notifyBlogComment(blog.author._id, blogId, {
+          author: req.user._id,
+          content: content,
+          _id: comment._id
         });
       } catch (notifError) {
         console.error('Failed to create notification:', notifError);

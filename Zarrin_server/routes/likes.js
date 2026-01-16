@@ -5,6 +5,7 @@ const Blog = require('../models/blog');
 const User = require('../models/userModel');
 const Notification = require('../models/notification');
 const { sendLikeNotification } = require('../services/emailService');
+const { notifyBlogLike } = require('../services/notificationService');
 
 const router = express.Router();
 
@@ -122,17 +123,12 @@ router.post('/:blogId', auth, async (req, res) => {
 
     const count = await Like.countDocuments({ blog: req.params.blogId });
 
-    // Create notification in database
+    // Create notification using notification service
     if (blog.author && blog.author._id.toString() !== req.user._id.toString()) {
       try {
-        await Notification.create({
-          recipient: blog.author._id,
+        await notifyBlogLike(blog.author._id, req.params.blogId, {
           sender: req.user._id,
-          type: 'like',
-          title: `${req.user.name || 'Someone'} liked your article`,
-          message: `Your article "${blog.title}" received a like`,
-          blog: req.params.blogId,
-          data: { likeCount: count }
+          likeCount: count
         });
       } catch (notifError) {
         console.error('Failed to create notification:', notifError);
