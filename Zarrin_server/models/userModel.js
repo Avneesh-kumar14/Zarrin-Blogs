@@ -5,9 +5,23 @@ const bcrypt = require('bcryptjs');
 const logger = require('../utils/logger');
 
 const UserSchema = new Schema({
+    firstName: {
+        type: String,
+        default: ''
+    },
+    lastName: {
+        type: String,
+        default: ''
+    },
     name: {
         type: String,
         required: true
+    },
+    username: {
+        type: String,
+        unique: true,
+        sparse: true,
+        trim: true
     },
     email: {
         type: String,

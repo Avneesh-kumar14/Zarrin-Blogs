@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Heart, MessageCircle, UserPlus, Bookmark, TrendingUp, Check, Settings, Bell } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Heart, MessageCircle, UserPlus, Bookmark, TrendingUp, Check, Trash2, RefreshCw, Eye, Bell } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 
 const Notifications = () => {
@@ -13,6 +13,9 @@ const Notifications = () => {
   const [filter, setFilter] = useState('all');
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const API_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200/api';
   const token = localStorage.getItem('token');
