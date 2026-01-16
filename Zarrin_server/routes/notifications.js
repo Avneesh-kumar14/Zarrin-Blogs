@@ -51,8 +51,6 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.get('/', auth, getNotifications);
-
 /**
  * @swagger
  * /api/notifications/stats:
@@ -70,6 +68,77 @@ router.get('/', auth, getNotifications);
  *         description: Server error
  */
 router.get('/stats', auth, getNotificationStats);
+
+/**
+ * @swagger
+ * /api/notifications/read-all:
+ *   put:
+ *     summary: Mark all notifications as read
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All notifications marked as read
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.put('/read-all', auth, markAllAsRead);
+
+/**
+ * @swagger
+ * /api/notifications/delete-all:
+ *   delete:
+ *     summary: Delete all notifications
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All notifications deleted
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.delete('/delete-all', auth, deleteAllNotifications);
+
+/**
+ * @swagger
+ * /api/notifications:
+ *   get:
+ *     summary: Get all notifications for current user
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *           enum: [all, unread, like, comment, follow, bookmark, trending]
+ *         description: Filter notifications by type or read status
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: List of notifications
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.get('/', auth, getNotifications);
 
 /**
  * @swagger
@@ -99,24 +168,6 @@ router.put('/:notificationId/read', auth, markAsRead);
 
 /**
  * @swagger
- * /api/notifications/read-all:
- *   put:
- *     summary: Mark all notifications as read
- *     tags: [Notifications]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: All notifications marked as read
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Server error
- */
-router.put('/read-all', auth, markAllAsRead);
-
-/**
- * @swagger
  * /api/notifications/{notificationId}:
  *   delete:
  *     summary: Delete a notification
@@ -140,23 +191,5 @@ router.put('/read-all', auth, markAllAsRead);
  *         description: Server error
  */
 router.delete('/:notificationId', auth, deleteNotification);
-
-/**
- * @swagger
- * /api/notifications/delete-all:
- *   delete:
- *     summary: Delete all notifications
- *     tags: [Notifications]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: All notifications deleted
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Server error
- */
-router.delete('/delete-all', auth, deleteAllNotifications);
 
 module.exports = router;

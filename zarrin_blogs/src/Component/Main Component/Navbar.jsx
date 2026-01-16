@@ -31,22 +31,103 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [userStats, setUserStats] = useState({
+    totalBlogs: 0,
+    followers: 0,
+    following: 0
+  });
+  const [loadingStats, setLoadingStats] = useState(false);
 
   const searchRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useContext(ThemeContext);
 
+  // Load user from localStorage and listen for updates
   useEffect(() => {
-    if (showSearch && searchRef.current) searchRef.current.focus();
-  }, [showSearch]);
+    const loadUser = () => {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      setIsLoggedIn(!!token);
+      if (userData) {
+        try {
+          setUser(JSON.parse(userData));
+        } catch (e) {
+          console.error('Failed to parse user data:', e);
+        }
+      }
+    };
 
+    loadUser();
+
+    // Listen for storage changes (avatar updates, profile changes)
+    const handleStorageChange = (e) => {
+      if (e.key === 'user' || e.key === null) {
+        loadUser();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [location]);
+
+  // Fetch user stats from API
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      
+      if (!token || !userData) return;
+
+      try {
+        setLoadingStats(true);
+        const parsedUser = JSON.parse(userData);
+        const response = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200/api'}/users/${parsedUser._id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserStats({
+            totalBlogs: data.totalBlogs || 0,
+            followers: data.followers?.length || 0,
+            following: data.following?.length || 0
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user stats:', error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchUserStats();
+    }
+  }, [isLoggedIn, location.pathname]);
+
+  // Also update when location changes
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     setIsLoggedIn(!!token);
-    if (userData) setUser(JSON.parse(userData));
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (e) {
+        console.error('Failed to parse user data:', e);
+      }
+    }
   }, [location]);
+
+  useEffect(() => {
+    if (showSearch && searchRef.current) searchRef.current.focus();
+  }, [showSearch]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -287,15 +368,15 @@ const Navbar = () => {
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center text-sm">
                           <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">12</p>
+                            <p className="font-bold text-gray-900 dark:text-white">{userStats.totalBlogs}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Posts</p>
                           </div>
                           <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">256</p>
+                            <p className="font-bold text-gray-900 dark:text-white">{userStats.followers}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Followers</p>
                           </div>
                           <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">98</p>
+                            <p className="font-bold text-gray-900 dark:text-white">{userStats.following}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Following</p>
                           </div>
                         </div>

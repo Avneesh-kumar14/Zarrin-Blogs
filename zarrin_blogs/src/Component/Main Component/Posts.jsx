@@ -178,7 +178,15 @@ const BlogForm = () => {
       });
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to create blog');
+        let errorMessage = errorData.message || 'Failed to create blog';
+        
+        // Show detailed validation errors if available
+        if (errorData.errors && Array.isArray(errorData.errors)) {
+          errorMessage = errorData.errors.map(e => e.msg).join(', ');
+        }
+        
+        console.error('Detailed error response:', errorData);
+        throw new Error(errorMessage);
       }
       setAlert({ type: 'success', message: 'Blog submitted successfully!' });
       setTitle('');

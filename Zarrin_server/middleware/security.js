@@ -101,8 +101,7 @@ const validateBlog = [
   body('title')
     .trim()
     .notEmpty().withMessage('Title is required')
-    .isLength({ min: 3, max: 200 }).withMessage('Title must be 3-200 characters')
-    .matches(/^[a-zA-Z0-9\s\-_.!?,']+$/).withMessage('Title contains invalid characters'),
+    .isLength({ min: 3, max: 200 }).withMessage('Title must be 3-200 characters'),
   
   body('content')
     .trim()

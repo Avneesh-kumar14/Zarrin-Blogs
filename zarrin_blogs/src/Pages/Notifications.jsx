@@ -14,7 +14,7 @@ const Notifications = () => {
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8200/api';
+  const API_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200/api';
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -25,7 +25,14 @@ const Notifications = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/notifications?filter=${filter}`, {
+      let url = `${API_URL}/notifications`;
+      
+      // Add filter to query - backend expects 'filter' or 'type' parameter
+      if (filter !== 'all') {
+        url += `?filter=${filter}`;
+      }
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -36,7 +43,16 @@ const Notifications = () => {
       }
 
       const data = await response.json();
-      setNotifications(data.notifications);
+      // Handle both array and object responses
+      if (Array.isArray(data)) {
+        setNotifications(data);
+      } else if (data.notifications) {
+        setNotifications(Array.isArray(data.notifications) ? data.notifications : []);
+      } else if (data.data) {
+        setNotifications(Array.isArray(data.data) ? data.data : []);
+      } else {
+        setNotifications([]);
+      }
     } catch (error) {
       console.error('Error fetching notifications:', error);
       setAlert({ type: 'error', message: 'Failed to load notifications' });
@@ -58,7 +74,12 @@ const Notifications = () => {
       }
 
       const data = await response.json();
-      setStats(data.stats);
+      // Handle different response formats
+      if (data.stats) {
+        setStats(data.stats);
+      } else if (data.likes !== undefined) {
+        setStats(data);
+      }
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
@@ -93,7 +114,8 @@ const Notifications = () => {
       const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
@@ -101,6 +123,16 @@ const Notifications = () => {
         throw new Error('Failed to mark as read');
       }
 
+      // Optimistic update
+      setNotifications(prev => 
+        prev.map(n => 
+          n._id === notificationId 
+            ? { ...n, isRead: true, readAt: new Date() }
+            : n
+        )
+      );
+      
+      // Fetch fresh data
       fetchNotifications();
     } catch (error) {
       console.error('Error:', error);
@@ -112,7 +144,8 @@ const Notifications = () => {
       const response = await fetch(`${API_URL}/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
@@ -120,8 +153,9 @@ const Notifications = () => {
         throw new Error('Failed to delete notification');
       }
 
+      // Optimistic update
+      setNotifications(prev => prev.filter(n => n._id !== notificationId));
       setAlert({ type: 'success', message: 'Notification deleted' });
-      fetchNotifications();
     } catch (error) {
       console.error('Error:', error);
       setAlert({ type: 'error', message: 'Failed to delete notification' });
@@ -133,7 +167,8 @@ const Notifications = () => {
       const response = await fetch(`${API_URL}/users/${followerId}/follow`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
@@ -142,6 +177,7 @@ const Notifications = () => {
       }
 
       setAlert({ type: 'success', message: 'Following user!' });
+      // Refresh notifications to update follow back button state
       fetchNotifications();
     } catch (error) {
       console.error('Error:', error);
