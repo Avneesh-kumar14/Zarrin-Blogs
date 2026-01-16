@@ -1,9 +1,9 @@
-
+console.log('[STARTUP] Initializing server...');
+require('dotenv').config({ quiet: true });
 
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config({ silent: true });
 
 const logger = require('./utils/logger');
 const { swaggerUi, swaggerSpec } = require('./swagger');
@@ -50,15 +50,17 @@ app.use(securityHeaders);
 // 2. Security Logging
 app.use(securityLogger);
 
-// 3. CORS Protection
+// 3. CORS Protection - Fixed configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+  'https://zarrin-blogs-frontend.vercel.app',
+  process.env.CORS_ORIGIN
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'https://zarrin-blogs-frontend.vercel.app',
-    process.env.CORS_ORIGIN || '*'
-  ],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -76,6 +78,8 @@ app.use(generalLimiter);
 
 // 7. Write Operations Rate Limiter
 app.use(writeLimiter);
+
+console.log('[STARTUP] Middleware configured');
 
 // ✅ SWAGGER API DOCUMENTATION
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -139,7 +143,10 @@ app.use(errorHandler);
 // Connect to MongoDB before starting the server
 const startServer = async () => {
   try {
+    console.log('[DEBUG] Starting server...');
+    console.log('[DEBUG] Connecting to MongoDB...');
     await connectDB();
+    console.log('[DEBUG] MongoDB connected, starting Express server...');
     app.listen(PORT, () => {
       logger.info('✅ Backend API running', {
         url: `http://localhost:${PORT}`,

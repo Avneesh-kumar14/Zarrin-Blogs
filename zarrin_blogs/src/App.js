@@ -4,6 +4,7 @@ import './App.css';
 import Navbar from './Component/Main Component/Navbar.jsx';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from './context/ThemeContext.jsx';
+import { UserProvider } from './context/UserContext.jsx';
 import Home from './Pages/Home.jsx';
 import Footer from './Component/Main Component/Footer.jsx';
 import Usercomponent from './Component/Common/Usercontact.jsx'
@@ -91,9 +92,11 @@ function AppWrapper() {
 function App() {
   return (
     <ThemeProvider>
-      <BrowserRouter>
-        <AppWrapper />
-      </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <AppWrapper />
+        </BrowserRouter>
+      </UserProvider>
     </ThemeProvider>
   );
 }
