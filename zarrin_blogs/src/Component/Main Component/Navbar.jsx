@@ -24,13 +24,16 @@ import {
 import Heading from '../Common/Heading';
 import Logo from '../Common/Logo';
 import { ThemeContext } from '../../context/ThemeContext';
+import { useUser } from '../../context/UserContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  
+  // ✅ FIX: Use UserContext instead of localStorage state
+  const { user, loading } = useUser();
 
   const searchRef = useRef(null);
   const location = useLocation();
@@ -43,9 +46,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
     setIsLoggedIn(!!token);
-    if (userData) setUser(JSON.parse(userData));
   }, [location]);
 
   const handleLogout = () => {
@@ -263,8 +264,13 @@ const Navbar = () => {
                   {/* User Profile Dropdown */}
                   <div className="relative group">
                     <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#6366F1]/10 to-[#EC4899]/10 dark:from-slate-800 dark:to-slate-700 hover:from-[#6366F1]/20 hover:to-[#EC4899]/20 dark:hover:from-slate-700 dark:hover:to-slate-600 transition-all duration-300 border border-[#6366F1]/20 dark:border-slate-700 hover:border-[#6366F1]/50 group-hover:shadow-lg z-40">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm">
-                        {user?.name?.[0]?.toUpperCase() || <User size={16} />}
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm overflow-hidden">
+                        {/* ✅ FIX: Show actual avatar if available */}
+                        {user?.avatar ? (
+                          <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          user?.name?.[0]?.toUpperCase() || <User size={16} />
+                        )}
                       </div>
                       <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                         {user?.name?.split(' ')[0] || 'User'}
@@ -277,8 +283,13 @@ const Navbar = () => {
                       {/* Profile Section */}
                       <div className="p-4 bg-gradient-to-br from-[#6366F1]/10 to-[#EC4899]/10 dark:from-slate-800 dark:to-slate-700 border-b border-gray-200 dark:border-slate-700">
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold">
-                            {user?.name?.[0]?.toUpperCase() || 'U'}
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold overflow-hidden">
+                            {/* ✅ FIX: Show actual avatar in dropdown */}
+                            {user?.avatar ? (
+                              <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                              user?.name?.[0]?.toUpperCase() || 'U'
+                            )}
                           </div>
                           <div>
                             <p className="font-bold text-gray-900 dark:text-white">{user?.name || 'User'}</p>
@@ -287,15 +298,15 @@ const Navbar = () => {
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center text-sm">
                           <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">12</p>
+                            <p className="font-bold text-gray-900 dark:text-white">{user?.blogsCount || 0}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Posts</p>
                           </div>
                           <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">256</p>
+                            <p className="font-bold text-gray-900 dark:text-white">{user?.followers?.length || 0}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Followers</p>
                           </div>
                           <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">98</p>
+                            <p className="font-bold text-gray-900 dark:text-white">{user?.following?.length || 0}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Following</p>
                           </div>
                         </div>

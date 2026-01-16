@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle, Info, AlertTriangle, X } from 'lucide-react';
-import Paragraph from './Paragraph';
+
+/**
+ * ALERT COMPONENT
+ * 
+ * Dismissible alert with automatic timeout.
+ * Types: 'error', 'success', 'warning', 'info'
+ * 
+ * Usage:
+ *   <Alert type="success" message="Saved!" duration={3000} />
+ */
 
 const Alert = ({ 
   message, 
   type = 'error', // 'error', 'success', 'warning', 'info'
   onClose, 
   duration = 5000,
-  className = ''
+  className = '',
+  title = null,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -21,57 +31,68 @@ const Alert = ({
     }
   }, [duration, onClose]);
 
-  if (!isVisible) return null;
-
-  const styles = {
-    error: {
-      bg: 'bg-red-50',
-      border: 'border-red-500',
-      text: 'text-red-700',
-      icon: <AlertCircle size={20} className="flex-shrink-0" />,
-      emoji: '❌'
-    },
-    success: {
-      bg: 'bg-green-50',
-      border: 'border-green-500',
-      text: 'text-green-700',
-      icon: <CheckCircle size={20} className="flex-shrink-0" />,
-      emoji: '✅'
-    },
-    warning: {
-      bg: 'bg-yellow-50',
-      border: 'border-yellow-500',
-      text: 'text-yellow-700',
-      icon: <AlertTriangle size={20} className="flex-shrink-0" />,
-      emoji: '⚠️'
-    },
-    info: {
-      bg: 'bg-blue-50',
-      border: 'border-blue-500',
-      text: 'text-blue-700',
-      icon: <Info size={20} className="flex-shrink-0" />,
-      emoji: 'ℹ️'
-    }
+  const handleDismiss = () => {
+    setIsVisible(false);
+    onClose && onClose();
   };
 
-  const style = styles[type] || styles.error;
+  if (!isVisible) return null;
+
+  // Using design system colors
+  const styles = {
+    error: {
+      container: 'bg-error/10 border-error',
+      text: 'text-error',
+      icon: AlertCircle,
+    },
+    success: {
+      container: 'bg-success/10 border-success',
+      text: 'text-success',
+      icon: CheckCircle,
+    },
+    warning: {
+      container: 'bg-warning/10 border-warning',
+      text: 'text-warning',
+      icon: AlertTriangle,
+    },
+    info: {
+      container: 'bg-accent-primary/10 border-accent-primary',
+      text: 'text-accent-primary',
+      icon: Info,
+    },
+  };
+
+  const { container, text, icon: Icon } = styles[type] || styles.info;
 
   return (
-    <div className={`${style.bg} border-l-4 ${style.border} p-4 rounded animate-shake flex items-start justify-between gap-3 ${className}`}>
-      <div className="flex items-start gap-3 flex-1">
-        {style.icon}
-        <Paragraph className={`${style.text} font-semibold`}>
+    <div 
+      className={`alert border ${container} ${className}`}
+      role="alert"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {/* Icon */}
+      <Icon size={20} className={`flex-shrink-0 ${text}`} aria-hidden="true" />
+
+      {/* Content */}
+      <div className="flex-1">
+        {title && (
+          <h4 className={`font-medium ${text} mb-1`}>
+            {title}
+          </h4>
+        )}
+        <p className={`text-body-sm ${text}`}>
           {message}
-        </Paragraph>
+        </p>
       </div>
+
+      {/* Close Button */}
       <button
-        onClick={() => {
-          setIsVisible(false);
-          onClose && onClose();
-        }}
-        className={`${style.text} hover:opacity-70 transition-opacity flex-shrink-0`}
+        onClick={handleDismiss}
+        className={`flex-shrink-0 ${text} hover:opacity-70 transition-opacity duration-200 p-1`}
+        aria-label="Dismiss alert"
       >
-        <X size={20} />
+        <X size={18} />
       </button>
     </div>
   );

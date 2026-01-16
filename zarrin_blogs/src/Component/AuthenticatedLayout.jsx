@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 import SideBar from "./Main Component/SideBar";
 import DashboardNavbar from "./Main Component/DashboardNavbar";
 
+/**
+ * AuthenticatedLayout Component
+ * 
+ * Main layout for authenticated pages.
+ * Provides consistent spacing, colors, and typography from design system.
+ */
+
 export default function AuthenticatedLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -65,17 +72,17 @@ export default function AuthenticatedLayout() {
   }, [hasValidated, navigate]);
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      {/* Sticky Navbar */}
+    <div className="flex flex-col h-screen bg-bg-page">
+      {/* Fixed Navbar */}
       <DashboardNavbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       
-      {/* Main Content Area */}
+      {/* Main Content Area with proper spacing */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Disappears on scroll */}
+        {/* Sidebar - Responsive */}
         <SideBar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
         
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto bg-gray-50">
+        {/* Main Content with professional spacing and typography */}
+        <div className="flex-1 overflow-y-auto bg-bg-page">
           <Outlet />
         </div>
       </div>

@@ -1,32 +1,70 @@
 
 
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+// const mongoose = require('mongoose');
+// const dotenv = require('dotenv');
 
-dotenv.config({ silent: true });
+// dotenv.config({ silent: true });
+
+// const connectDB = async () => {
+//   try {
+//     const conn = await mongoose.connect(process.env.MONGO_URL, {
+//       maxPoolSize: 10,
+//       minPoolSize: 5,
+//       serverSelectionTimeoutMS: 5000,
+//       socketTimeoutMS: 45000,
+//       retryWrites: true,
+//       w: 'majority'
+//     });
+    
+//     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    
+//     mongoose.connection.on('disconnected', () => console.log('⚠️ MongoDB disconnected'));
+//     mongoose.connection.on('reconnected', () => console.log('🔄 MongoDB reconnected'));
+//     mongoose.connection.on('error', (err) => console.error('❌ MongoDB Error:', err));
+
+//     return conn;
+//   } catch (error) {
+//     console.error('MongoDB connection error:', error);
+//     process.exit(1);
+//   }
+// };
+
+// module.exports = connectDB;
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URL, {
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI is missing in environment variables');
+    }
+
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
       maxPoolSize: 10,
       minPoolSize: 5,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
-      retryWrites: true,
-      w: 'majority'
     });
-    
+
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-    
-    mongoose.connection.on('disconnected', () => console.log('⚠️ MongoDB disconnected'));
-    mongoose.connection.on('reconnected', () => console.log('🔄 MongoDB reconnected'));
-    mongoose.connection.on('error', (err) => console.error('❌ MongoDB Error:', err));
+
+    mongoose.connection.on('disconnected', () =>
+      console.log('⚠️ MongoDB disconnected')
+    );
+
+    mongoose.connection.on('reconnected', () =>
+      console.log('🔄 MongoDB reconnected')
+    );
+
+    mongoose.connection.on('error', (err) =>
+      console.error('❌ MongoDB Error:', err)
+    );
 
     return conn;
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
+    console.error('❌ MongoDB connection failed:', error.message);
+    throw error;
   }
 };
 
 module.exports = connectDB;
+

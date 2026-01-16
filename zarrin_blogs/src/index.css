@@ -3,211 +3,271 @@
 @tailwind utilities;
 @tailwind screens;
 
-/* Elegant Cyan + Light Minimalistic Color Scheme */
+/* Import the professional design system */
+@import url('./styles/design-system.css');
+
+/* Legacy compatibility - these colors now use CSS variables from design-system.css */
 :root {
-  /* Primary Brand Colors - Cyan Focus */
-  --color-primary: #06B6D4;        /* Cyan - Primary */
-  --color-secondary: #0891B2;      /* Darker Cyan - Secondary */
-  --color-accent: #14B8A6;         /* Teal - Accent */
-  --color-success: #10B981;        /* Emerald - Success */
-  --color-danger: #DC2626;         /* Red - Alerts */
-  
-  /* Neutral Colors - Light & Airy */
-  --color-dark: #0C4A6E;           /* Dark Slate Blue */
-  --color-light: #F0F9FC;          /* Very Light Cyan */
-  --color-text-secondary: #475569; /* Slate Gray */
-  --color-border: #CFFAFE;         /* Very Light Cyan Border */
-  
-  /* Additional Palette */
-  --color-bg-primary: #FFFFFF;     /* Pure White */
-  --color-bg-secondary: #ECFDF5;   /* Ultra Light Cyan */
-  --color-bg-tertiary: #E0F2FE;    /* Light Blue */
+  /* Maintained for backwards compatibility */
+  --color-primary: #2563EB;
+  --color-secondary: #4B5563;
+  --color-accent: #2563EB;
+  --color-success: #16A34A;
+  --color-danger: #DC2626;
+  --color-dark: #1C1F26;
+  --color-light: #FAFAFA;
+  --color-text-secondary: #4B5563;
+  --color-border: #E5E7EB;
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F3F4F6;
+  --color-bg-tertiary: #FAFAFA;
 }
 
-.dark {
-  /* Dark Mode Colors - Elegant Cyan */
-  --color-primary: #06B6D4;        /* Cyan */
-  --color-secondary: #00D9FF;      /* Bright Cyan */
-  --color-accent: #14B8A6;         /* Teal */
-  --color-success: #34D399;        /* Emerald */
-  --color-danger: #F87171;         /* Light Red */
-  
-  --color-dark: #ECFDF5;           /* Light text */
-  --color-light: #082F49;          /* Very Dark Blue */
-  --color-text-secondary: #A7F3D0; /* Light Teal Text */
-  --color-border: #164E63;         /* Dark Cyan Border */
-  
-  /* Dark Mode Background */
-  --color-bg-primary: #0F172A;     /* Dark Navy */
-  --color-bg-secondary: #134E4A;   /* Dark Teal */
-  --color-bg-tertiary: #0C4A6E;    /* Dark Cyan-Blue */
-}
-
-/* Smooth Animations */
-@keyframes blob {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-}
-
-@keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    transform: translateX(-5px);
-  }
-  20%, 40%, 60%, 80% {
-    transform: translateX(5px);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* Utility Classes */
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.6s ease-out;
-}
-
-.animate-slide-down {
-  animation: slideDown 0.6s ease-out;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-out;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Smooth transitions */
+/* Smooth transitions for all elements */
 * {
   @apply transition-colors duration-200;
 }
 
-/* Scrollbar Styling - Elegant Cyan */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* ============================================================================
+   COMPONENT LAYER - Reusable component styles
+   ============================================================================ */
+
+@layer components {
+  /* BUTTONS - Professional and minimal */
+  
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 font-medium rounded-sm
+           transition-all duration-200 ease-out focus-visible:outline-2 
+           focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-accent-primary text-white hover:bg-accent-hover 
+           active:scale-95 focus-visible:outline-accent-primary;
+  }
+
+  .btn-primary-sm {
+    @apply btn-primary px-3 py-1.5 text-sm;
+  }
+
+  .btn-primary-md {
+    @apply btn-primary px-4 py-2.5 text-base;
+  }
+
+  .btn-primary-lg {
+    @apply btn-primary px-6 py-3 text-base;
+  }
+
+  .btn-secondary {
+    @apply btn-base bg-bg-muted text-text-primary border border-border-light
+           hover:bg-border-muted active:scale-95 focus-visible:outline-accent-primary;
+  }
+
+  .btn-secondary-sm {
+    @apply btn-secondary px-3 py-1.5 text-sm;
+  }
+
+  .btn-secondary-md {
+    @apply btn-secondary px-4 py-2.5 text-base;
+  }
+
+  .btn-secondary-lg {
+    @apply btn-secondary px-6 py-3 text-base;
+  }
+
+  .btn-ghost {
+    @apply btn-base text-text-primary hover:bg-bg-muted active:scale-95
+           focus-visible:outline-accent-primary;
+  }
+
+  .btn-ghost-sm {
+    @apply btn-ghost px-3 py-1.5 text-sm;
+  }
+
+  .btn-ghost-md {
+    @apply btn-ghost px-4 py-2.5 text-base;
+  }
+
+  .btn-ghost-lg {
+    @apply btn-ghost px-6 py-3 text-base;
+  }
+
+  .btn-success {
+    @apply btn-base bg-success text-white hover:opacity-90 active:scale-95;
+  }
+
+  .btn-error {
+    @apply btn-base bg-error text-white hover:opacity-90 active:scale-95;
+  }
+
+  /* LINKS */
+  
+  .link-primary {
+    @apply text-accent-primary hover:text-accent-hover underline-offset-2
+           hover:underline transition-colors duration-200;
+  }
+
+  /* CARDS - Minimal and professional */
+  
+  .card {
+    @apply bg-bg-surface border border-border-light rounded-sm p-6 shadow-sm
+           transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-md hover:border-border-muted;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer hover:shadow-md transition-all duration-200;
+  }
+
+  /* INPUTS & FORMS */
+  
+  .input-base {
+    @apply w-full px-3 py-2.5 border border-border-light rounded-sm
+           bg-bg-surface text-text-primary placeholder-text-muted
+           transition-all duration-200 focus:border-accent-primary 
+           focus:ring-2 focus:ring-accent-soft focus:outline-none
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-error {
+    @apply border-error focus:border-error focus:ring-error/10;
+  }
+
+  /* TEXT AREAS */
+  
+  .textarea-base {
+    @apply input-base resize-vertical min-h-24;
+  }
+
+  /* SELECT */
+  
+  .select-base {
+    @apply input-base cursor-pointer;
+  }
+
+  /* LABELS */
+  
+  .label-base {
+    @apply block text-sm font-medium text-text-primary mb-2;
+  }
+
+  /* FORM GROUPS */
+  
+  .form-group {
+    @apply flex flex-col gap-2;
+  }
+
+  .form-error {
+    @apply text-sm text-error mt-1;
+  }
+
+  .form-hint {
+    @apply text-xs text-text-muted mt-1;
+  }
+
+  /* BADGES & TAGS */
+  
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-accent-soft text-accent-primary;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 dark:bg-green-900/30 text-success;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning/20 text-warning;
+  }
+
+  .badge-error {
+    @apply badge bg-error/20 text-error;
+  }
+
+  /* CONTAINERS */
+  
+  .container-content {
+    @apply max-w-4xl mx-auto px-6 py-8;
+  }
+
+  .container-article {
+    @apply max-w-article mx-auto px-6 py-12;
+  }
+
+  /* DIVIDERS */
+  
+  .divider {
+    @apply border-t border-border-light;
+  }
+
+  /* ALERTS */
+  
+  .alert {
+    @apply flex gap-3 rounded-sm p-4 border;
+  }
+
+  .alert-success {
+    @apply alert border-green-200 dark:border-green-900/30 
+           bg-green-50 dark:bg-green-900/10 text-success;
+  }
+
+  .alert-warning {
+    @apply alert border-warning/30 bg-warning/10 text-warning;
+  }
+
+  .alert-error {
+    @apply alert border-error/30 bg-error/10 text-error;
+  }
+
+  .alert-info {
+    @apply alert border-accent-soft bg-accent-primary/5 text-accent-primary;
+  }
+
+  /* LOADING SPINNER */
+  
+  .spinner {
+    @apply inline-block h-4 w-4 animate-spin rounded-full border-2 
+           border-current border-r-transparent;
+  }
+
+  /* GRADIENT TEXT - Used sparingly */
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-accent-primary to-accent-hover 
+           bg-clip-text text-transparent;
+  }
+
+  /* RESPONSIVE GRID */
+  
+  .grid-responsive {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-2;
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: #F0F9FC;
-}
+/* ============================================================================
+   Smooth page transitions
+   ============================================================================ */
 
-::-webkit-scrollbar-thumb {
-  background: #06B6D4;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #0891B2;
-}
-
-/* Selection Color - Cyan Theme */
-::selection {
-  background: linear-gradient(to right, #06B6D4, #0891B2);
-  color: white;
-}
-
-/* Focus visible outline - Elegant Cyan */
-*:focus-visible {
-  outline: 2px solid #06B6D4;
-  outline-offset: 2px;
-}
-
-/* Smooth page transitions */
 html {
   scroll-behavior: smooth;
 }
 
-/* Form elements styling - Cyan Focus */
-input:focus,
-textarea:focus,
-select:focus {
-  @apply ring-2 ring-cyan-500 ring-opacity-50;
+/* Ensure dark mode class works properly */
+html.dark {
+  color-scheme: dark;
 }
 
-/* Custom text selection */
-@layer components {
-  .btn-primary {
-    @apply px-6 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95;
-  }
-
-  .btn-secondary {
-    @apply px-6 py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95;
-  }
-
-  .gradient-text {
-    @apply bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent;
-  }
-
-  .card-hover {
-    @apply transition-all duration-300 hover:scale-105 hover:shadow-2xl;
-  }
-
-  .glass-effect {
-    @apply bg-white/40 backdrop-blur-lg border border-cyan-200/40 rounded-xl shadow-xl;
-  }
+html {
+  color-scheme: light;
 }
+
