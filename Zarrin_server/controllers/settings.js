@@ -16,6 +16,7 @@ const getSettings = async (req, res) => {
 
     res.json({
       profile: {
+        _id: user._id,
         firstName: user.name?.split(' ')[0] || '',
         lastName: user.name?.split(' ').slice(1).join(' ') || '',
         username: user.name || '',
@@ -290,12 +291,19 @@ const uploadAvatar = async (req, res) => {
 
     // Update user avatar URL
     user.avatar = result.secure_url;
-    await user.save();
+    const updatedUser = await user.save();
 
     logger.info('Avatar uploaded successfully', { userId: req.user._id, url: result.secure_url });
     res.json({
       message: 'Avatar uploaded successfully',
-      avatar: result.secure_url
+      avatar: result.secure_url,
+      profile: {
+        firstName: updatedUser.name?.split(' ')[0] || '',
+        lastName: updatedUser.name?.split(' ').slice(1).join(' ') || '',
+        email: updatedUser.email,
+        bio: updatedUser.bio,
+        avatar: updatedUser.avatar
+      }
     });
   } catch (error) {
     logger.error('Error uploading avatar:', { error: error.message });

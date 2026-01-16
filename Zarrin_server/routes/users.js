@@ -102,20 +102,38 @@ router.get('/me/profile', auth, async (req, res) => {
 // Get user profile
 router.get('/:userId', async (req, res) => {
   try {
+    console.log('📌 Fetching user profile for userId:', req.params.userId);
+    
     const user = await User.findById(req.params.userId)
       .select('-password')
       .populate('followers', 'name email avatar')
       .populate('following', 'name email avatar');
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      console.log('❌ User not found:', req.params.userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
 
+    console.log('✅ User found:', user.name);
+    
     const blogs = await Blog.countDocuments({ author: req.params.userId, status: 'published' });
     
-    res.json({
-      ...user.toObject(),
-      totalBlogs: blogs
-    });
+    const response = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar || '',
+      totalBlogs: blogs,
+      followers: user.followers || [],
+      following: user.following || [],
+      bio: user.bio || '',
+      profileSettings: user.profileSettings || {}
+    };
+    
+    console.log('📤 Sending user response with followers:', response.followers?.length);
+    res.json(response);
   } catch (err) {
+    console.error('❌ Error in GET /:userId:', err.message);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });

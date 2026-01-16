@@ -15,7 +15,8 @@ router.post('/upload', auth, upload.single('image'), async (req, res) => {
     console.log('Uploading file:', req.file.originalname);
     
     // Upload to Cloudinary
-    const imageUrl = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+    const result = await uploadToCloudinary(req.file.buffer, req.file.originalname, 'zarrin_blogs/photos');
+    const imageUrl = typeof result === 'string' ? result : result.secure_url;
     
     res.status(200).json({
       success: true,
@@ -43,10 +44,11 @@ router.post('/upload-multiple', auth, upload.array('images', 10), async (req, re
 
     // Upload all files to Cloudinary
     const uploadPromises = req.files.map(file =>
-      uploadToCloudinary(file.buffer, file.originalname)
+      uploadToCloudinary(file.buffer, file.originalname, 'zarrin_blogs/photos')
     );
 
-    const imageUrls = await Promise.all(uploadPromises);
+    const results = await Promise.all(uploadPromises);
+    const imageUrls = results.map(result => typeof result === 'string' ? result : result.secure_url);
 
     res.status(200).json({
       success: true,

@@ -51,7 +51,8 @@ const Navbar = () => {
       setIsLoggedIn(!!token);
       if (userData) {
         try {
-          setUser(JSON.parse(userData));
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
         } catch (e) {
           console.error('Failed to parse user data:', e);
         }
@@ -67,37 +68,64 @@ const Navbar = () => {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [location]);
+    // Listen for custom avatar update event
+    const handleAvatarUpdated = (e) => {
+      if (e.detail && e.detail.user) {
+        setUser(e.detail.user);
+      }
+    };
 
-  // Fetch user stats from API
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('avatarUpdated', handleAvatarUpdated);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('avatarUpdated', handleAvatarUpdated);
+    };
+  }, []);
+
+  // Fetch user stats from API with real-time updates
   useEffect(() => {
     const fetchUserStats = async () => {
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
       
-      if (!token || !userData) return;
+      if (!token || !userData) {
+        console.log('⚠️ Missing token or user data');
+        return;
+      }
 
       try {
         setLoadingStats(true);
         const parsedUser = JSON.parse(userData);
-        const response = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200/api'}/users/${parsedUser._id}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+        console.log('📌 Fetching stats for user:', parsedUser._id);
+        
+        // Construct API URL properly
+        const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+        const apiUrl = apiBase.includes('/api') ? apiBase : `${apiBase}/api`;
+        const fetchUrl = `${apiUrl}/users/${parsedUser._id}`;
+        console.log('📍 Fetch URL:', fetchUrl);
+        
+        const response = await fetch(fetchUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
-        );
+        });
 
         if (response.ok) {
           const data = await response.json();
+          console.log('✅ Stats fetched:', { followers: data.followers?.length, blogs: data.totalBlogs });
           setUserStats({
             totalBlogs: data.totalBlogs || 0,
             followers: data.followers?.length || 0,
             following: data.following?.length || 0
           });
+          // Update avatar if it changed
+          if (data.avatar && data.avatar !== user?.avatar) {
+            console.log('🖼️ Updating avatar:', data.avatar);
+            setUser(prev => ({ ...prev, avatar: data.avatar }));
+          }
+        } else {
+          console.error('❌ Failed to fetch stats:', response.status, response.statusText);
         }
       } catch (error) {
         console.error('Error fetching user stats:', error);
@@ -108,8 +136,11 @@ const Navbar = () => {
 
     if (isLoggedIn) {
       fetchUserStats();
+      // Refresh stats every 3 seconds for real-time updates
+      const interval = setInterval(fetchUserStats, 3000);
+      return () => clearInterval(interval);
     }
-  }, [isLoggedIn, location.pathname]);
+  }, [isLoggedIn, location.pathname, user]);
 
   // Also update when location changes
   useEffect(() => {
@@ -344,8 +375,12 @@ const Navbar = () => {
                   {/* User Profile Dropdown */}
                   <div className="relative group">
                     <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#6366F1]/10 to-[#EC4899]/10 dark:from-slate-800 dark:to-slate-700 hover:from-[#6366F1]/20 hover:to-[#EC4899]/20 dark:hover:from-slate-700 dark:hover:to-slate-600 transition-all duration-300 border border-[#6366F1]/20 dark:border-slate-700 hover:border-[#6366F1]/50 group-hover:shadow-lg z-40">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm">
-                        {user?.name?.[0]?.toUpperCase() || <User size={16} />}
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm overflow-hidden border-2 border-white dark:border-slate-700">
+                        {user?.avatar ? (
+                          <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                        ) : (
+                          user?.name?.[0]?.toUpperCase() || <User size={16} />
+                        )}
                       </div>
                       <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                         {user?.name?.split(' ')[0] || 'User'}
@@ -358,8 +393,12 @@ const Navbar = () => {
                       {/* Profile Section */}
                       <div className="p-4 bg-gradient-to-br from-[#6366F1]/10 to-[#EC4899]/10 dark:from-slate-800 dark:to-slate-700 border-b border-gray-200 dark:border-slate-700">
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold">
-                            {user?.name?.[0]?.toUpperCase() || 'U'}
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold overflow-hidden border-2 border-white dark:border-slate-700">
+                            {user?.avatar ? (
+                              <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                            ) : (
+                              user?.name?.[0]?.toUpperCase() || 'U'
+                            )}
                           </div>
                           <div>
                             <p className="font-bold text-gray-900 dark:text-white">{user?.name || 'User'}</p>
@@ -367,16 +406,16 @@ const Navbar = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">{userStats.totalBlogs}</p>
+                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2 hover:bg-white/70 dark:hover:bg-slate-800/70 transition-colors cursor-default">
+                            <p className="font-bold text-gray-900 dark:text-white">{loadingStats ? '⟳' : userStats.totalBlogs}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Posts</p>
                           </div>
-                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">{userStats.followers}</p>
+                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2 hover:bg-white/70 dark:hover:bg-slate-800/70 transition-colors cursor-default">
+                            <p className="font-bold text-gray-900 dark:text-white">{loadingStats ? '⟳' : userStats.followers}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Followers</p>
                           </div>
-                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2">
-                            <p className="font-bold text-gray-900 dark:text-white">{userStats.following}</p>
+                          <div className="bg-white/50 dark:bg-slate-800/50 rounded-lg p-2 hover:bg-white/70 dark:hover:bg-slate-800/70 transition-colors cursor-default">
+                            <p className="font-bold text-gray-900 dark:text-white">{loadingStats ? '⟳' : userStats.following}</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">Following</p>
                           </div>
                         </div>

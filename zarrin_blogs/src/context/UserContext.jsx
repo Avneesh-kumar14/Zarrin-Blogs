@@ -44,8 +44,9 @@ export const UserProvider = ({ children }) => {
       
       setUser(userData);
       
-      // Update localStorage with new user data for navbar sync
+      // Update localStorage with new user data for navbar sync - INCLUDE _id
       localStorage.setItem('user', JSON.stringify({
+        _id: data.profile._id,
         name: `${data.profile.firstName} ${data.profile.lastName}`,
         email: data.profile.email,
         avatar: data.profile.avatar,
@@ -108,6 +109,7 @@ export const UserProvider = ({ children }) => {
       const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
       localStorage.setItem('user', JSON.stringify({
         ...storedUser,
+        _id: storedUser._id,
         name: `${data.profile.firstName} ${data.profile.lastName}`,
         ...data.profile
       }));
@@ -117,6 +119,7 @@ export const UserProvider = ({ children }) => {
         key: 'user',
         newValue: JSON.stringify({
           ...storedUser,
+          _id: storedUser._id,
           name: `${data.profile.firstName} ${data.profile.lastName}`,
           ...data.profile
         }),
@@ -146,17 +149,15 @@ export const UserProvider = ({ children }) => {
         setUser(updatedUser);
         
         const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        localStorage.setItem('user', JSON.stringify({
+        const newUserData = {
           ...storedUser,
           avatar: avatarFile
-        }));
+        };
+        localStorage.setItem('user', JSON.stringify(newUserData));
         
         window.dispatchEvent(new StorageEvent('storage', {
           key: 'user',
-          newValue: JSON.stringify({
-            ...storedUser,
-            avatar: avatarFile
-          }),
+          newValue: JSON.stringify(newUserData),
           storageArea: localStorage
         }));
         
@@ -179,26 +180,40 @@ export const UserProvider = ({ children }) => {
         }
 
         const data = await response.json();
+        console.log('📦 Avatar upload response:', data);
+        
+        // Get avatar URL from response (handle multiple formats)
+        const avatarUrl = data.avatar || (data.profile && data.profile.avatar) || (data.secure_url);
+        console.log('🔍 Avatar URL extracted:', avatarUrl);
+        
+        if (!avatarUrl) {
+          console.error('❌ Response data:', JSON.stringify(data, null, 2));
+          throw new Error('No avatar URL in response');
+        }
         
         // Update user context
-        const updatedUser = { ...user, avatar: data.avatar };
+        const updatedUser = { ...user, avatar: avatarUrl };
         setUser(updatedUser);
         
-        // Update localStorage with new avatar
+        // Update localStorage with new avatar AND complete profile
         const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        localStorage.setItem('user', JSON.stringify({
+        const newUserData = {
           ...storedUser,
-          avatar: data.avatar
-        }));
+          avatar: avatarUrl,
+          _id: storedUser._id
+        };
+        localStorage.setItem('user', JSON.stringify(newUserData));
         
-        // Trigger storage event for navbar to update
+        // Dispatch storage event to trigger navbar update
         window.dispatchEvent(new StorageEvent('storage', {
           key: 'user',
-          newValue: JSON.stringify({
-            ...storedUser,
-            avatar: data.avatar
-          }),
+          newValue: JSON.stringify(newUserData),
           storageArea: localStorage
+        }));
+        
+        // Also dispatch a custom event for immediate UI update
+        window.dispatchEvent(new CustomEvent('avatarUpdated', { 
+          detail: { avatar: avatarUrl, user: newUserData } 
         }));
         
         return data;

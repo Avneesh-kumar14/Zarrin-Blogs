@@ -371,9 +371,10 @@ router.post('/verify-otp', authLimiter, async (req, res) => {
     res.status(200).json({
       message: 'Email verified successfully!',
       user: {
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
+        avatar: user.avatar || '',
         role: user.role,
         isEmailVerified: user.isEmailVerified
       },
@@ -510,10 +511,11 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     res.json({ 
       message: 'Login successful',
       user: { 
-        id: foundUser._id, 
+        _id: foundUser._id, 
         name: foundUser.name, 
         email: foundUser.email, 
         role: foundUser.role,
+        avatar: foundUser.avatar || '',
         isEmailVerified: foundUser.isEmailVerified
       }, 
       token 

@@ -105,19 +105,29 @@ const Settings = () => {
       }
 
       // Call UserContext method to handle upload
-      const updatedUser = await updateAvatar(fileInput.files[0]);
+      const response = await updateAvatar(fileInput.files[0]);
       
-      setFormData({
-        ...formData,
-        avatar: updatedUser.avatar
-      });
+      // Handle both response formats
+      const avatarUrl = response?.avatar || response?.data?.avatar || (typeof response === 'string' ? response : null);
       
+      if (!avatarUrl) {
+        throw new Error('Failed to get avatar URL from upload response');
+      }
+      
+      // Update local form data with new avatar immediately
+      setFormData(prev => ({
+        ...prev,
+        avatar: avatarUrl
+      }));
+      
+      // Clear preview and input
       setPreviewAvatar(null);
       fileInput.value = '';
+      
       setAlert({ type: 'success', message: 'Avatar updated successfully!' });
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      setAlert({ type: 'error', message: error.message });
+      setAlert({ type: 'error', message: error.message || 'Failed to upload avatar' });
     } finally {
       setAvatarLoading(false);
     }
@@ -275,11 +285,11 @@ const Settings = () => {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profile Picture</h3>
               <div className="flex items-start gap-6">
                 <div className="flex-shrink-0">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-r from-[#6366F1] to-[#EC4899] flex items-center justify-center text-white text-2xl font-bold">
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-r from-[#6366F1] to-[#EC4899] flex items-center justify-center text-white text-3xl font-bold overflow-hidden border-4 border-white dark:border-slate-700 shadow-lg">
                     {previewAvatar ? (
-                      <img src={previewAvatar} alt="Preview" className="w-24 h-24 rounded-full object-cover" />
+                      <img src={previewAvatar} alt="Preview" className="w-full h-full object-cover" />
                     ) : formData.avatar ? (
-                      <img src={formData.avatar} alt="Avatar" className="w-24 h-24 rounded-full object-cover" />
+                      <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                       formData.firstName?.[0]?.toUpperCase() || 'U'
                     )}

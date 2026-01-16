@@ -9,13 +9,13 @@ cloudinary.config({
 });
 
 // Upload file to Cloudinary
-const uploadToCloudinary = async (fileBuffer, fileName) => {
+const uploadToCloudinary = async (fileBuffer, fileName, folder = 'zarrin_blogs') => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         resource_type: 'auto',
-        public_id: `zarrin_blogs/${Date.now()}-${fileName}`,
-        folder: 'zarrin_blogs'
+        public_id: `${folder}/${Date.now()}-${fileName}`,
+        folder: folder
       },
       (error, result) => {
         if (error) {
@@ -23,7 +23,7 @@ const uploadToCloudinary = async (fileBuffer, fileName) => {
           reject(new Error(`Upload failed: ${error.message}`));
         } else {
           console.log('File uploaded to Cloudinary:', result.secure_url);
-          resolve(result.secure_url);
+          resolve(result);
         }
       }
     );
