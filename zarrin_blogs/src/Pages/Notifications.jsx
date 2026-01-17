@@ -13,27 +13,39 @@ const Notifications = () => {
   const [filter, setFilter] = useState('all');
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingStats, setLoadingStats] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const API_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+  const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+  const API_URL = API_BASE.includes('/api') ? API_BASE : `${API_BASE}/api`;
   const token = localStorage.getItem('token');
 
+  // Real-time notifications fetching (like Navbar pattern)
   useEffect(() => {
-    // Check authentication before fetching
     if (!token) {
       setAlert({ type: 'error', message: 'Please login to view notifications' });
       return;
     }
+
+    // Fetch immediately on load
     fetchNotifications();
     fetchStats();
+
+    // Set up real-time interval (refresh every 5 seconds like navbar dropdown)
+    const notifInterval = setInterval(() => {
+      fetchNotifications();
+      fetchStats();
+    }, 5000);
+
+    return () => clearInterval(notifInterval);
   }, [filter, token]);
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      let url = `${API_URL}/api/notifications`;
+      let url = `${API_URL}/notifications`;
       
       // Add filter to query - backend expects 'filter' or 'type' parameter
       if (filter !== 'all') {
@@ -43,8 +55,10 @@ const Notifications = () => {
       console.log('📡 Fetching notifications from:', url);
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        signal: AbortSignal.timeout(5000) // 5 second timeout
       });
 
       if (!response.ok) {
@@ -54,6 +68,7 @@ const Notifications = () => {
 
       const data = await response.json();
       console.log('✅ Notifications fetched:', data);
+      
       // Handle both array and object responses
       if (Array.isArray(data)) {
         setNotifications(data);
@@ -64,9 +79,13 @@ const Notifications = () => {
       } else {
         setNotifications([]);
       }
+      setAlert(null); // Clear alerts on success
     } catch (error) {
-      console.error('Error fetching notifications:', error);
-      setAlert({ type: 'error', message: 'Failed to load notifications' });
+      if (error.name === 'AbortError') {
+        console.warn('⏱️ Notifications fetch timeout');
+      } else {
+        console.error('⚠️ Error fetching notifications:', error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -74,12 +93,16 @@ const Notifications = () => {
 
   const fetchStats = async () => {
     try {
-      const url = `${API_URL}/api/notifications/stats`;
+      setLoadingStats(true);
+      const url = `${API_URL}/notifications/stats`;
       console.log('📊 Fetching stats from:', url);
+      
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        signal: AbortSignal.timeout(5000) // 5 second timeout
       });
 
       if (!response.ok) {
@@ -89,6 +112,7 @@ const Notifications = () => {
 
       const data = await response.json();
       console.log('✅ Stats fetched:', data);
+      
       // Handle different response formats
       if (data.stats) {
         setStats(data.stats);
@@ -96,18 +120,26 @@ const Notifications = () => {
         setStats(data);
       }
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      if (error.name === 'AbortError') {
+        console.warn('⏱️ Stats fetch timeout');
+      } else {
+        console.error('⚠️ Error fetching stats:', error.message);
+      }
+    } finally {
+      setLoadingStats(false);
     }
   };
 
   const handleMarkAllRead = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/notifications/read-all`, {
+      const response = await fetch(`${API_URL}/notifications/read-all`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        signal: AbortSignal.timeout(5000)
       });
 
       if (!response.ok) {
@@ -115,9 +147,14 @@ const Notifications = () => {
       }
 
       setAlert({ type: 'success', message: 'All notifications marked as read' });
-      fetchNotifications();
+      // Refresh immediately after action
+      await fetchNotifications();
     } catch (error) {
-      console.error('Error:', error);
+      if (error.name === 'AbortError') {
+        console.warn('⏱️ Mark all read timeout');
+      } else {
+        console.error('⚠️ Error:', error.message);
+      }
       setAlert({ type: 'error', message: error.message });
     } finally {
       setLoading(false);
@@ -126,12 +163,13 @@ const Notifications = () => {
 
   const handleMarkAsRead = async (notificationId) => {
     try {
-      const response = await fetch(`${API_URL}/api/notifications/${notificationId}/read`, {
+      const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        signal: AbortSignal.timeout(5000)
       });
 
       if (!response.ok) {
@@ -147,21 +185,24 @@ const Notifications = () => {
         )
       );
       
-      // Fetch fresh data
-      fetchNotifications();
+      // Fetch fresh data after a short delay
+      setTimeout(() => fetchNotifications(), 500);
     } catch (error) {
-      console.error('Error:', error);
+      if (error.name !== 'AbortError') {
+        console.error('⚠️ Error marking as read:', error.message);
+      }
     }
   };
 
   const handleDeleteNotification = async (notificationId) => {
     try {
-      const response = await fetch(`${API_URL}/api/notifications/${notificationId}`, {
+      const response = await fetch(`${API_URL}/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        signal: AbortSignal.timeout(5000)
       });
 
       if (!response.ok) {
@@ -172,19 +213,22 @@ const Notifications = () => {
       setNotifications(prev => prev.filter(n => n._id !== notificationId));
       setAlert({ type: 'success', message: 'Notification deleted' });
     } catch (error) {
-      console.error('Error:', error);
+      if (error.name !== 'AbortError') {
+        console.error('⚠️ Error deleting notification:', error.message);
+      }
       setAlert({ type: 'error', message: 'Failed to delete notification' });
     }
   };
 
   const handleFollowBack = async (notificationId, followerId) => {
     try {
-      const response = await fetch(`${API_URL}/api/users/${followerId}/follow`, {
+      const response = await fetch(`${API_URL}/users/${followerId}/follow`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        signal: AbortSignal.timeout(5000)
       });
 
       if (!response.ok) {
@@ -193,9 +237,11 @@ const Notifications = () => {
 
       setAlert({ type: 'success', message: 'Following user!' });
       // Refresh notifications to update follow back button state
-      fetchNotifications();
+      setTimeout(() => fetchNotifications(), 500);
     } catch (error) {
-      console.error('Error:', error);
+      if (error.name !== 'AbortError') {
+        console.error('⚠️ Error following user:', error.message);
+      }
       setAlert({ type: 'error', message: 'Failed to follow user' });
     }
   };
