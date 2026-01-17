@@ -511,6 +511,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     res.json({ 
       message: 'Login successful',
       user: { 
+        id: foundUser._id,  // Add normalized id field for frontend
         _id: foundUser._id, 
         name: foundUser.name, 
         email: foundUser.email, 

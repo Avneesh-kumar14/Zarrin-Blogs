@@ -17,24 +17,30 @@ const Notifications = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const API_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200/api';
+  const API_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+    // Check authentication before fetching
+    if (!token) {
+      setAlert({ type: 'error', message: 'Please login to view notifications' });
+      return;
+    }
     fetchNotifications();
     fetchStats();
-  }, [filter]);
+  }, [filter, token]);
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      let url = `${API_URL}/notifications`;
+      let url = `${API_URL}/api/notifications`;
       
       // Add filter to query - backend expects 'filter' or 'type' parameter
       if (filter !== 'all') {
         url += `?filter=${filter}`;
       }
       
+      console.log('📡 Fetching notifications from:', url);
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -42,10 +48,12 @@ const Notifications = () => {
       });
 
       if (!response.ok) {
+        console.error('❌ Response not OK:', response.status, response.statusText);
         throw new Error('Failed to fetch notifications');
       }
 
       const data = await response.json();
+      console.log('✅ Notifications fetched:', data);
       // Handle both array and object responses
       if (Array.isArray(data)) {
         setNotifications(data);
@@ -66,17 +74,21 @@ const Notifications = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${API_URL}/notifications/stats`, {
+      const url = `${API_URL}/api/notifications/stats`;
+      console.log('📊 Fetching stats from:', url);
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
       if (!response.ok) {
+        console.error('❌ Stats response not OK:', response.status, response.statusText);
         throw new Error('Failed to fetch stats');
       }
 
       const data = await response.json();
+      console.log('✅ Stats fetched:', data);
       // Handle different response formats
       if (data.stats) {
         setStats(data.stats);
@@ -91,7 +103,7 @@ const Notifications = () => {
   const handleMarkAllRead = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/notifications/read-all`, {
+      const response = await fetch(`${API_URL}/api/notifications/read-all`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -114,7 +126,7 @@ const Notifications = () => {
 
   const handleMarkAsRead = async (notificationId) => {
     try {
-      const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
+      const response = await fetch(`${API_URL}/api/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -144,7 +156,7 @@ const Notifications = () => {
 
   const handleDeleteNotification = async (notificationId) => {
     try {
-      const response = await fetch(`${API_URL}/notifications/${notificationId}`, {
+      const response = await fetch(`${API_URL}/api/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -167,7 +179,7 @@ const Notifications = () => {
 
   const handleFollowBack = async (notificationId, followerId) => {
     try {
-      const response = await fetch(`${API_URL}/users/${followerId}/follow`, {
+      const response = await fetch(`${API_URL}/api/users/${followerId}/follow`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

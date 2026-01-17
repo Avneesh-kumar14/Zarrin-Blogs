@@ -84,10 +84,16 @@ const Login = () => {
         throw new Error('Server error occurred. Please try again.');
       }
       
+      // Normalize user data: ensure both _id and id fields exist
+      const normalizedUser = {
+        ...data.user,
+        id: data.user._id || data.user.id // Ensure id field exists
+      };
+      
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('user', JSON.stringify(normalizedUser));
       
       setAlert({ type: 'success', message: 'Login successful!' });
       

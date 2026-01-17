@@ -45,7 +45,8 @@ export default function AuthenticatedLayout() {
         console.log('✅ Token validated:', data);
         
         const user = JSON.parse(userStr);
-        if (!user.id || !user.email) {
+        // Check for both _id (MongoDB) and id (normalized field)
+        if (!(user._id || user.id) || !user.email) {
           throw new Error('Invalid user data');
         }
         
