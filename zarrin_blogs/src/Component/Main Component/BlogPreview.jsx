@@ -556,22 +556,19 @@ const BlogPreview = () => {
   if (!blog) return null;
 
   return (
-    <div className="bg-slate-50 text-slate-900 min-h-screen">
-
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-6 py-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm text-slate-600 hover:text-indigo-600 transition"
-          >
-            <ArrowLeft size={16} /> Back
-          </button>
-        </div>
-      </header>
+    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-white min-h-screen">
 
       {/* Article */}
       <article className="max-w-3xl mx-auto px-6 py-14 animate-[fadeIn_0.4s_ease-out]">
+
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 mb-8 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-lg transition-all duration-200 group"
+        >
+          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          <span>Back</span>
+        </button>
 
         {/* Category */}
         <p className="inline-block text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full mb-3">
