@@ -8,6 +8,19 @@ const Comment = require('../models/comment');
 const router = express.Router();
 
 /**
+ * Dashboard MyBlogs Debug:
+ * The route should:
+ * - Require authentication middleware
+ * - Use req.user._id to fetch blogs
+ *
+ * Please check:
+ * - JWT token is correctly decoded
+ * - req.user exists
+ * - User ID is passed correctly to query
+ * - Frontend sends Authorization header
+ */
+
+/**
  * @swagger
  * tags:
  *   - name: Admin

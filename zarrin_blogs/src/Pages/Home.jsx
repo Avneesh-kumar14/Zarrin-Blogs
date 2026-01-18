@@ -1,3 +1,25 @@
+/**
+ * DEBUG TASK – Zarrin MERN Blog Project
+ *
+ * The following issues exist in the project:
+ * 1. Latest articles are not showing on the home page
+ * 2. Trending blogs (most liked / most commented) return empty data
+ * 3. /dashboard/myblogs shows "Invalid user data. Please login again"
+ * 4. Profile page does not show correct post count, followers, or following
+ * 5. Follow/unfollow API fails with "Failed to update follow status"
+ *
+ * Please:
+ * - Verify frontend API calls (URLs, params, headers, auth token)
+ * - Verify backend routes, controllers, and middleware
+ * - Check MongoDB queries, population, aggregation, and sorting logic
+ * - Ensure authenticated routes correctly read req.user
+ * - Ensure models (User, Blog, Follow, Like) match query logic
+ * - Fix mismatches between frontend expectations and backend responses
+ *
+ * Stack: MERN (React, Node, Express, MongoDB, JWT Auth)
+ * Project: Zarrin Blog Platform
+ */
+
 import React, { useState, useEffect } from 'react'
 import { ArrowRight, Clock, User, Zap, BookOpen, Sparkles, Pen, Star, Share2, Shield, TrendingUp, Heart, Eye, MessageCircle, Users, Award, Quote, CheckCircle, Play, Bookmark } from 'lucide-react'
 import TrendingBlogs from '../Component/Main Component/TrendingBlogs'
@@ -9,25 +31,56 @@ const Home = () => {
   const [topWriters, setTopWriters] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8200/api';
+  // Construct API URL properly
+  let API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+  const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
 
   useEffect(() => {
     fetchAllData();
   }, []);
 
+  /**
+   * Home Page Debug:
+   * Latest articles should be fetched by:
+   * - Sorting blogs by createdAt DESC
+   * - Limiting results (e.g., 6 or 10)
+   * - Excluding drafts and unpublished blogs
+   *
+   * Verify:
+   * - Correct API endpoint is called
+   * - Backend query uses sort({ createdAt: -1 })
+   * - Frontend correctly maps response data
+   * - Data is not filtered out accidentally on frontend
+   */
   const fetchAllData = async () => {
     try {
       setLoading(true);
       
-      // Fetch blogs
-      const blogsRes = await fetch(`${API_URL}/blogs?status=published`);
+      // Fetch blogs - get published blogs sorted by createdAt (most recent first)
+      const blogsRes = await fetch(`${API_URL}/blogs?status=published&sort=createdAt&order=desc`);
       if (blogsRes.ok) {
         const data = await blogsRes.json();
-        const blogs = data.blogs || data;
-        if (Array.isArray(blogs) && blogs.length > 0) {
-          setFeaturedBlog(blogs[0]);
-          setRecentBlogs(blogs.slice(1, 9));
-          setTrendingBlogs(blogs.slice(0, 3));
+        
+        // Handle multiple response formats
+        let blogs = [];
+        if (data.data && Array.isArray(data.data)) {
+          blogs = data.data;
+        } else if (data.blogs && Array.isArray(data.blogs)) {
+          blogs = data.blogs;
+        } else if (Array.isArray(data)) {
+          blogs = data;
+        }
+        
+        if (blogs.length > 0) {
+          console.log('✅ Blogs fetched:', blogs.length);
+          setFeaturedBlog(blogs[0]);  // First blog as featured
+          setRecentBlogs(blogs.slice(1, 9));  // Next 8 as recent
+          
+          // For trending, sort by likes count
+          const trendingBlogs = blogs
+            .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0))
+            .slice(0, 3);
+          setTrendingBlogs(trendingBlogs);
         }
       }
 
@@ -55,7 +108,7 @@ const Home = () => {
         }
       }
     } catch (err) {
-      console.error('Error fetching home data:', err);
+      console.error('❌ Error fetching home data:', err);
     } finally {
       setLoading(false);
     }
@@ -194,7 +247,7 @@ const Home = () => {
 
                     {/* Badge */}
                     <div className="absolute top-4 left-4 px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white text-xs font-bold rounded-full">
-                      {featuredBlog.category || 'Featured'}
+                      {featuredBlog.category?.[0]?.name || 'Featured'}
                     </div>
                   </div>
 
@@ -288,7 +341,7 @@ const Home = () => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <div className={`absolute top-4 left-4 px-3 py-1 bg-gradient-to-r ${gradients[index % 3]} text-white text-xs font-bold rounded-full`}>
-                        {blog.category || 'Featured'}
+                        {blog.category?.[0]?.name || 'Featured'}
                       </div>
                     </div>
 

@@ -104,7 +104,11 @@ const Followers = () => {
         }
       });
 
-      if (!res.ok) throw new Error('Failed to update follow status');
+      // Parse error response properly
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `Failed to update follow status (${res.status})`);
+      }
       
       setFollowingMap(prev => ({
         ...prev,
@@ -119,6 +123,7 @@ const Followers = () => {
         message: followingMap[followerId] ? 'Unfollowed successfully' : 'Followed successfully'
       });
     } catch (err) {
+      console.error('❌ Follow toggle error:', err);
       setAlert({ type: 'error', message: err.message });
     }
   };

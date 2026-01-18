@@ -33,11 +33,12 @@ const BlogManagement = ({ showAll = false }) => {
         endpoint = 'http://localhost:8200/api/blogs';
       } else {
         // For MyBlogs, get user's own blogs
-        if (!userData.id) {
+        if (!userData._id && !userData.id) {
           setAlert({ type: 'error', message: 'Invalid user data. Please login again.' });
           return;
         }
-        endpoint = `http://localhost:8200/api/blogs/user/${userData.id}`;
+        const userId = userData._id || userData.id;
+        endpoint = `http://localhost:8200/api/blogs/user/${userId}`;
       }
       
       console.log('Fetching blogs from:', endpoint);

@@ -8,6 +8,20 @@ const { notifyUserFollow } = require('../services/notificationService');
 
 const router = express.Router();
 
+/**
+ * Profile Page Debug:
+ * Profile should show:
+ * - Total posts by user
+ * - Follower count
+ * - Following count
+ *
+ * Verify:
+ * - Blog count query filters by author
+ * - Followers and following stored correctly
+ * - Population logic matches schema
+ * - API response includes correct counts
+ */
+
 // Search users by name (MUST come before /:userId route)
 router.get('/search', async (req, res) => {
   try {
@@ -149,6 +163,20 @@ router.get('/:userId/blogs', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
+
+/**
+ * Follow / Unfollow Debug:
+ * Follow action should:
+ * - Update target user's followers
+ * - Update current user's following
+ * - Prevent duplicate follows
+ *
+ * Please verify:
+ * - User IDs are valid ObjectIds
+ * - Both user documents are updated
+ * - API returns updated follow status
+ * - Frontend handles response correctly
+ */
 
 // Follow user
 router.post('/:userId/follow', auth, async (req, res) => {

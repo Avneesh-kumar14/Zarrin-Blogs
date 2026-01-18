@@ -7,6 +7,20 @@ const User = require('../models/userModel');
 const router = express.Router();
 
 /**
+ * Trending Blogs Debug:
+ * Trending blogs should be determined by:
+ * - Highest likeCount OR
+ * - Highest commentCount OR
+ * - Aggregation pipeline using $lookup and $sort
+ *
+ * Please verify:
+ * - Like and Comment models update counts correctly
+ * - Aggregation pipeline is correct
+ * - Fields used for sorting actually exist in schema
+ * - API response is not empty due to filters
+ */
+
+/**
  * @swagger
  * tags:
  *   - name: Blog
@@ -239,12 +253,18 @@ router.get('/', async (req, res) => {
     const { skip, limit, page } = getPagination(req.query.page, req.query.limit);
     const sortBy = req.query.sort || 'createdAt';
     const sortOrder = req.query.order === 'asc' ? 1 : -1;
+    
+    // Build filter query
+    const filter = {};
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
 
-    // Count total documents
-    const total = await Blog.countDocuments();
+    // Count total documents matching filter
+    const total = await Blog.countDocuments(filter);
 
     // Fetch paginated blogs
-    const blogs = await Blog.find()
+    const blogs = await Blog.find(filter)
       .populate('author', 'name email avatar')
       .populate('category', 'name slug')
       .sort({ [sortBy]: sortOrder })

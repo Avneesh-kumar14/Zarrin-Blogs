@@ -7,6 +7,10 @@ const TrendingBlogs = () => {
   const [trending, setTrending] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Construct API URL properly
+  let API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+  const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
+
   useEffect(() => {
     fetchTrendingBlogs();
   }, []);
@@ -14,12 +18,15 @@ const TrendingBlogs = () => {
   const fetchTrendingBlogs = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:8200/api/trending?limit=6');
+      console.log('📡 Fetching trending from:', `${API_URL}/trending?limit=6`);
+      const res = await fetch(`${API_URL}/trending?limit=6`);
       if (!res.ok) throw new Error('Failed to fetch trending blogs');
       const data = await res.json();
-      setTrending(data);
+      console.log('✅ Trending blogs received:', data.length);
+      setTrending(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error('Error fetching trending blogs:', err);
+      console.error('❌ Error fetching trending blogs:', err);
+      setTrending([]);
     } finally {
       setLoading(false);
     }

@@ -14,6 +14,9 @@ const BlogSchema = new Schema({
   },
   scheduledAt: { type: Date },
   views: { type: Number, default: 0 },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comment' }],
+  bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
   wordCount: { type: Number, default: 0 },
   readingTime: { type: Number, default: 0 }
 }, { timestamps: true });

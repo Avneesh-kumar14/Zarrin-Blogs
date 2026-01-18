@@ -42,20 +42,23 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       const token = localStorage.getItem('token');
       
-      if (!userData?._id || !token) {
-        throw new Error('User data or token missing');
+      // Normalize user ID field (_id or id)
+      const userId = userData?._id || userData?.id;
+      
+      if (!userId || !token) {
+        throw new Error('Invalid user data. Please login again.');
       }
 
-      console.log('Fetching drafts from:', `http://localhost:8200/api/users/${userData._id}/drafts`);
+      console.log('📥 Fetching drafts for user:', userId);
       
-      const res = await fetch(`http://localhost:8200/api/users/${userData._id}/drafts`, {
+      const res = await fetch(`http://localhost:8200/api/users/${userId}/drafts`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
-      console.log('Response status:', res.status);
+      console.log('📊 Response status:', res.status);
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -63,11 +66,11 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
       }
       
       const data = await res.json();
-      console.log('Drafts fetched:', data);
+      console.log('✅ Drafts fetched:', data.length);
       setDrafts(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error('Error fetching drafts:', err);
-      setAlert({ type: 'error', message: 'Failed to load drafts: ' + err.message });
+      console.error('❌ Error fetching drafts:', err);
+      setAlert({ type: 'error', message: err.message });
       setDrafts([]);
     } finally {
       setLoading(false);
