@@ -196,39 +196,38 @@ const Navbar = () => {
   return (
     <>
       {/* Top Announcement Bar */}
-      <div className="bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] text-white py-2 px-4 text-center text-sm">
-        <div className="flex items-center justify-center gap-2">
-          <Sparkles className="w-4 h-4" />
+      <div className="bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] text-white py-3 px-4 text-center text-sm shadow-lg">
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          <Sparkles className="w-4 h-4 text-amber-300 flex-shrink-0" />
           <span className="font-medium">New: AI-powered article assistant is now available!</span>
-          <button className="underline hover:no-underline ml-2 transition">Learn More</button>
+          <button className="underline hover:no-underline ml-2 transition font-semibold">Learn More</button>
         </div>
       </div>
 
       {/* Main Navbar */}
-      <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/70 dark:bg-slate-950/70 border-b border-gray-200 dark:border-slate-800 shadow-sm">
+      <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-16 flex items-center justify-between">
 
-            {/* Logo with Pulse Animation */}
+            {/* Logo */}
             <NavLink 
               to="/" 
               className="flex items-center gap-2 group hover:scale-105 transition-transform duration-300"
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#6366F1] via-[#EC4899] to-[#8B5CF6] rounded-lg blur-md group-hover:blur-lg transition-all opacity-50" />
-                <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#6366F1] to-[#EC4899] flex items-center justify-center text-white font-bold text-lg shadow-md group-hover:shadow-lg transition-shadow">
                   Z
                 </div>
               </div>
               <Heading
                 type="h4"
-                className="hidden sm:block text-lg font-bold bg-gradient-to-r from-[#6366F1] to-[#EC4899] dark:from-[#6366F1] dark:to-[#8B5CF6] bg-clip-text text-transparent"
+                className="hidden sm:block text-lg font-bold bg-gradient-to-r from-[#6366F1] to-[#EC4899] bg-clip-text text-transparent"
               >
                 Zarrin
               </Heading>
             </NavLink>
 
-            {/* Desktop Navigation with Mega Menu */}
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-1">
               {navLinks.map(({ name, path, icon: Icon }) => {
                 const isActive = location.pathname === path;
@@ -238,24 +237,24 @@ const Navbar = () => {
                     to={path}
                     className="relative group"
                   >
-                    <button className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                    <button className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 ${
                       isActive
-                        ? 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white shadow-lg'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}>
-                      <Icon size={18} className="group-hover:scale-110 transition-transform" />
+                      <Icon size={18} />
                       <span>{name}</span>
                     </button>
 
                     {/* Mega Menu for Blog */}
                     {name === 'Blog' && (
-                      <div className="absolute top-full left-0 mt-0 w-[500px] bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-2xl rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                      <div className="absolute top-full left-0 mt-0 w-[500px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                         <div className="p-6">
                           <div className="grid grid-cols-2 gap-6">
                             {/* Trending Topics */}
                             <div>
-                              <h3 className="font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
-                                <TrendingUp className="w-4 h-4 text-[#6366F1]" />
+                              <h3 className="font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+                                <TrendingUp className="w-4 h-4 text-blue-600" />
                                 Trending Topics
                               </h3>
                               <div className="space-y-2">
@@ -263,15 +262,15 @@ const Navbar = () => {
                                   <button
                                     key={topic.name}
                                     onClick={() => navigate('/blog')}
-                                    className="w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors group/item"
+                                    className="w-full text-left p-3 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                   >
                                     <div className="flex items-center gap-3">
-                                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${topic.color} flex items-center justify-center text-lg group-hover/item:scale-110 transition-transform`}>
+                                      <div className={`w-8 h-8 rounded-md bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-lg`}>
                                         {topic.icon}
                                       </div>
                                       <div>
-                                        <p className="font-medium text-sm text-gray-900 dark:text-white">{topic.name}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{topic.count}</p>
+                                        <p className="font-medium text-sm text-slate-900 dark:text-white">{topic.name}</p>
+                                        <p className="text-xs text-slate-500">{topic.count}</p>
                                       </div>
                                     </div>
                                   </button>
@@ -281,28 +280,28 @@ const Navbar = () => {
 
                             {/* Quick Links */}
                             <div>
-                              <h3 className="font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
-                                <Sparkles className="w-4 h-4 text-[#EC4899]" />
+                              <h3 className="font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+                                <Sparkles className="w-4 h-4 text-blue-600" />
                                 Quick Links
                               </h3>
                               <div className="space-y-2">
                                 {quickLinks.map((link) => (
                                   <button
                                     key={link.title}
-                                    className="w-full text-left p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                                    className="w-full text-left p-3 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                   >
-                                    <p className="font-medium text-sm text-gray-900 dark:text-white">{link.title}</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{link.desc}</p>
+                                    <p className="font-medium text-sm text-slate-900 dark:text-white">{link.title}</p>
+                                    <p className="text-xs text-slate-500">{link.desc}</p>
                                   </button>
                                 ))}
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="bg-gray-50 dark:bg-slate-800 p-4 border-t border-gray-200 dark:border-slate-700">
+                        <div className="bg-slate-50 dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-800">
                           <button 
                             onClick={() => navigate('/blog')}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white font-semibold rounded-lg transition-all"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-all"
                           >
                             <BookOpen className="w-4 h-4" />
                             Browse All Articles
@@ -323,9 +322,9 @@ const Navbar = () => {
               <div className="relative hidden md:block group">
                 <button
                   onClick={() => setShowSearch(!showSearch)}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-300 text-gray-700 dark:text-gray-300 group-hover:text-[#6366F1] dark:group-hover:text-[#8B5CF6]"
+                  className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400"
                 >
-                  <Search size={20} className="group-hover:scale-110 transition-transform" />
+                  <Search size={20} />
                 </button>
 
                 {showSearch && (

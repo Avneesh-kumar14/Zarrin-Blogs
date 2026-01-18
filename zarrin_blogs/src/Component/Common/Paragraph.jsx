@@ -1,22 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Paragraph = ({ children, variant = 'small', className = '' }) => {
+const Paragraph = ({ children, variant = 'body', className = '' }) => {
   const variants = {
-    'big': 'text-lg ',
-    'small': 'text-base',
+    'lg': 'text-lg text-slate-700 leading-relaxed font-font2',
+    'body': 'text-base text-slate-700 leading-relaxed font-font2',
+    'sm': 'text-sm text-slate-600 leading-relaxed font-font2',
+    'muted': 'text-slate-500 leading-relaxed font-font2',
   };
 
   return (
-    <p className={`font-font2 ${variants[variant]} ${className}`}>
+    <p className={`${variants[variant]} ${className}`}>
       {children}
     </p>
   );
 };
 
 Paragraph.propTypes = {
-  children: PropTypes.string.isRequired,
-  variant: PropTypes.oneOf(['big', 'small']),
+  children: PropTypes.node.isRequired,
+  variant: PropTypes.oneOf(['lg', 'body', 'sm', 'muted']),
   className: PropTypes.string,
 };
 

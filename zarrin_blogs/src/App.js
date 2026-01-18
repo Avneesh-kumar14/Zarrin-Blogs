@@ -2,7 +2,7 @@
 
 import './App.css';
 import Navbar from './Component/Main Component/Navbar.jsx';
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { UserProvider } from './context/UserContext.jsx';
 import Home from './Pages/Home.jsx';
@@ -61,6 +61,7 @@ function AppWrapper() {
         <Route path="/bookmarks" element={<Bookmarks isAuthenticated={!!localStorage.getItem('token')} />} />
         <Route path="/followers/:userId" element={<Followers />} />
         <Route path="/following/:userId" element={<Following />} />
+        <Route path="/profile" element={<Navigate to="/dashboard/profile" replace />} />
         <Route path="/profile/:userId" element={<UserProfile currentUser={safeJsonParse(localStorage.getItem('user'))} isAuthenticated={!!localStorage.getItem('token')} />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
@@ -79,7 +80,7 @@ function AppWrapper() {
           <Route path='/dashboard/myblogs' element={<MyBlogs />} />
           <Route path='/dashboard/categories' element={<Categories />} />
           <Route path='drafts' element={<Drafts />} />
-          <Route path='profile' element={<UserProfile currentUser={safeJsonParse(localStorage.getItem('user'))} isAuthenticated={!!localStorage.getItem('token')} />} />
+          <Route path='profile' element={<UserProfile currentUser={safeJsonParse(localStorage.getItem('user'))} isAuthenticated={!!localStorage.getItem('token')} ownProfile={true} />} />
         </Route>
       </Routes>
 

@@ -116,21 +116,36 @@ router.get('/me/profile', auth, async (req, res) => {
 // Get user profile
 router.get('/:userId', async (req, res) => {
   try {
-    console.log('📌 Fetching user profile for userId:', req.params.userId);
+    const { userId } = req.params;
     
-    const user = await User.findById(req.params.userId)
+    console.log('📌 Fetching user profile for userId:', userId);
+    
+    // Validation: Check if userId is valid
+    if (!userId || userId === 'undefined' || userId === 'null') {
+      console.log('❌ Invalid userId:', userId);
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+    
+    // Validation: Check if it's a valid MongoDB ObjectId format
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log('❌ Invalid ObjectId format:', userId);
+      return res.status(400).json({ message: 'Invalid user ID format' });
+    }
+    
+    const user = await User.findById(userId)
       .select('-password')
       .populate('followers', 'name email avatar')
       .populate('following', 'name email avatar');
 
     if (!user) {
-      console.log('❌ User not found:', req.params.userId);
+      console.log('❌ User not found:', userId);
       return res.status(404).json({ message: 'User not found' });
     }
 
     console.log('✅ User found:', user.name);
     
-    const blogs = await Blog.countDocuments({ author: req.params.userId, status: 'published' });
+    const blogs = await Blog.countDocuments({ author: userId, status: 'published' });
     
     const response = {
       _id: user._id,
@@ -155,11 +170,27 @@ router.get('/:userId', async (req, res) => {
 // Get user's blogs
 router.get('/:userId/blogs', async (req, res) => {
   try {
-    const blogs = await Blog.find({ author: req.params.userId, status: 'published' })
+    const { userId } = req.params;
+    
+    // Validation: Check if userId is valid
+    if (!userId || userId === 'undefined' || userId === 'null') {
+      console.log('❌ Invalid userId for blogs:', userId);
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+    
+    // Validation: Check if it's a valid MongoDB ObjectId format
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.log('❌ Invalid ObjectId format for blogs:', userId);
+      return res.status(400).json({ message: 'Invalid user ID format' });
+    }
+    
+    const blogs = await Blog.find({ author: userId, status: 'published' })
       .populate('author', 'name email avatar')
       .sort({ createdAt: -1 });
     res.json(blogs);
   } catch (err) {
+    console.error('❌ Error in GET /:userId/blogs:', err.message);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });

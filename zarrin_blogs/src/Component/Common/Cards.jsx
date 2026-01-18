@@ -6,7 +6,7 @@ import Heading from './Heading';
 import Button from './Button';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Calendar } from 'lucide-react';
+import { ArrowRight, Calendar, Heart, MessageCircle } from 'lucide-react';
 
 const Cards = ({
   id = '',
@@ -18,6 +18,8 @@ const Cards = ({
   buttonText = '',
   buttonVariant = 'primary',
   createdAt = '',
+  likes = 0,
+  comments = 0,
 }) => {
   const navigate = useNavigate();
 
@@ -38,91 +40,119 @@ const Cards = ({
     }
   };
 
+  // Gradient rotation for visual variety
+  const gradients = [
+    "from-[#6366F1] to-[#8B5CF6]",
+    "from-[#EC4899] to-[#F472B6]",
+    "from-[#06B6D4] to-[#6366F1]"
+  ];
+
+  const gradientIndex = (id?.charCodeAt(0) || 0) % gradients.length;
+  const gradient = gradients[gradientIndex];
+
   return (
     <div 
       onClick={handleCardClick}
-      className="group h-full bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer hover:translate-y-[-8px] flex flex-col border border-gray-100"
+      className="group h-full bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer flex flex-col border border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600"
     >
-      {/* Image Container with Overlay */}
+      {/* Gradient Top Border */}
+      <div className={`h-1 bg-gradient-to-r ${gradient}`}></div>
+
+      {/* Image Container */}
       <div className="relative overflow-hidden h-48 sm:h-56 md:h-64">
         <Image
           src={imageSrc}
           alt={imageAlt}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        {/* Dark Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
         
         {/* Category Badge */}
         {headingSmall && (
-          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full">
-            <span className="text-xs font-bold text-gray-800 uppercase tracking-wider">
-              {headingSmall}
-            </span>
+          <div className={`absolute top-4 left-4 bg-gradient-to-r ${gradient} text-white px-3 py-1.5 rounded-lg shadow-lg font-semibold text-xs uppercase tracking-wider`}>
+            {headingSmall}
           </div>
         )}
+
+        {/* Bookmark Button */}
+        <button 
+          className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 hover:bg-white flex items-center justify-center transition-all shadow-lg hover:shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
+        </button>
       </div>
 
       {/* Content Container */}
-      <div className="flex flex-col justify-between flex-1 p-5 sm:p-6">
+      <div className="flex flex-col justify-between flex-1 p-5 sm:p-6 space-y-4">
         {/* Date and Meta Info */}
         {createdAt && (
-          <div className="flex items-center text-xs text-gray-500 mb-3 space-x-1">
+          <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 space-x-2">
             <Calendar size={14} />
             <span>{formatDate(createdAt)}</span>
           </div>
         )}
 
         {/* Title */}
-        <div className="mb-3">
+        <div>
           <Heading 
             type="h5" 
-            className="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300"
+            className={`line-clamp-2 group-hover:bg-gradient-to-r group-hover:${gradient} group-hover:bg-clip-text group-hover:text-transparent transition-all duration-200 text-gray-900 dark:text-white`}
           >
             {headingLarge}
           </Heading>
         </div>
 
         {/* Description */}
-        <div className="mb-4 flex-1">
+        <div className="flex-1">
           <Paragraph 
-            className="text-sm text-gray-600 leading-relaxed line-clamp-3 opacity-85"
+            variant="sm"
+            className="line-clamp-3 text-gray-600 dark:text-gray-400"
           >
             {paragraph}
           </Paragraph>
         </div>
 
-        {/* Read More Button */}
+        {/* Engagement Stats */}
+        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-slate-700 pt-3">
+          <div className="flex items-center gap-1 hover:text-red-500 transition-colors">
+            <Heart size={16} className="group-hover:fill-red-500" />
+            <span>{likes || 0}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <MessageCircle size={16} />
+            <span>{comments || 0}</span>
+          </div>
+        </div>
+
+        {/* Read More Link */}
         {buttonText && (
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-semibold text-blue-600 group-hover:text-blue-700 transition-colors duration-300">
+          <div className={`flex items-center space-x-2 pt-2 bg-gradient-to-r ${gradient} bg-clip-text text-transparent group-hover:gap-2 transition-all duration-200`}>
+            <span className="text-sm font-semibold">
               {buttonText}
             </span>
             <ArrowRight 
               size={16} 
-              className="text-blue-600 group-hover:translate-x-1 transition-transform duration-300"
+              className="group-hover:translate-x-1 transition-transform duration-200 text-gray-600 dark:text-gray-400 group-hover:text-transparent"
             />
           </div>
         )}
       </div>
-
-      {/* Bottom Accent Line */}
-      <div className="h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     </div>
   );
-};
+}
 
 Cards.propTypes = {
   id: PropTypes.string,
   imageSrc: PropTypes.string,
   imageAlt: PropTypes.string,
   headingSmall: PropTypes.string,
-  headingLarge: PropTypes.string,
+  headingLarge: PropTypes.string, 
   paragraph: PropTypes.string,
   buttonText: PropTypes.string,
-  buttonVariant: PropTypes.oneOf(['primary', 'outline', 'dark', 'read']),
+  buttonVariant: PropTypes.string,
   createdAt: PropTypes.string,
-};
-
+  likes: PropTypes.number,
+  comments: PropTypes.number,
+};    
 export default Cards;
-

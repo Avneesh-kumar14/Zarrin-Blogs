@@ -14,27 +14,25 @@ const Button = ({
   icon: Icon = null,
 }) => {
   const variants = {
-    primary: 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl',
-    secondary: 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl',
-    success: 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl',
-    danger: 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl',
-    outline: 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:border-blue-700',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100',
-    dark: 'bg-gray-900 text-white hover:bg-black shadow-lg hover:shadow-xl',
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md',
+    secondary: 'bg-slate-600 hover:bg-slate-700 text-white shadow-sm hover:shadow-md',
+    success: 'bg-green-600 hover:bg-green-700 text-white shadow-sm hover:shadow-md',
+    error: 'bg-red-600 hover:bg-red-700 text-white shadow-sm hover:shadow-md',
+    outline: 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
+    ghost: 'bg-transparent text-slate-700 hover:bg-slate-100',
   };
 
   const sizes = {
     sm: 'px-3 py-1.5 text-sm',
     md: 'px-6 py-2.5 text-base',
-    lg: 'px-8 py-3 text-lg',
-    xl: 'px-10 py-4 text-xl',
+    lg: 'px-8 py-3 text-base',
+    xl: 'px-10 py-4 text-lg',
   };
 
   const baseClasses = `
-    inline-flex items-center justify-center space-x-2 font-semibold rounded-lg
-    transition-all duration-300 ease-out
-    hover:scale-105 hover:-translate-y-1 active:scale-95 active:translate-y-0
-    disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 disabled:hover:scale-100
+    inline-flex items-center justify-center space-x-2 font-semibold rounded-md
+    transition-all duration-200
+    disabled:opacity-50 disabled:cursor-not-allowed
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
     ${fullWidth ? 'w-full' : ''}
     ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
@@ -64,7 +62,7 @@ const Button = ({
 
 Button.propTypes = {
   text: PropTypes.string,
-  variant: PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'outline', 'ghost', 'dark']),
+  variant: PropTypes.oneOf(['primary', 'secondary', 'success', 'error', 'outline', 'ghost']),
   className: PropTypes.string,
   children: PropTypes.node,
   onClick: PropTypes.func,

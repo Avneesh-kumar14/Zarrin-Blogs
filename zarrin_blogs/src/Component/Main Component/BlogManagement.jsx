@@ -104,8 +104,14 @@ const BlogManagement = ({ showAll = false }) => {
   };
 
   return (
-    <div className="p-4 sm:p-8 bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen">
-      <div className="max-w-6xl mx-auto">
+    <div className="p-4 sm:p-8 bg-gradient-to-br from-white via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen relative overflow-hidden">
+      {/* Animated Background Blobs */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-300 to-pink-300 dark:from-purple-600 dark:to-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-br from-cyan-300 to-indigo-300 dark:from-cyan-600 dark:to-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Alert */}
         {alert && (
           <div className="mb-6">
@@ -121,7 +127,7 @@ const BlogManagement = ({ showAll = false }) => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
           <div>
-            <Headings type="h2" className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 dark:from-indigo-400 dark:via-pink-400 dark:to-amber-400 bg-clip-text text-transparent mb-2">
+            <Headings type="h2" className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] dark:from-[#6366F1] dark:via-[#EC4899] dark:to-[#8B5CF6] bg-clip-text text-transparent mb-2">
               {showAll ? '📚 All Posts' : '✍️ My Blogs'}
             </Headings>
             <Paragraph className="text-slate-600 dark:text-slate-400">
@@ -132,7 +138,7 @@ const BlogManagement = ({ showAll = false }) => {
           {!showAll && (
             <button
               onClick={() => navigate('/blog/create')}
-              className="flex items-center space-x-2 bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform whitespace-nowrap"
+              className="flex items-center space-x-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E23DA5] text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 transform whitespace-nowrap"
             >
               <Plus size={20} />
               <span>Create New Blog</span>
@@ -143,17 +149,21 @@ const BlogManagement = ({ showAll = false }) => {
         {/* Loading State */}
         {loading && (
           <div className="flex justify-center py-16">
-            <div className="animate-spin">
-              <div className="w-16 h-16 border-4 border-indigo-200 dark:border-indigo-800 border-t-indigo-600 dark:border-t-indigo-400 rounded-full"></div>
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#6366F1] to-[#EC4899] p-[3px]">
+              <div className="w-full h-full bg-white dark:bg-slate-950 rounded-full flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-slate-700 border-t-[#6366F1]"></div>
+              </div>
             </div>
           </div>
         )}
 
         {/* Empty State */}
         {!loading && blogs.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-600 shadow-sm hover:shadow-md transition-all">
-            <div className="text-5xl mb-4">📝</div>
-            <Headings type="h4" className="text-gray-900 dark:text-white mb-2 text-xl">
+          <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
+            <div className="inline-block p-4 bg-gradient-to-br from-[#6366F1] to-[#EC4899] rounded-2xl mb-6">
+              <div className="text-5xl">📝</div>
+            </div>
+            <Headings type="h4" className="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent mb-2 text-xl font-bold">
               No blogs yet
             </Headings>
             <Paragraph className="text-slate-500 dark:text-slate-400 mb-6">
@@ -162,7 +172,7 @@ const BlogManagement = ({ showAll = false }) => {
             {!showAll && (
               <button
                 onClick={() => navigate('/blog/create')}
-                className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all hover:scale-105 inline-block"
+                className="px-8 py-3 bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E23DA5] text-white rounded-xl font-semibold hover:shadow-lg transition-all hover:scale-105 inline-block"
               >
                 Create Your First Blog
               </button>
@@ -174,19 +184,22 @@ const BlogManagement = ({ showAll = false }) => {
         {!loading && blogs.length > 0 && (
           <div className="grid grid-cols-1 gap-6">
             {blogs.map((blog, index) => {
-              const colors = [
-                { border: 'border-indigo-200 dark:border-indigo-700', bg: 'bg-indigo-50/50 dark:bg-indigo-900/20', icon: 'text-indigo-600 dark:text-indigo-400', accent: 'from-indigo-500 to-indigo-600' },
-                { border: 'border-pink-200 dark:border-pink-700', bg: 'bg-pink-50/50 dark:bg-pink-900/20', icon: 'text-pink-600 dark:text-pink-400', accent: 'from-pink-500 to-pink-600' },
-                { border: 'border-amber-200 dark:border-amber-700', bg: 'bg-amber-50/50 dark:bg-amber-900/20', icon: 'text-amber-600 dark:text-amber-400', accent: 'from-amber-500 to-amber-600' },
-                { border: 'border-emerald-200 dark:border-emerald-700', bg: 'bg-emerald-50/50 dark:bg-emerald-900/20', icon: 'text-emerald-600 dark:text-emerald-400', accent: 'from-emerald-500 to-emerald-600' }
+              const gradients = [
+                { border: 'from-[#6366F1] to-[#8B5CF6]', gradient: 'from-[#6366F1] to-[#8B5CF6]', light: 'bg-indigo-50/50 dark:bg-indigo-900/20', text: 'text-[#6366F1] dark:text-indigo-400' },
+                { border: 'from-[#EC4899] to-[#F472B6]', gradient: 'from-[#EC4899] to-[#F472B6]', light: 'bg-pink-50/50 dark:bg-pink-900/20', text: 'text-[#EC4899] dark:text-pink-400' },
+                { border: 'from-[#06B6D4] to-[#6366F1]', gradient: 'from-[#06B6D4] to-[#6366F1]', light: 'bg-cyan-50/50 dark:bg-cyan-900/20', text: 'text-[#06B6D4] dark:text-cyan-400' },
+                { border: 'from-[#FB923C] to-[#FBBF24]', gradient: 'from-[#FB923C] to-[#FBBF24]', light: 'bg-orange-50/50 dark:bg-orange-900/20', text: 'text-[#FB923C] dark:text-orange-400' }
               ];
-              const color = colors[index % colors.length];
+              const color = gradients[index % gradients.length];
               
               return (
                 <div 
                   key={blog._id} 
-                  className={`bg-white dark:bg-slate-800 border-l-4 ${color.border} rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:scale-[1.02] origin-left`}
+                  className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:scale-[1.01] border border-gray-100 dark:border-slate-800 backdrop-blur"
                 >
+                  {/* Gradient Top Border */}
+                  <div className={`h-1 bg-gradient-to-r ${color.gradient}`}></div>
+
                   <div className="p-6 sm:p-8">
                     {/* Blog Info */}
                     <div className="flex flex-col sm:flex-row gap-6 mb-6">
@@ -203,21 +216,21 @@ const BlogManagement = ({ showAll = false }) => {
                       
                       {/* Content */}
                       <div className="flex-1">
-                        <Headings type="h4" className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-pink-600 group-hover:bg-clip-text transition-all">
+                        <Headings type="h4" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent mb-3">
                           {blog.title}
                         </Headings>
                         
                         {/* Meta Info */}
                         <div className="flex flex-wrap gap-4 mb-4 text-sm text-slate-600 dark:text-slate-400">
-                          <div className={`flex items-center space-x-2 px-3 py-1 ${color.bg} rounded-lg`}>
-                            <Folder size={16} className={color.icon} />
+                          <div className={`flex items-center space-x-2 px-3 py-1 ${color.light} rounded-lg`}>
+                            <Folder size={16} className={color.text} />
                             <span className="font-medium">
                               {blog.category && blog.category.length > 0 
                                 ? blog.category.map(c => c.name).join(', ')
                                 : 'Uncategorized'}
                             </span>
                           </div>
-                          <div className="flex items-center space-x-2 px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                          <div className="flex items-center space-x-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
                             <Calendar size={16} className="text-slate-600 dark:text-slate-400" />
                             <span>{new Date(blog.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                           </div>
@@ -231,24 +244,24 @@ const BlogManagement = ({ showAll = false }) => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-2 pt-6 border-t border-slate-200 dark:border-slate-700">
+                    <div className="flex flex-wrap gap-2 pt-6 border-t border-slate-200 dark:border-slate-800">
                       <button
                         onClick={() => navigate(`/blog/${blog._id}/preview`)}
-                        className={`flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-indigo-50 dark:from-indigo-900/30 to-indigo-100 dark:to-indigo-800/30 text-indigo-700 dark:text-indigo-300 rounded-lg font-semibold hover:from-indigo-100 hover:to-indigo-200 dark:hover:from-indigo-900/50 dark:hover:to-indigo-800/50 transition-all duration-300 hover:shadow-md`}
+                        className={`flex items-center space-x-2 px-4 py-2 bg-gradient-to-r ${color.gradient} text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105 transform`}
                       >
                         <Eye size={18} />
                         <span>Preview</span>
                       </button>
                       <button
                         onClick={() => navigate(`/blog/${blog._id}/edit`)}
-                        className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-pink-50 dark:from-pink-900/30 to-pink-100 dark:to-pink-800/30 text-pink-700 dark:text-pink-300 rounded-lg font-semibold hover:from-pink-100 hover:to-pink-200 dark:hover:from-pink-900/50 dark:hover:to-pink-800/50 transition-all duration-300 hover:shadow-md"
+                        className={`flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-[#06B6D4] to-[#06B6D4] text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105 transform`}
                       >
                         <Edit size={18} />
                         <span>Edit</span>
                       </button>
                       <button
                         onClick={() => handleDeleteBlog(blog._id)}
-                        className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-50 dark:from-red-900/30 to-red-100 dark:to-red-800/30 text-red-700 dark:text-red-300 rounded-lg font-semibold hover:from-red-100 hover:to-red-200 dark:hover:from-red-900/50 dark:hover:to-red-800/50 transition-all duration-300 hover:shadow-md"
+                        className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105 transform"
                       >
                         <Trash2 size={18} />
                         <span>Delete</span>
@@ -261,6 +274,26 @@ const BlogManagement = ({ showAll = false }) => {
           </div>
         )}
       </div>
+
+      <style>{`
+        @keyframes blob {
+          0%, 100% {
+            transform: translate(0, 0) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+      `}</style>
     </div>
   );
 };

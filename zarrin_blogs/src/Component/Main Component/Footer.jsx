@@ -43,18 +43,14 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-300 overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl" />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl" />
-
+    <footer className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:bg-slate-950 text-slate-300 border-t border-slate-800">
       {/* Newsletter */}
       <div className="relative max-w-7xl mx-auto px-6 pt-24">
-        <div className="bg-gradient-to-br from-cyan-500 via-teal-500 to-cyan-600 rounded-3xl p-10 grid md:grid-cols-2 gap-8 items-center">
+        <div className="bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] hover:shadow-2xl transition-all rounded-2xl p-10 grid md:grid-cols-2 gap-8 items-center shadow-xl">
           <div className="text-white">
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles size={18} />
-              <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
+              <Sparkles size={18} className="text-amber-300" />
+              <span className="text-sm bg-white/20 px-3 py-1 rounded-full text-xs font-semibold">
                 Weekly Digest
               </span>
             </div>
@@ -66,14 +62,14 @@ const Footer = () => {
             </p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur rounded-2xl p-5">
+          <div className="bg-white/10 backdrop-blur rounded-xl p-5 border border-white/20">
             <div className="flex gap-2">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 h-12 rounded-lg px-4 bg-white text-black outline-none"
+                className="flex-1 h-12 rounded-md px-4 bg-white text-slate-900 outline-none focus:ring-2 focus:ring-purple-400 placeholder-slate-400"
               />
-              <button className="h-12 px-5 rounded-lg bg-black text-white hover:bg-zinc-800 transition">
+              <button className="h-12 px-5 rounded-md bg-white text-purple-700 hover:bg-purple-50 transition font-semibold">
                 Subscribe
               </button>
             </div>
@@ -87,15 +83,21 @@ const Footer = () => {
       {/* Stats */}
       <div className="relative max-w-7xl mx-auto px-6 py-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {stats.map((s) => {
+          {stats.map((s, idx) => {
             const Icon = s.icon;
+            const gradients = [
+              "from-[#6366F1] to-[#8B5CF6]",
+              "from-[#EC4899] to-[#F472B6]",
+              "from-[#06B6D4] to-[#6366F1]",
+              "from-[#FB923C] to-[#FBBF24]"
+            ];
             return (
               <div key={s.label}>
-                <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center mb-3">
-                  <Icon className="text-white" />
+                <div className={`w-16 h-16 mx-auto rounded-xl bg-gradient-to-br ${gradients[idx]} flex items-center justify-center mb-4 shadow-lg hover:scale-110 transition-transform`}>
+                  <Icon className="text-white" size={24} />
                 </div>
                 <div className="text-3xl font-bold text-white">{s.value}</div>
-                <div className="text-sm text-zinc-400">{s.label}</div>
+                <div className="text-sm text-slate-400">{s.label}</div>
               </div>
             );
           })}

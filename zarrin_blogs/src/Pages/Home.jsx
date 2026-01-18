@@ -118,16 +118,16 @@ const Home = () => {
   const categories = [
     { name: "Technology", icon: "💻", count: "2.3K articles", color: "from-[#6366F1] to-[#8B5CF6]" },
     { name: "Design", icon: "🎨", count: "1.8K articles", color: "from-[#EC4899] to-[#F472B6]" },
-    { name: "Business", icon: "📈", count: "1.5K articles", color: "from-[#06B6D4] to-[#6366F1]" },
-    { name: "Lifestyle", icon: "✨", count: "1.2K articles", color: "from-[#FB923C] to-[#F472B6]" }
+    { name: "Business", icon: "📈", count: "1.5K articles", color: "from-[#FB923C] to-[#FBBF24]" },
+    { name: "Lifestyle", icon: "✨", count: "1.2K articles", color: "from-[#06B6D4] to-[#10B981]" }
   ];
 
   // Platform stats
   const platformStats = [
     { icon: BookOpen, value: "50K+", label: "Articles Published", color: "from-[#6366F1] to-[#8B5CF6]" },
     { icon: Users, value: "1M+", label: "Active Readers", color: "from-[#EC4899] to-[#F472B6]" },
-    { icon: TrendingUp, value: "10K+", label: "Writers", color: "from-[#06B6D4] to-[#6366F1]" },
-    { icon: Award, value: "4.9/5", label: "User Rating", color: "from-[#FB923C] to-[#F472B6]" }
+    { icon: TrendingUp, value: "10K+", label: "Writers", color: "from-[#FB923C] to-[#FBBF24]" },
+    { icon: Award, value: "4.9/5", label: "User Rating", color: "from-[#06B6D4] to-[#10B981]" }
   ];
 
   // Features

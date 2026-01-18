@@ -26,41 +26,43 @@ const Alert = ({
   const styles = {
     error: {
       bg: 'bg-red-50',
-      border: 'border-red-500',
+      border: 'border-l-4 border-red-600',
       text: 'text-red-700',
-      icon: <AlertCircle size={20} className="flex-shrink-0" />,
-      emoji: '❌'
+      icon: 'text-red-600',
+      icon_component: <AlertCircle size={20} className="flex-shrink-0" />,
     },
     success: {
       bg: 'bg-green-50',
-      border: 'border-green-500',
+      border: 'border-l-4 border-green-600',
       text: 'text-green-700',
-      icon: <CheckCircle size={20} className="flex-shrink-0" />,
-      emoji: '✅'
+      icon: 'text-green-600',
+      icon_component: <CheckCircle size={20} className="flex-shrink-0" />,
     },
     warning: {
-      bg: 'bg-yellow-50',
-      border: 'border-yellow-500',
-      text: 'text-yellow-700',
-      icon: <AlertTriangle size={20} className="flex-shrink-0" />,
-      emoji: '⚠️'
+      bg: 'bg-amber-50',
+      border: 'border-l-4 border-amber-500',
+      text: 'text-amber-700',
+      icon: 'text-amber-600',
+      icon_component: <AlertTriangle size={20} className="flex-shrink-0" />,
     },
     info: {
       bg: 'bg-blue-50',
-      border: 'border-blue-500',
+      border: 'border-l-4 border-blue-600',
       text: 'text-blue-700',
-      icon: <Info size={20} className="flex-shrink-0" />,
-      emoji: 'ℹ️'
+      icon: 'text-blue-600',
+      icon_component: <Info size={20} className="flex-shrink-0" />,
     }
   };
 
   const style = styles[type] || styles.error;
 
   return (
-    <div className={`${style.bg} border-l-4 ${style.border} p-4 rounded animate-shake flex items-start justify-between gap-3 ${className}`}>
+    <div className={`${style.bg} ${style.border} p-4 rounded-md flex items-start justify-between gap-3 ${className}`}>
       <div className="flex items-start gap-3 flex-1">
-        {style.icon}
-        <Paragraph className={`${style.text} font-semibold`}>
+        <div className={style.icon}>
+          {style.icon_component}
+        </div>
+        <Paragraph variant="sm" className={`${style.text} font-medium`}>
           {message}
         </Paragraph>
       </div>
@@ -69,9 +71,9 @@ const Alert = ({
           setIsVisible(false);
           onClose && onClose();
         }}
-        className={`${style.text} hover:opacity-70 transition-opacity flex-shrink-0`}
+        className={`${style.text} hover:opacity-70 transition-opacity flex-shrink-0 pt-1`}
       >
-        <X size={20} />
+        <X size={18} />
       </button>
     </div>
   );

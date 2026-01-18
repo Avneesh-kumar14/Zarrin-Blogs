@@ -7,47 +7,31 @@ import { BookOpen, Sparkles, ArrowRight, Flame, Star, Clock, TrendingUp, Search,
 const Blog = () => {
   const [activeFilter, setActiveFilter] = useState('featured')
 
-  // Topic categories with updated colors
+  // Topic categories with vibrant gradient colors
   const topics = [
     {
       title: "Technology",
       description: "Latest trends in tech, software, and innovation",
       icon: "💻",
       gradient: "from-[#6366F1] to-[#8B5CF6]",
-      bgGradient: "from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-900/10",
-      borderColor: "border-indigo-300 dark:border-indigo-600",
-      textColor: "text-indigo-600 dark:text-indigo-400",
-      hoverBorder: "hover:border-indigo-500"
     },
     {
       title: "Design",
       description: "UI/UX, graphic design, and creative inspiration",
       icon: "🎨",
       gradient: "from-[#EC4899] to-[#F472B6]",
-      bgGradient: "from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-900/10",
-      borderColor: "border-pink-300 dark:border-pink-600",
-      textColor: "text-pink-600 dark:text-pink-400",
-      hoverBorder: "hover:border-pink-500"
     },
     {
       title: "Business",
       description: "Entrepreneurship, startups, and business insights",
       icon: "📈",
-      gradient: "from-[#06B6D4] to-[#6366F1]",
-      bgGradient: "from-cyan-50 to-cyan-100 dark:from-cyan-900/20 dark:to-cyan-900/10",
-      borderColor: "border-cyan-300 dark:border-cyan-600",
-      textColor: "text-cyan-600 dark:text-cyan-400",
-      hoverBorder: "hover:border-cyan-500"
+      gradient: "from-[#FB923C] to-[#FBBF24]",
     },
     {
       title: "Lifestyle",
       description: "Health, wellness, travel, and personal growth",
       icon: "✨",
-      gradient: "from-[#FB923C] to-[#F472B6]",
-      bgGradient: "from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/10",
-      borderColor: "border-amber-300 dark:border-amber-600",
-      textColor: "text-amber-600 dark:text-amber-400",
-      hoverBorder: "hover:border-amber-500"
+      gradient: "from-[#06B6D4] to-[#10B981]",
     }
   ]
 
@@ -55,11 +39,10 @@ const Blog = () => {
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#EC4899] text-white py-20 sm:py-32">
-        {/* Animated Aurora Background */}
+        {/* Animated Background Blobs */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-72 h-72 bg-[#6366F1]/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#EC4899]/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#8B5CF6]/10 rounded-full blur-3xl"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,20 +70,20 @@ const Blog = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto pt-8">
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-indigo-200">10K+</div>
+              <div className="text-center group">
+                <div className="text-3xl md:text-4xl font-bold text-white group-hover:scale-110 transition-transform">10K+</div>
                 <div className="text-white/80 text-sm mt-1">Articles</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-pink-200">100K+</div>
+              <div className="text-center group">
+                <div className="text-3xl md:text-4xl font-bold text-white group-hover:scale-110 transition-transform">100K+</div>
                 <div className="text-white/80 text-sm mt-1">Readers</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-amber-200">500+</div>
+              <div className="text-center group">
+                <div className="text-3xl md:text-4xl font-bold text-white group-hover:scale-110 transition-transform">500+</div>
                 <div className="text-white/80 text-sm mt-1">Authors</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-teal-200">4.9★</div>
+              <div className="text-center group">
+                <div className="text-3xl md:text-4xl font-bold text-white group-hover:scale-110 transition-transform">4.9★</div>
                 <div className="text-white/80 text-sm mt-1">Rating</div>
               </div>
             </div>
@@ -111,7 +94,7 @@ const Blog = () => {
                 onClick={() => setActiveFilter('featured')}
                 className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 ${
                   activeFilter === 'featured'
-                    ? 'bg-white text-indigo-700 shadow-lg shadow-white/25'
+                    ? 'bg-white text-purple-700 shadow-lg shadow-white/25'
                     : 'bg-white/10 border border-white/20 text-white hover:bg-white/20 backdrop-blur-sm'
                 }`}
               >
@@ -122,7 +105,7 @@ const Blog = () => {
                 onClick={() => setActiveFilter('trending')}
                 className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 ${
                   activeFilter === 'trending'
-                    ? 'bg-white text-indigo-700 shadow-lg shadow-white/25'
+                    ? 'bg-white text-purple-700 shadow-lg shadow-white/25'
                     : 'bg-white/10 border border-white/20 text-white hover:bg-white/20 backdrop-blur-sm'
                 }`}
               >
@@ -133,7 +116,7 @@ const Blog = () => {
                 onClick={() => setActiveFilter('new')}
                 className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 ${
                   activeFilter === 'new'
-                    ? 'bg-white text-indigo-700 shadow-lg shadow-white/25'
+                    ? 'bg-white text-purple-700 shadow-lg shadow-white/25'
                     : 'bg-white/10 border border-white/20 text-white hover:bg-white/20 backdrop-blur-sm'
                 }`}
               >
@@ -171,32 +154,35 @@ const Blog = () => {
               <a
                 key={index}
                 href="/blog"
-                className={`group relative bg-gradient-to-br ${topic.bgGradient} rounded-2xl p-8 border ${topic.borderColor} ${topic.hoverBorder} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden`}
+                className="group relative h-full bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden"
               >
-                {/* Gradient Accent */}
-                <div className={`absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br ${topic.gradient} opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-opacity duration-500`}></div>
+                {/* Top Gradient Border */}
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${topic.gradient}`}></div>
+
+                {/* Gradient Accent Background */}
+                <div className={`absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br ${topic.gradient} opacity-0 group-hover:opacity-15 rounded-full blur-2xl transition-opacity duration-500`}></div>
 
                 {/* Content */}
                 <div className="relative z-10 space-y-4">
                   {/* Icon */}
-                  <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br ${topic.gradient} rounded-2xl text-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                  <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${topic.gradient} rounded-2xl text-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                     {topic.icon}
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  <h3 className={`text-2xl font-bold bg-gradient-to-r ${topic.gradient} bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300`}>
                     {topic.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                     {topic.description}
                   </p>
 
                   {/* CTA */}
-                  <div className={`inline-flex items-center gap-2 ${topic.textColor} font-semibold text-sm pt-4 group-hover:gap-3 transition-all`}>
+                  <div className={`inline-flex items-center gap-2 bg-gradient-to-r ${topic.gradient} bg-clip-text text-transparent font-semibold text-sm pt-4 group-hover:gap-3 transition-all`}>
                     Explore
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-gray-600 dark:text-gray-400 group-hover:text-transparent" />
                   </div>
                 </div>
               </a>
