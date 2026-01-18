@@ -84,7 +84,6 @@ function AppWrapper() {
         </Route>
       </Routes>
 
-      {!hideFooterAndUser && <Usercomponent />}
       {!hideFooterAndUser && <Footer />}
     </>
   );

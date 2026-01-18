@@ -195,15 +195,6 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Top Announcement Bar */}
-      <div className="bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] text-white py-3 px-4 text-center text-sm shadow-lg">
-        <div className="flex items-center justify-center gap-2 flex-wrap">
-          <Sparkles className="w-4 h-4 text-amber-300 flex-shrink-0" />
-          <span className="font-medium">New: AI-powered article assistant is now available!</span>
-          <button className="underline hover:no-underline ml-2 transition font-semibold">Learn More</button>
-        </div>
-      </div>
-
       {/* Main Navbar */}
       <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
