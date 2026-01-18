@@ -68,37 +68,47 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!window.confirm('Delete this user? All their blogs will also be deleted.')) return;
+    setAlert({
+      type: 'warning',
+      message: 'Delete this user? All their blogs will also be deleted. This cannot be undone.',
+      isConfirmation: true,
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`http://localhost:8200/api/admin/users/${userId}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+          });
 
-    try {
-      const res = await fetch(`http://localhost:8200/api/admin/users/${userId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (!res.ok) throw new Error('Failed to delete user');
-      setAlert({ type: 'success', message: 'User deleted successfully' });
-      fetchDashboard();
-    } catch (err) {
-      setAlert({ type: 'error', message: err.message });
-    }
+          if (!res.ok) throw new Error('Failed to delete user');
+          setAlert({ type: 'success', message: 'User deleted successfully!' });
+          fetchDashboard();
+        } catch (err) {
+          setAlert({ type: 'error', message: err.message });
+        }
+      }
+    });
   };
 
   const handleDeleteBlog = async (blogId) => {
-    if (!window.confirm('Delete this blog?')) return;
+    setAlert({
+      type: 'warning',
+      message: 'Delete this blog? This action cannot be undone.',
+      isConfirmation: true,
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`http://localhost:8200/api/admin/blogs/${blogId}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+          });
 
-    try {
-      const res = await fetch(`http://localhost:8200/api/admin/blogs/${blogId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (!res.ok) throw new Error('Failed to delete blog');
-      setAlert({ type: 'success', message: 'Blog deleted successfully' });
-      fetchDashboard();
-    } catch (err) {
-      setAlert({ type: 'error', message: err.message });
-    }
+          if (!res.ok) throw new Error('Failed to delete blog');
+          setAlert({ type: 'success', message: 'Blog deleted successfully!' });
+          fetchDashboard();
+        } catch (err) {
+          setAlert({ type: 'error', message: err.message });
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -145,7 +155,15 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
       {/* Alert */}
       {alert && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-          <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+            duration={alert.isConfirmation ? 0 : 5000}
+            isConfirmation={alert.isConfirmation}
+            onConfirm={alert.onConfirm}
+            onCancel={() => setAlert(null)}
+          />
         </div>
       )}
 

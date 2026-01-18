@@ -117,24 +117,30 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
   };
 
   const handleDeleteComment = async (commentId) => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    // Show custom alert for confirmation instead of window.confirm
+    setAlert({ 
+      type: 'warning', 
+      message: 'Are you sure you want to delete this comment? This action cannot be undone.',
+      isConfirmation: true,
+      onConfirm: async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const res = await fetch(`http://localhost:8200/api/comments/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
 
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:8200/api/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`
+          if (!res.ok) throw new Error('Failed to delete comment');
+          
+          setComments(comments.filter(c => c._id !== commentId));
+          setAlert({ type: 'success', message: 'Comment deleted successfully!' });
+        } catch (err) {
+          setAlert({ type: 'error', message: err.message });
         }
-      });
-
-      if (!res.ok) throw new Error('Failed to delete comment');
-      
-      setComments(comments.filter(c => c._id !== commentId));
-      setAlert({ type: 'success', message: 'Comment deleted successfully!' });
-    } catch (err) {
-      setAlert({ type: 'error', message: err.message });
-    }
+      }
+    });
   };
 
   const canEditDelete = (comment) => {
@@ -149,7 +155,10 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
             message={alert.message}
             type={alert.type}
             onClose={() => setAlert(null)}
-            duration={4000}
+            duration={alert.isConfirmation ? 0 : 4000}
+            isConfirmation={alert.isConfirmation}
+            onConfirm={alert.onConfirm}
+            onCancel={() => setAlert(null)}
           />
         </div>
       )}

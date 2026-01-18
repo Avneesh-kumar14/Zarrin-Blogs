@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Heading from "../Common/Heading";
 import Paragraph from "../Common/Paragraph";
+import Alert from "../Common/Alert";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -19,6 +20,7 @@ const Categories = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(null);
+  const [alert, setAlert] = useState(null);
 
   useEffect(() => {
     fetchCategories();
@@ -64,21 +66,27 @@ const Categories = () => {
   };
 
   const deleteCategory = async (id) => {
-    if (!window.confirm("Delete this category?")) return;
-
-    try {
-      setDeleteLoading(id);
-      const token = localStorage.getItem("token");
-      await fetch(`http://localhost:8200/api/categories/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setCategories(categories.filter((c) => c._id !== id));
-    } catch {
-      setError("Delete failed");
-    } finally {
-      setDeleteLoading(null);
-    }
+    setAlert({
+      type: 'warning',
+      message: 'Delete this category? This action cannot be undone.',
+      isConfirmation: true,
+      onConfirm: async () => {
+        try {
+          setDeleteLoading(id);
+          const token = localStorage.getItem("token");
+          await fetch(`http://localhost:8200/api/categories/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setCategories(categories.filter((c) => c._id !== id));
+          setAlert({ type: 'success', message: 'Category deleted successfully!' });
+        } catch {
+          setAlert({ type: 'error', message: 'Delete failed' });
+        } finally {
+          setDeleteLoading(null);
+        }
+      }
+    });
   };
 
   return (
@@ -112,12 +120,23 @@ const Categories = () => {
         </div>
 
         {/* Error and Success Messages */}
-        {error && (
+        {alert && (
+          <Alert
+            message={alert.message}
+            type={alert.type}
+            onClose={() => setAlert(null)}
+            duration={alert.isConfirmation ? 0 : 4000}
+            isConfirmation={alert.isConfirmation}
+            onConfirm={alert.onConfirm}
+            onCancel={() => setAlert(null)}
+          />
+        )}
+        {error && !alert && (
           <div className="p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-lg">
             <p className="text-red-700 dark:text-red-400 font-medium">{error}</p>
           </div>
         )}
-        {success && (
+        {success && !alert && (
           <div className="p-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-lg">
             <p className="text-green-700 dark:text-green-400 font-medium flex items-center gap-2"><CheckCircle size={20} /> {success}</p>
           </div>

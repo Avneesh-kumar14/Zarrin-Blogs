@@ -49,30 +49,35 @@ const Bookmarks = ({ isAuthenticated }) => {
   };
 
   const handleRemoveBookmark = async (blogId) => {
-    if (!window.confirm('Remove this bookmark?')) return;
+    setAlert({
+      type: 'warning',
+      message: 'Remove this bookmark? This action cannot be undone.',
+      isConfirmation: true,
+      onConfirm: async () => {
+        try {
+          setDeleting(blogId);
+          const token = localStorage.getItem('token');
+          const res = await fetch(
+            `http://localhost:8200/api/bookmarks/${blogId}`,
+            {
+              method: 'DELETE',
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          );
 
-    try {
-      setDeleting(blogId);
-      const token = localStorage.getItem('token');
-      const res = await fetch(
-        `http://localhost:8200/api/bookmarks/${blogId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+          if (!res.ok) throw new Error('Failed to remove bookmark');
+
+          setBookmarks(bookmarks.filter(b => b.blog._id !== blogId));
+          setAlert({ type: 'success', message: 'Bookmark removed successfully!' });
+        } catch (err) {
+          setAlert({ type: 'error', message: 'Failed to remove bookmark: ' + err.message });
+        } finally {
+          setDeleting(null);
         }
-      );
-
-      if (!res.ok) throw new Error('Failed to remove bookmark');
-
-      setBookmarks(bookmarks.filter(b => b.blog._id !== blogId));
-      setAlert({ type: 'success', message: 'Bookmark removed' });
-    } catch (err) {
-      setAlert({ type: 'error', message: 'Failed to remove bookmark: ' + err.message });
-    } finally {
-      setDeleting(null);
-    }
+      }
+    });
   };
 
   const handleViewBlog = (blogId) => {
@@ -117,7 +122,10 @@ const Bookmarks = ({ isAuthenticated }) => {
               message={alert.message}
               type={alert.type}
               onClose={() => setAlert(null)}
-              duration={5000}
+              duration={alert.isConfirmation ? 0 : 5000}
+              isConfirmation={alert.isConfirmation}
+              onConfirm={alert.onConfirm}
+              onCancel={() => setAlert(null)}
             />
           </div>
         )}

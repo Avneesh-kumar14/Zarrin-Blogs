@@ -86,21 +86,26 @@ const BlogManagement = ({ showAll = false }) => {
 
   // Delete blog
   const handleDeleteBlog = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this blog? This action cannot be undone.')) return;
-    
-    try {
-      const res = await fetch(`http://localhost:8200/api/blogs/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+    setAlert({
+      type: 'warning',
+      message: 'Are you sure you want to delete this blog? This action cannot be undone.',
+      isConfirmation: true,
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`http://localhost:8200/api/blogs/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          if (!res.ok) throw new Error('Failed to delete blog');
+          setAlert({ type: 'success', message: 'Blog deleted successfully!' });
+          fetchBlogs();
+        } catch (err) {
+          setAlert({ type: 'error', message: 'Error deleting blog: ' + err.message });
         }
-      });
-      if (!res.ok) throw new Error('Failed to delete blog');
-      setAlert({ type: 'success', message: 'Blog deleted successfully!' });
-      fetchBlogs();
-    } catch (err) {
-      setAlert({ type: 'error', message: 'Error deleting blog: ' + err.message });
-    }
+      }
+    });
   };
 
   return (
@@ -119,7 +124,10 @@ const BlogManagement = ({ showAll = false }) => {
               message={alert.message}
               type={alert.type}
               onClose={() => setAlert(null)}
-              duration={5000}
+              duration={alert.isConfirmation ? 0 : 5000}
+              isConfirmation={alert.isConfirmation}
+              onConfirm={alert.onConfirm}
+              onCancel={() => setAlert(null)}
             />
           </div>
         )}

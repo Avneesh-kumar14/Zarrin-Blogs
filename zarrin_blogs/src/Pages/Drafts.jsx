@@ -78,26 +78,31 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
   };
 
   const handleDeleteDraft = async (blogId) => {
-    if (!window.confirm('Delete this draft?')) return;
+    setAlert({
+      type: 'warning',
+      message: 'Delete this draft? This action cannot be undone.',
+      isConfirmation: true,
+      onConfirm: async () => {
+        try {
+          setDeleting(blogId);
+          const token = localStorage.getItem('token');
+          const res = await fetch(`http://localhost:8200/api/blogs/${blogId}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
 
-    try {
-      setDeleting(blogId);
-      const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:8200/api/blogs/${blogId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`
+          if (!res.ok) throw new Error('Failed to delete draft');
+          setDrafts(drafts.filter(d => d._id !== blogId));
+          setAlert({ type: 'success', message: 'Draft deleted successfully!' });
+        } catch (err) {
+          setAlert({ type: 'error', message: 'Failed to delete draft: ' + err.message });
+        } finally {
+          setDeleting(null);
         }
-      });
-
-      if (!res.ok) throw new Error('Failed to delete draft');
-      setDrafts(drafts.filter(d => d._id !== blogId));
-      setAlert({ type: 'success', message: 'Draft deleted' });
-    } catch (err) {
-      setAlert({ type: 'error', message: 'Failed to delete draft: ' + err.message });
-    } finally {
-      setDeleting(null);
-    }
+      }
+    });
   };
 
   const handleEditDraft = (blogId) => {
@@ -144,7 +149,10 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
               message={alert.message}
               type={alert.type}
               onClose={() => setAlert(null)}
-              duration={4000}
+              duration={alert.isConfirmation ? 0 : 4000}
+              isConfirmation={alert.isConfirmation}
+              onConfirm={alert.onConfirm}
+              onCancel={() => setAlert(null)}
             />
           </div>
         )}
