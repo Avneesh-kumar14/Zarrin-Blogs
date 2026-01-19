@@ -10,7 +10,7 @@ import { ArrowRight, Calendar, Heart, MessageCircle } from 'lucide-react';
 
 const Cards = ({
   id = '',
-  imageSrc = '/Assets/beach.png',
+  imageSrc = null,
   imageAlt = 'Card Image',
   headingSmall = '',
   headingLarge = '',
@@ -50,6 +50,9 @@ const Cards = ({
   const gradientIndex = (id?.charCodeAt(0) || 0) % gradients.length;
   const gradient = gradients[gradientIndex];
 
+  // Use placeholder if no image provided
+  const displayImage = imageSrc || '/Assets/beach.png';
+
   return (
     <div 
       onClick={handleCardClick}
@@ -61,7 +64,7 @@ const Cards = ({
       {/* Image Container */}
       <div className="relative overflow-hidden h-48 sm:h-56 md:h-64">
         <Image
-          src={imageSrc}
+          src={displayImage}
           alt={imageAlt}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />

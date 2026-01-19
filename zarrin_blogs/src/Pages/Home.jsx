@@ -239,7 +239,7 @@ const Home = () => {
                   {/* Image */}
                   <div className="relative h-80 overflow-hidden">
                     <img
-                      src={featuredBlog.image || '/Assets/beach.png'}
+                      src={featuredBlog.images && featuredBlog.images[0] ? featuredBlog.images[0] : (featuredBlog.image || '/Assets/beach.png')}
                       alt={featuredBlog.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
@@ -335,7 +335,7 @@ const Home = () => {
                     
                     <div className="relative h-48 overflow-hidden">
                       <img
-                        src={blog.image || '/Assets/beach.png'}
+                        src={blog.images && blog.images[0] ? blog.images[0] : (blog.image || '/Assets/beach.png')}
                         alt={blog.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
@@ -542,7 +542,7 @@ const Home = () => {
               <a key={article._id} href={`/blog/${article._id}/preview`} className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl bg-white dark:bg-slate-800 flex flex-col h-full">
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={article.image || '/Assets/beach.png'}
+                    src={article.images && article.images[0] ? article.images[0] : (article.image || '/Assets/beach.png')}
                     alt={article.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
