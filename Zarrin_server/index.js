@@ -4,10 +4,13 @@ require('dotenv').config({ quiet: true });
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const http = require('http');
+const socketIO = require('socket.io');
 
 const logger = require('./utils/logger');
 const { swaggerUi, swaggerSpec } = require('./swagger');
 const connectDB = require('./connection');
+const SocketHandler = require('./services/socketHandler');
 const authRoutes = require('./routes/auth');
 const blogRoutes = require('./routes/blog');
 const categoryRoutes = require('./routes/category');
@@ -25,6 +28,7 @@ const adminRoutes = require('./routes/admin');
 const readingProgressRoutes = require('./routes/readingProgress');
 const settingsRoutes = require('./routes/settings');
 const notificationsRoutes = require('./routes/notifications');
+const chatRoutes = require('./routes/chat');
 
 // Security middleware
 const {
@@ -124,6 +128,9 @@ app.use('/api/settings', settingsRoutes);
 // ✅ Notifications routes (protected by auth middleware)
 app.use('/api/notifications', notificationsRoutes);
 
+// ✅ Chat routes (protected by auth middleware)
+app.use('/api/chat', chatRoutes);
+
 // ✅ Reading Progress routes (protected by auth middleware)
 app.use('/api/reading-progress', readingProgressRoutes);
 
@@ -147,9 +154,32 @@ const startServer = async () => {
     console.log('[DEBUG] Connecting to MongoDB...');
     await connectDB();
     console.log('[DEBUG] MongoDB connected, starting Express server...');
-    app.listen(PORT, () => {
+
+    // Create HTTP server for Socket.IO
+    const server = http.createServer(app);
+
+    // ✅ Initialize Socket.IO with CORS and connection settings
+    const io = socketIO(server, {
+      cors: {
+        origin: allowedOrigins,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE']
+      },
+      transports: ['websocket', 'polling'],
+      pingInterval: 25000,
+      pingTimeout: 60000,
+      maxHttpBufferSize: 1e6
+    });
+
+    // Initialize Socket handlers
+    new SocketHandler(io);
+    logger.info('✅ Socket.IO initialized');
+
+    // Start the server
+    server.listen(PORT, () => {
       logger.info('✅ Backend API running', {
         url: `http://localhost:${PORT}`,
+        socketIO: 'ws://localhost:' + PORT + '/chat',
         mongoState: mongoose.connection.readyState,
         environment: process.env.NODE_ENV || 'development',
       });

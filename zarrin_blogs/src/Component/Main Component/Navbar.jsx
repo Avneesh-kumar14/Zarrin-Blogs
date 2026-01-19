@@ -19,7 +19,8 @@ import {
   TrendingUp,
   Bell,
   Settings,
-  ArrowRight
+  ArrowRight,
+  MessageCircle
 } from 'lucide-react';
 import Heading from '../Common/Heading';
 import Logo from '../Common/Logo';
@@ -351,7 +352,14 @@ const Navbar = () => {
                   >
                     <Bookmark size={20} />
                   </NavLink>
-
+                  {/* Chat */}
+                  <NavLink
+                    to="/chat"
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-300 text-gray-700 dark:text-gray-300"
+                    title="Chat"
+                  >
+                    <MessageCircle size={20} />
+                  </NavLink>
                   {/* Notifications */}
                   <NavLink
                     to="/notifications"

@@ -5,6 +5,7 @@ import Navbar from './Component/Main Component/Navbar.jsx';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { UserProvider } from './context/UserContext.jsx';
+import { ChatProvider } from './context/ChatContext.jsx';
 import Home from './Pages/Home.jsx';
 import Footer from './Component/Main Component/Footer.jsx';
 import Usercomponent from './Component/Common/Usercontact.jsx'
@@ -33,6 +34,7 @@ import Following from './Pages/Following.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
 import Notifications from './Pages/Notifications.jsx';
 import Settings from './Pages/Settings.jsx';
+import Chat from './Component/Chat/Chat.jsx';
 
 // ✅ Safe JSON parse helper
 const safeJsonParse = (jsonString, fallback = {}) => {
@@ -47,7 +49,8 @@ const safeJsonParse = (jsonString, fallback = {}) => {
 
 function AppWrapper() {
   const location = useLocation();
-  const hideFooterAndUser = location.pathname.startsWith("/dashboard");
+  const hideFooterAndUser = location.pathname.startsWith("/dashboard") || location.pathname.startsWith("/chat");
+  const token = localStorage.getItem('token');
   return (
     <>
       <Navbar />
@@ -65,6 +68,7 @@ function AppWrapper() {
         <Route path="/profile/:userId" element={<UserProfile currentUser={safeJsonParse(localStorage.getItem('user'))} isAuthenticated={!!localStorage.getItem('token')} />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/chat" element={<Chat userToken={token} />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path='/signup' element={<Signup />} />
@@ -90,12 +94,16 @@ function AppWrapper() {
 }
 
 function App() {
+  const token = localStorage.getItem('token');
+  
   return (
     <ThemeProvider>
       <UserProvider>
-        <BrowserRouter>
-          <AppWrapper />
-        </BrowserRouter>
+        <ChatProvider token={token}>
+          <BrowserRouter>
+            <AppWrapper />
+          </BrowserRouter>
+        </ChatProvider>
       </UserProvider>
     </ThemeProvider>
   );
