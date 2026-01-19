@@ -14,7 +14,7 @@ const auth = async (req, res, next) => {
     console.log('Received token:', token.substring(0, 20) + '...');
 
     // Get JWT_SECRET from environment or use fallback
-    const JWT_SECRET = process.env.JWT_SECRET || 'your-fallback-secret-key-make-this-long-and-secure-123';
+    const JWT_SECRET = process.env.JWT_SECRET || 'makeityourown';
     console.log('Using JWT_SECRET:', JWT_SECRET.substring(0, 5) + '...');
 
     try {

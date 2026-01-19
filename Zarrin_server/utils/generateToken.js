@@ -3,7 +3,7 @@
 
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-fallback-secret-key-make-this-long-and-secure-123';
+const JWT_SECRET = process.env.JWT_SECRET || 'makeityourown';
 
 const generateToken = (user) => {
   try {

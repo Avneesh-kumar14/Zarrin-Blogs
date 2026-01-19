@@ -28,6 +28,7 @@ export const ChatProvider = ({ children, token }) => {
   // Initialize Socket connection
   useEffect(() => {
     if (token) {
+      console.log('ChatProvider: Initializing socket connection with token');
       socketService.connect(token);
 
       // Setup listeners
@@ -47,8 +48,11 @@ export const ChatProvider = ({ children, token }) => {
       socketService.on('error', handleSocketError);
 
       return () => {
+        console.log('ChatProvider: Cleaning up socket connection');
         socketService.disconnect();
       };
+    } else {
+      console.warn('ChatProvider: No token provided for socket connection');
     }
   }, [token]);
 
@@ -162,6 +166,7 @@ export const ChatProvider = ({ children, token }) => {
   // Create direct conversation
   const createDirectConversation = useCallback(async (otherUserId) => {
     try {
+      console.log('Creating direct conversation with user:', otherUserId);
       const response = await fetch(`${api}/api/chat/conversations/direct/${otherUserId}`, {
         method: 'POST',
         headers: {
@@ -171,15 +176,18 @@ export const ChatProvider = ({ children, token }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create conversation');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to create conversation (${response.status})`);
       }
 
       const data = await response.json();
+      console.log('Conversation created successfully:', data);
       setConversations(prev => [data.data, ...prev]);
       selectConversation(data.data);
     } catch (err) {
-      setError(err.message);
       console.error('Error creating conversation:', err);
+      setError(err.message);
+      alert(`Error creating conversation: ${err.message}`);
     }
   }, [token, selectConversation]);
 

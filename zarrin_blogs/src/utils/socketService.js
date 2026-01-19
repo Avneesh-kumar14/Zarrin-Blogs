@@ -13,8 +13,12 @@ class SocketService {
    */
   connect(token) {
     if (this.socket?.connected) {
+      console.log('Socket already connected');
       return this.socket;
     }
+
+    console.log('🔌 Attempting to connect to Socket.IO at:', `${SOCKET_URL}/chat`);
+    console.log('Token present:', !!token);
 
     this.socket = io(`${SOCKET_URL}/chat`, {
       auth: {
@@ -24,7 +28,9 @@ class SocketService {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       reconnectionAttempts: 5,
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      secure: true,
+      rejectUnauthorized: false
     });
 
     // Connection events
@@ -40,7 +46,12 @@ class SocketService {
 
     this.socket.on('connect_error', (error) => {
       console.error('❌ Socket connection error:', error);
+      console.error('Error details:', error.message);
       this.emit('socketError', error);
+    });
+
+    this.socket.on('error', (error) => {
+      console.error('❌ Socket error:', error);
     });
 
     return this.socket;

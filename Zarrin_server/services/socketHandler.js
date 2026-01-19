@@ -27,17 +27,20 @@ class SocketHandler {
       const token = socket.handshake.auth.token;
 
       if (!token) {
+        logger.error('Socket auth error: No token provided');
         return next(new Error('Authentication token required'));
       }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      const JWT_SECRET = process.env.JWT_SECRET || 'makeityourown';
+      const decoded = jwt.verify(token, JWT_SECRET);
       socket.userId = decoded.id;
       socket.username = decoded.username;
+      logger.info(`Socket auth successful for user: ${decoded.id}`);
 
       next();
     } catch (error) {
-      logger.error('Socket auth error:', error);
-      next(new Error('Invalid token'));
+      logger.error('Socket auth error:', error.message);
+      next(new Error('Invalid token: ' + error.message));
     }
   }
 

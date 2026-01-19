@@ -3,6 +3,8 @@ import { X } from 'lucide-react';
 import { useChatContext } from '../../context/ChatContext';
 import './CreateConversationModal.css';
 
+const api = process.env.REACT_APP_API_URL || 'http://localhost:8200';
+
 const CreateConversationModal = ({ onClose }) => {
   const { createDirectConversation, createGroupConversation } = useChatContext();
   const [mode, setMode] = useState('direct'); // 'direct' or 'group'
@@ -11,6 +13,7 @@ const CreateConversationModal = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); // eslint-disable-line no-unused-vars
 
   // Fetch available users
   useEffect(() => {
@@ -20,15 +23,29 @@ const CreateConversationModal = ({ onClose }) => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/users', {
+      setError(null);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${api}/api/users`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch users: ${response.status}`);
+      }
       const data = await response.json();
-      setUsers(data.data || []);
+      // Handle both array and object with data property
+      const usersList = Array.isArray(data) ? data : (data.data || []);
+      // Filter out current user
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const currentUserId = currentUser._id;
+      const filteredList = usersList.filter(user => user._id !== currentUserId);
+      setUsers(filteredList);
+      console.log('Fetched users:', filteredList);
     } catch (error) {
       console.error('Error fetching users:', error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -114,10 +131,17 @@ const CreateConversationModal = ({ onClose }) => {
 
           {/* Users List */}
           <div className="users-list">
+            {error && (
+              <div style={{ color: 'red', padding: '10px', marginBottom: '10px', borderRadius: '4px', backgroundColor: '#ffe0e0' }}>
+                Error: {error}
+              </div>
+            )}
             {loading ? (
               <p>Loading users...</p>
+            ) : users.length === 0 ? (
+              <p>No users available</p>
             ) : filteredUsers.length === 0 ? (
-              <p>No users found</p>
+              <p>No users found matching your search</p>
             ) : (
               filteredUsers.map(user => (
                 <label key={user._id} className="user-checkbox">
