@@ -314,4 +314,116 @@ router.get('/:userId/drafts', auth, async (req, res) => {
   }
 });
 
+// Delete user account and all associated content
+router.delete('/:userId', auth, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { password } = req.body;
+
+    console.log('\n================== DELETE ACCOUNT REQUEST ==================');
+    console.log('🗑️ Delete account request for userId:', userId);
+    console.log('🔐 Current authenticated user ID:', req.user._id.toString());
+    console.log('🔐 Password provided:', password ? 'Yes' : 'No');
+    console.log('=====================================================\n');
+
+    // Verify authorization - user can only delete their own account
+    if (req.user._id.toString() !== userId) {
+      console.error('❌ UNAUTHORIZED: User trying to delete different account');
+      console.error('   Expected:', userId);
+      console.error('   Got:', req.user._id.toString());
+      return res.status(403).json({ message: 'Unauthorized - You can only delete your own account' });
+    }
+
+    console.log('✅ Authorization check passed');
+
+    // Verify password
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error('❌ User not found:', userId);
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    console.log('✅ User found:', user.email);
+
+    // Use the model's comparePassword method
+    console.log('🔐 Comparing passwords...');
+    const isPasswordValid = await user.comparePassword(password);
+    console.log('🔐 Password comparison result:', isPasswordValid);
+    
+    if (!isPasswordValid) {
+      console.error('❌ INVALID PASSWORD for user:', userId);
+      return res.status(401).json({ message: 'Incorrect password' });
+    }
+
+    console.log('✅ Password verified successfully');
+    console.log('🗑️ Proceeding with deletion...\n');
+
+    // Delete all user's blogs and their associated images
+    const userBlogs = await Blog.find({ author: userId });
+    console.log('📝 Found', userBlogs.length, 'blogs to delete');
+    
+    // Delete all comments on user's blogs
+    const commentsDeleted = await Blog.updateMany(
+      { author: userId },
+      { $pull: { comments: { author: userId } } }
+    );
+    console.log('💬 Deleted comments from', commentsDeleted.modifiedCount, 'blogs');
+
+    // Delete all likes on user's blogs
+    const likesDeleted = await Blog.updateMany(
+      { author: userId },
+      { $pull: { likes: userId } }
+    );
+    console.log('👍 Deleted likes from', likesDeleted.modifiedCount, 'blogs');
+
+    // Delete user's blogs
+    const blogsDeleted = await Blog.deleteMany({ author: userId });
+    console.log('📝 Deleted', blogsDeleted.deletedCount, 'blogs');
+
+    // Delete all notifications related to user
+    const notificationsDeleted = await Notification.deleteMany({ 
+      $or: [
+        { userId: userId },
+        { from: userId }
+      ]
+    });
+    console.log('🔔 Deleted', notificationsDeleted.deletedCount, 'notifications');
+
+    // Remove user from all followers/following lists
+    const followersUpdated = await User.updateMany(
+      { followers: userId },
+      { $pull: { followers: userId } }
+    );
+    console.log('👥 Removed user from', followersUpdated.modifiedCount, 'followers lists');
+
+    const followingUpdated = await User.updateMany(
+      { following: userId },
+      { $pull: { following: userId } }
+    );
+    console.log('👥 Removed user from', followingUpdated.modifiedCount, 'following lists');
+
+    // Delete the user account
+    const deletedUser = await User.findByIdAndDelete(userId);
+    console.log('✅ User account deleted successfully');
+    console.log('   Deleted user email:', deletedUser.email);
+
+    console.log('\n✅✅✅ ACCOUNT DELETION COMPLETE ✅✅✅\n');
+
+    res.json({ 
+      success: true,
+      message: 'Account and all associated content deleted successfully',
+      deleted: {
+        blogs: blogsDeleted.deletedCount,
+        notifications: notificationsDeleted.deletedCount
+      }
+    });
+  } catch (err) {
+    console.error('\n❌❌❌ ERROR DELETING USER ACCOUNT ❌❌❌');
+    console.error('Error message:', err.message);
+    console.error('Error stack:', err.stack);
+    console.error('=========================================\n');
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
 module.exports = router;

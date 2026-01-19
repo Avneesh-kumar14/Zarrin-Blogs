@@ -343,6 +343,19 @@ export const UserProvider = ({ children }) => {
     }
   }, [API_URL, token]);
 
+  const clearUser = useCallback(() => {
+    console.log('🔓 Clearing user context');
+    setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    // Dispatch storage event to notify other components
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'token',
+      newValue: null,
+      storageArea: localStorage
+    }));
+  }, []);
+
   const value = {
     user,
     loading,
@@ -354,7 +367,8 @@ export const UserProvider = ({ children }) => {
     updatePrivacy,
     updateNotifications,
     fetchUserSettings,
-    setError
+    setError,
+    clearUser
   };
 
   return (

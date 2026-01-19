@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { User, Shield, Bell, Palette, Upload, Eye, EyeOff } from 'lucide-react';
+import { User, Shield, Bell, Palette, Upload, Eye, EyeOff, Trash2 } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 import { useUser } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
-  const { user, loading: userLoading, updateUserProfile, updateAvatar, changePassword, updateWritingPreferences, updatePrivacy, updateNotifications } = useUser();
+  const { user, loading: userLoading, updateUserProfile, updateAvatar, changePassword, updateWritingPreferences, updatePrivacy, updateNotifications, clearUser } = useUser();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [alert, setAlert] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [previewAvatar, setPreviewAvatar] = useState(null);
   const [avatarLoading, setAvatarLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -238,13 +243,88 @@ const Settings = () => {
     }
   };
 
-  const TabButton = ({ tab, icon: Icon, label }) => (
+  const handleDeleteAccount = async () => {
+    try {
+      // Check if user is loaded
+      if (!user || !user._id) {
+        setAlert({ type: 'error', message: 'User not loaded. Please refresh the page.' });
+        return;
+      }
+
+      // Validate confirmation
+      if (deleteConfirmText !== 'DELETE MY ACCOUNT') {
+        setAlert({ type: 'error', message: 'Please type "DELETE MY ACCOUNT" to confirm' });
+        return;
+      }
+
+      if (!deletePassword) {
+        setAlert({ type: 'error', message: 'Please enter your password to confirm deletion' });
+        return;
+      }
+
+      setLoading(true);
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      // Call delete account API
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+      const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
+
+      console.log('🗑️ Attempting to delete account for user:', user._id);
+      console.log('📡 API URL:', `${API_URL}/users/${user._id}`);
+
+      const res = await fetch(`${API_URL}/users/${user._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ password: deletePassword })
+      });
+
+      console.log('📤 Delete response status:', res.status);
+
+      if (!res.ok) {
+        const error = await res.json();
+        console.error('❌ Delete failed:', error);
+        throw new Error(error.message || 'Failed to delete account');
+      }
+
+      const data = await res.json();
+      console.log('✅ Delete successful:', data);
+
+      // Clear user context and localStorage
+      clearUser();
+
+      setAlert({ type: 'success', message: 'Account deleted successfully. Redirecting to home...' });
+
+      // Redirect to home after 2 seconds
+      setTimeout(() => {
+        navigate('/');
+        // Force refresh to clear any remaining state
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      console.error('❌ Error deleting account:', error);
+      setAlert({ type: 'error', message: error.message || 'Failed to delete account' });
+      setLoading(false);
+    }
+  };
+
+  const TabButton = ({ tab, icon: Icon, label, isDanger = false }) => (
     <button
       onClick={() => setActiveTab(tab)}
       className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
         activeTab === tab
-          ? 'bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white'
-          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+          ? isDanger 
+            ? 'bg-red-500 text-white'
+            : 'bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white'
+          : isDanger
+            ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
+            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
       }`}
     >
       <Icon className="w-4 h-4" />
@@ -273,6 +353,7 @@ const Settings = () => {
           <TabButton tab="account" icon={Shield} label="Account" />
           <TabButton tab="notifications" icon={Bell} label="Notifications" />
           <TabButton tab="appearance" icon={Palette} label="Appearance" />
+          <TabButton tab="danger" icon={Trash2} label="Danger Zone" isDanger={true} />
         </div>
 
         {/* Profile Tab */}
@@ -648,6 +729,107 @@ const Settings = () => {
           <div className="bg-white dark:bg-slate-800 rounded-lg p-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Appearance Settings</h2>
             <p className="text-gray-600 dark:text-gray-400">Theme settings managed through the navbar theme toggle.</p>
+          </div>
+        )}
+
+        {/* Danger Zone Tab */}
+        {activeTab === 'danger' && (
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-8 border-2 border-red-200 dark:border-red-900">
+            <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-6 flex items-center gap-2">
+              <Trash2 className="w-6 h-6" />
+              Danger Zone
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-8 bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+              ⚠️ <strong>Warning:</strong> The actions in this section are permanent and cannot be undone. Please proceed with caution.
+            </p>
+
+            {/* Delete Account */}
+            <div className="mb-8 pb-8 border-b border-red-200 dark:border-red-900">
+              <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-4">Delete Account</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Once you delete your account, all your blogs, comments, likes, and followers will be permanently removed. This action cannot be undone.
+              </p>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-all flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete My Account
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Account Confirmation Modal */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-8 max-w-md w-full shadow-2xl">
+              <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4 flex items-center gap-2">
+                <Trash2 className="w-6 h-6" />
+                Delete Account?
+              </h3>
+
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
+                This will <strong>permanently delete</strong> your account and all associated content including:
+              </p>
+
+              <ul className="text-sm text-gray-600 dark:text-gray-400 mb-6 list-disc list-inside space-y-2">
+                <li>Your profile and all personal information</li>
+                <li>All your blog posts and articles</li>
+                <li>All uploaded images and files</li>
+                <li>Your comments and interactions</li>
+                <li>Your followers and following lists</li>
+              </ul>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Type <strong>"DELETE MY ACCOUNT"</strong> to confirm:
+                  </label>
+                  <input
+                    type="text"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder="DELETE MY ACCOUNT"
+                    className="w-full px-4 py-2 border border-red-300 dark:border-red-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-slate-700 dark:text-white font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Enter your password to confirm:
+                  </label>
+                  <input
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder="Your password"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-slate-700 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteConfirmText('');
+                    setDeletePassword('');
+                  }}
+                  disabled={loading}
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-slate-700 transition-all disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={loading || deleteConfirmText !== 'DELETE MY ACCOUNT' || !deletePassword}
+                  className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:hover:bg-red-600 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Deleting...' : 'Delete Account'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
