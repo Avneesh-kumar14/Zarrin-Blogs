@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import Headings from "../Common/Heading";
 import Paragraph from "../Common/Paragraph";
 import Button from "../Common/Button";
