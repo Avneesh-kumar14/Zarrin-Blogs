@@ -31,8 +31,12 @@ router.get(
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 20;
+      
+      logger.info(`[CHAT] GET /conversations - User: ${req.user.id}, Page: ${page}, Limit: ${limit}`);
 
       const result = await chatService.getUserConversations(req.user.id, page, limit);
+      
+      logger.info(`[CHAT] Conversations found: ${result.conversations.length}, Total: ${result.total}`);
 
       res.json({
         success: true,
@@ -45,7 +49,7 @@ router.get(
         }
       });
     } catch (error) {
-      logger.error('Error in GET /conversations:', error);
+      logger.error('[CHAT] Error in GET /conversations:', error);
       res.status(500).json({
         success: false,
         message: error.message

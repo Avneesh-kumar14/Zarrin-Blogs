@@ -1,0 +1,67 @@
+.chat-debug-panel {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.debug-header {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.debug-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+  margin: 4px 0;
+  background: white;
+  border-left: 3px solid #999;
+  border-radius: 2px;
+}
+
+.debug-item.success {
+  border-left-color: #4caf50;
+  background: #f1f8f6;
+}
+
+.debug-item.error {
+  border-left-color: #f44336;
+  background: #fdf1f0;
+}
+
+.debug-item.warning {
+  border-left-color: #ff9800;
+  background: #fff8f0;
+}
+
+.debug-label {
+  font-weight: bold;
+  color: #666;
+  min-width: 100px;
+}
+
+.debug-value {
+  color: #333;
+  word-break: break-all;
+  flex: 1;
+  text-align: right;
+}
+
+.debug-hint {
+  margin-top: 10px;
+  padding: 8px;
+  background: #e3f2fd;
+  border-radius: 4px;
+  color: #1565c0;
+  font-size: 11px;
+  border-left: 3px solid #2196f3;
+}

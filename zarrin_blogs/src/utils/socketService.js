@@ -13,48 +13,59 @@ class SocketService {
    */
   connect(token) {
     if (this.socket?.connected) {
-      console.log('Socket already connected');
+      console.log('✅ Socket already connected');
       return this.socket;
+    }
+
+    if (!token) {
+      console.error('❌ Socket connection failed: No token provided');
+      return null;
     }
 
     console.log('🔌 Attempting to connect to Socket.IO at:', `${SOCKET_URL}/chat`);
     console.log('Token present:', !!token);
 
-    this.socket = io(`${SOCKET_URL}/chat`, {
-      auth: {
-        token: token
-      },
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5,
-      transports: ['websocket', 'polling'],
-      secure: true,
-      rejectUnauthorized: false
-    });
+    try {
+      this.socket = io(`${SOCKET_URL}/chat`, {
+        auth: {
+          token: token
+        },
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: 5,
+        transports: ['websocket', 'polling'],
+        secure: true,
+        rejectUnauthorized: false,
+        forceNew: false
+      });
 
-    // Connection events
-    this.socket.on('connect', () => {
-      console.log('✅ Socket connected:', this.socket.id);
-      this.emit('socketConnected');
-    });
+      // Connection events
+      this.socket.on('connect', () => {
+        console.log('✅ Socket connected:', this.socket.id);
+        this.emit('socketConnected');
+      });
 
-    this.socket.on('disconnect', (reason) => {
-      console.log('❌ Socket disconnected:', reason);
-      this.emit('socketDisconnected', reason);
-    });
+      this.socket.on('disconnect', (reason) => {
+        console.log('❌ Socket disconnected:', reason);
+        this.emit('socketDisconnected', reason);
+      });
 
-    this.socket.on('connect_error', (error) => {
-      console.error('❌ Socket connection error:', error);
-      console.error('Error details:', error.message);
-      this.emit('socketError', error);
-    });
+      this.socket.on('connect_error', (error) => {
+        console.error('❌ Socket connection error:', error);
+        console.error('Error message:', error.message);
+        this.emit('socketError', error);
+      });
 
-    this.socket.on('error', (error) => {
-      console.error('❌ Socket error:', error);
-    });
+      this.socket.on('error', (error) => {
+        console.error('❌ Socket error event:', error);
+      });
 
-    return this.socket;
+      return this.socket;
+    } catch (error) {
+      console.error('❌ Socket initialization error:', error);
+      return null;
+    }
   }
 
   /**

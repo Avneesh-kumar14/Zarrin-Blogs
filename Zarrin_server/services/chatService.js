@@ -71,6 +71,7 @@ class ChatService {
   async getUserConversations(userId, page = 1, limit = 20) {
     try {
       const skip = (page - 1) * limit;
+      logger.info(`[ChatService] getUserConversations - userId: ${userId}, page: ${page}, limit: ${limit}`);
 
       const conversations = await Conversation.find({
         participants: userId,
@@ -87,13 +88,15 @@ class ChatService {
         archivedBy: { $ne: userId }
       });
 
+      logger.info(`[ChatService] Found ${conversations.length} conversations, total: ${total}`);
+
       return {
         conversations,
         total,
         pages: Math.ceil(total / limit)
       };
     } catch (error) {
-      logger.error('Error in getUserConversations:', error);
+      logger.error('[ChatService] Error in getUserConversations:', error);
       throw new Error('Failed to fetch conversations');
     }
   }

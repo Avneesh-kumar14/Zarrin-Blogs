@@ -24,6 +24,7 @@ export const ChatProvider = ({ children, token }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [socketConnected, setSocketConnected] = useState(false);
 
   // Initialize Socket connection
   useEffect(() => {
@@ -31,7 +32,24 @@ export const ChatProvider = ({ children, token }) => {
       console.log('ChatProvider: Initializing socket connection with token');
       socketService.connect(token);
 
-      // Setup listeners
+      // Setup listeners with connection tracking
+      const handleSocketConnected = () => {
+        console.log('🟢 Socket connected in ChatProvider');
+        setSocketConnected(true);
+      };
+
+      const handleSocketDisconnected = (reason) => {
+        console.log('🔴 Socket disconnected in ChatProvider:', reason);
+        setSocketConnected(false);
+      };
+
+      const handleSocketError = (error) => {
+        console.log('🟠 Socket error in ChatProvider:', error);
+      };
+
+      socketService.on('socketConnected', handleSocketConnected);
+      socketService.on('socketDisconnected', handleSocketDisconnected);
+      socketService.on('socketError', handleSocketError);
       socketService.on('newMessage', handleNewMessage);
       socketService.on('userOnline', handleUserOnline);
       socketService.on('userOffline', handleUserOffline);
@@ -45,39 +63,54 @@ export const ChatProvider = ({ children, token }) => {
       socketService.on('userLeftConversation', handleUserLeft);
       socketService.on('incomingCall', handleIncomingCall);
       socketService.on('callEnded', handleCallEnded);
-      socketService.on('error', handleSocketError);
 
       return () => {
         console.log('ChatProvider: Cleaning up socket connection');
+        socketService.off('socketConnected', handleSocketConnected);
+        socketService.off('socketDisconnected', handleSocketDisconnected);
+        socketService.off('socketError', handleSocketError);
         socketService.disconnect();
       };
     } else {
       console.warn('ChatProvider: No token provided for socket connection');
+      setSocketConnected(false);
     }
   }, [token]);
 
   // Fetch conversations
   const fetchConversations = useCallback(async (page = 1) => {
     try {
+      if (!token) {
+        console.warn('ChatContext: No token available for fetching conversations');
+        setError('No authentication token');
+        return;
+      }
+
       setLoading(true);
       setError(null);
+      console.log('Fetching conversations from:', `${api}/api/chat/conversations?page=${page}`);
 
       const response = await fetch(`${api}/api/chat/conversations?page=${page}`, {
+        method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
+      console.log('Conversations response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to fetch conversations');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to fetch conversations (${response.status})`);
       }
 
       const data = await response.json();
-      setConversations(data.data);
+      console.log('Conversations fetched successfully:', data);
+      setConversations(data.data || []);
     } catch (err) {
-      setError(err.message);
       console.error('Error fetching conversations:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -314,6 +347,7 @@ export const ChatProvider = ({ children, token }) => {
     loading,
     error,
     searchQuery,
+    socketConnected,
     setSearchQuery,
     fetchConversations,
     fetchMessages,

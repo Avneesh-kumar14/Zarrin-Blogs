@@ -63,16 +63,43 @@ const Footer = () => {
           </div>
 
           <div className="bg-white/10 backdrop-blur rounded-xl p-5 border border-white/20">
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 h-12 rounded-md px-4 bg-white text-slate-900 outline-none focus:ring-2 focus:ring-purple-400 placeholder-slate-400"
-              />
-              <button className="h-12 px-5 rounded-md bg-white text-purple-700 hover:bg-purple-50 transition font-semibold">
-                Subscribe
-              </button>
-            </div>
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xl mx-auto">
+  <input
+    type="email"
+    placeholder="Enter your email"
+    className="
+      w-full
+      h-12
+      rounded-md
+      px-4
+      bg-white
+      text-slate-900
+      outline-none
+      focus:ring-2
+      focus:ring-purple-400
+      placeholder-slate-400
+    "
+  />
+
+  <button
+    className="
+      h-12
+      w-full
+      sm:w-auto
+      px-6
+      rounded-md
+      bg-white
+      text-purple-700
+      hover:bg-purple-50
+      transition
+      font-semibold
+      whitespace-nowrap
+    "
+  >
+    Subscribe
+  </button>
+</div>
+
             <p className="text-xs text-white/70 mt-3">
               No spam. Unsubscribe anytime.
             </p>
