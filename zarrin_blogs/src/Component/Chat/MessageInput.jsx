@@ -1,11 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Plus } from 'lucide-react';
+import { Send, Plus, Smile, Image as ImageIcon, X } from 'lucide-react';
 import socketService from '../../utils/socketService';
+import EmojiPicker from './EmojiPicker';
 import './MessageInput.css';
 
-const MessageInput = ({ onSendMessage, isLoading }) => {
+const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
   const [message, setMessage] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
   const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
   // Auto-resize textarea
@@ -33,8 +39,117 @@ const MessageInput = ({ onSendMessage, isLoading }) => {
     }, 1000);
   };
 
-  const handleSendMessage = () => {
-    if (message.trim() && !isLoading) {
+  const handleEmojiSelect = (emoji) => {
+    const newMessage = message + emoji;
+    setMessage(newMessage);
+    setShowEmojiPicker(false);
+
+    // Focus back on textarea
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    
+    // Validate file types and size
+    const validFiles = files.filter(file => {
+      const isImage = file.type.startsWith('image/');
+      const isUnder5MB = file.size <= 5 * 1024 * 1024;
+      
+      if (!isImage) {
+        alert(`${file.name} is not an image`);
+        return false;
+      }
+      
+      if (!isUnder5MB) {
+        alert(`${file.name} is larger than 5MB`);
+        return false;
+      }
+      
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      setSelectedFiles(prev => [...prev, ...validFiles]);
+      
+      // Create preview URLs
+      const newPreviews = validFiles.map(file => URL.createObjectURL(file));
+      setPreviewUrls(prev => [...prev, ...newPreviews]);
+    }
+
+    // Reset input
+    e.target.value = '';
+  };
+
+  const removeFile = (index) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviewUrls(prev => {
+      const newPreviews = prev.filter((_, i) => i !== index);
+      // Cleanup old preview URL
+      URL.revokeObjectURL(prev[index]);
+      return newPreviews;
+    });
+  };
+
+  const uploadFiles = async () => {
+    if (selectedFiles.length === 0) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      selectedFiles.forEach(file => {
+        formData.append('images', file);
+      });
+
+      const token = localStorage.getItem('token');
+      const api = process.env.REACT_APP_API_URL || 'http://localhost:8200';
+
+      const response = await fetch(
+        `${api}/api/chat/conversations/${selectedConversation._id}/messages/upload`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      console.log('✅ Images uploaded successfully:', data);
+
+      // Clear files after successful upload
+      setSelectedFiles([]);
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+      setPreviewUrls([]);
+
+      // Send message about images
+      if (data.attachments && data.attachments.length > 0) {
+        onSendMessage(data.attachments);
+      }
+    } catch (error) {
+      console.error('❌ Image upload error:', error);
+      alert('Failed to upload images');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    // Send images if any
+    if (selectedFiles.length > 0 && message.trim() === '') {
+      await uploadFiles();
+      return;
+    }
+
+    // Send text message
+    if (message.trim() && !isLoading && !isUploading) {
       onSendMessage(message.trim());
       setMessage('');
       
@@ -46,6 +161,17 @@ const MessageInput = ({ onSendMessage, isLoading }) => {
       // Stop typing indicator
       socketService.emit('userStoppedTyping', {});
     }
+    
+    // Send both text and images
+    if (message.trim() && selectedFiles.length > 0) {
+      // First upload images
+      await uploadFiles();
+      // Then send text
+      if (message.trim()) {
+        onSendMessage(message.trim());
+        setMessage('');
+      }
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -55,33 +181,103 @@ const MessageInput = ({ onSendMessage, isLoading }) => {
     }
   };
 
+  const canSend = (message.trim() || selectedFiles.length > 0) && !isLoading && !isUploading;
+
   return (
     <div className="message-input-container">
+      {/* File previews */}
+      {previewUrls.length > 0 && (
+        <div className="file-preview-container">
+          <div className="file-preview-grid">
+            {previewUrls.map((url, idx) => (
+              <div key={idx} className="file-preview-item">
+                <img src={url} alt={`Preview ${idx}`} />
+                <button
+                  className="file-preview-remove"
+                  onClick={() => removeFile(idx)}
+                  title="Remove image"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+          {selectedFiles.length > 0 && (
+            <div className="file-preview-actions">
+              <button
+                className="btn-clear-files"
+                onClick={() => {
+                  setSelectedFiles([]);
+                  previewUrls.forEach(url => URL.revokeObjectURL(url));
+                  setPreviewUrls([]);
+                }}
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="message-input-wrapper">
-        <button className="btn-attach" title="Attach file">
-          <Plus size={20} />
-        </button>
+        <div className="input-actions-left">
+          <button 
+            className="btn-attach" 
+            title="Attach images"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <ImageIcon size={20} />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+          />
+          
+          <button
+            className="btn-emoji"
+            title="Add emoji"
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          >
+            <Smile size={20} />
+          </button>
+        </div>
 
         <textarea
           ref={textareaRef}
           className="message-textarea"
-          placeholder="Type a message..."
+          placeholder="Type a message... (Shift+Enter for new line)"
           value={message}
           onChange={handleTyping}
           onKeyPress={handleKeyPress}
           rows={1}
-          disabled={isLoading}
+          disabled={isLoading || isUploading}
         />
 
         <button
           className="btn-send"
           onClick={handleSendMessage}
-          disabled={!message.trim() || isLoading}
+          disabled={!canSend}
           title="Send message"
         >
-          <Send size={20} />
+          {isUploading ? (
+            <div className="spinner-small" />
+          ) : (
+            <Send size={20} />
+          )}
         </button>
       </div>
+
+      {/* Emoji Picker Modal */}
+      {showEmojiPicker && (
+        <EmojiPicker
+          onEmojiSelect={handleEmojiSelect}
+          onClose={() => setShowEmojiPicker(false)}
+        />
+      )}
     </div>
   );
 };

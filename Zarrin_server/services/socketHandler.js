@@ -223,7 +223,10 @@ class SocketHandler {
    */
   async handleSendMessage(socket, { conversationId, content, attachments = [], messageType = 'text' }) {
     try {
+      logger.info(`[Socket] Sending message in conversation ${conversationId} from user ${socket.userId}`);
+      
       if (!content.trim() && attachments.length === 0) {
+        logger.warn(`[Socket] Empty message attempted in conversation ${conversationId}`);
         socket.emit('error', { message: 'Message content cannot be empty' });
         return;
       }
@@ -236,6 +239,8 @@ class SocketHandler {
         messageType,
         attachments
       );
+
+      logger.info(`[Socket] Message created: ${message._id}`);
 
       const roomName = `conversation_${conversationId}`;
 
@@ -251,9 +256,9 @@ class SocketHandler {
         readBy: []
       });
 
-      logger.info(`Message sent in conversation ${conversationId} by ${socket.userId}`);
+      logger.info(`[Socket] Message broadcasted to room: ${roomName}`);
     } catch (error) {
-      logger.error('Error in handleSendMessage:', error);
+      logger.error('[Socket] Error in handleSendMessage:', error);
       socket.emit('error', { message: 'Failed to send message' });
     }
   }

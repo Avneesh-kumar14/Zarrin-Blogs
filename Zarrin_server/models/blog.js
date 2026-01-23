@@ -6,7 +6,7 @@ const BlogSchema = new Schema({
   images: [{ type: String }],
   category: [{ type: mongoose.Schema.Types.ObjectId, ref: 'category' }],
   tags: [{ type: String }],
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   status: {
     type: String,
     enum: ['draft', 'published', 'scheduled'],
@@ -14,9 +14,9 @@ const BlogSchema = new Schema({
   },
   scheduledAt: { type: Date },
   views: { type: Number, default: 0 },
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comment' }],
-  bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+  bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   wordCount: { type: Number, default: 0 },
   readingTime: { type: Number, default: 0 }
 }, { timestamps: true });

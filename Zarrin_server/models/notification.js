@@ -3,12 +3,12 @@ const { Schema, model } = require('mongoose');
 const NotificationSchema = new Schema({
   recipient: {
     type: Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
     required: true
   },
   sender: {
     type: Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'User',
     default: null
   },
   type: {

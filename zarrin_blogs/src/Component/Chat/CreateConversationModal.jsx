@@ -65,12 +65,29 @@ const CreateConversationModal = ({ onClose }) => {
   };
 
   const handleCreateConversation = async () => {
-    if (mode === 'direct' && selectedUsers.length === 1) {
-      await createDirectConversation(selectedUsers[0]);
-      onClose();
-    } else if (mode === 'group' && selectedUsers.length > 0 && groupName.trim()) {
-      await createGroupConversation(groupName, selectedUsers);
-      onClose();
+    try {
+      if (mode === 'direct' && selectedUsers.length === 1) {
+        console.log('🟡 Starting direct conversation creation');
+        await createDirectConversation(selectedUsers[0]);
+        console.log('✅ Direct conversation created');
+        // Give async operation time to complete
+        setTimeout(() => {
+          onClose();
+        }, 500);
+      } else if (mode === 'group' && selectedUsers.length > 0 && groupName.trim()) {
+        console.log('🟡 Starting group conversation creation');
+        await createGroupConversation(groupName, selectedUsers);
+        console.log('✅ Group conversation created');
+        // Give async operation time to complete
+        setTimeout(() => {
+          onClose();
+        }, 500);
+      } else {
+        setError('Please select at least one user' + (mode === 'group' ? ' and enter a group name' : ''));
+      }
+    } catch (err) {
+      console.error('❌ Error creating conversation:', err);
+      setError(err.message || 'Failed to create conversation');
     }
   };
 

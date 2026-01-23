@@ -70,11 +70,11 @@ const UserSchema = new Schema({
     avatar: { type: String, default: '' },
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user"
+        ref: "User"
     }],
     following: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user"
+        ref: "User"
     }],
     // ✅ Notification Preferences
     notificationPreferences: {
@@ -136,5 +136,5 @@ UserSchema.methods.comparePassword = async function(candidatePassword) {
     }
 }
 
-const UserModel = model("user", UserSchema)
+const UserModel = model("User", UserSchema)
 module.exports = UserModel

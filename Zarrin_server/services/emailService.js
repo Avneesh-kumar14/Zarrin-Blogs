@@ -1,20 +1,34 @@
 const nodemailer = require('nodemailer');
 
+// Validate Gmail credentials before initialization
+const gmailEmail = process.env.GMAIL_EMAIL;
+const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+
+if (!gmailEmail || !gmailAppPassword) {
+  console.warn('[⚠️ EMAIL] Gmail credentials not fully configured');
+  console.warn('[⚠️ EMAIL] Required: GMAIL_EMAIL, GMAIL_APP_PASSWORD');
+} else {
+  console.log('[✅ EMAIL] Gmail credentials found in .env');
+}
+
 // Initialize Gmail transporter with your credentials
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.GMAIL_EMAIL,
-    pass: process.env.GMAIL_APP_PASSWORD,
+    user: gmailEmail,
+    pass: gmailAppPassword,
   },
 });
 
 // Verify transporter connection on startup
 transporter.verify((error, success) => {
   if (error) {
-    console.warn('⚠️  Email service configuration error:', error.message);
+    console.warn('[⚠️ EMAIL] Email service configuration error:', error.message);
+    if (!gmailEmail || !gmailAppPassword) {
+      console.warn('[⚠️ EMAIL] Credentials are missing or incorrect. Check .env file.');
+    }
   } else {
-    console.log('✅ Email service ready - Gmail SMTP connected');
+    console.log('[✅ EMAIL] Email service ready - Gmail SMTP connected');
   }
 });
 

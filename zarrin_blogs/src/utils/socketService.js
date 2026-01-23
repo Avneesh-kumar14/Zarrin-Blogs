@@ -9,7 +9,7 @@ class SocketService {
   }
 
   /**
-   * Initialize Socket.IO connection
+   * Initialize Socket.IO connection with proper error handling
    */
   connect(token) {
     if (this.socket?.connected) {
@@ -19,13 +19,17 @@ class SocketService {
 
     if (!token) {
       console.error('❌ Socket connection failed: No token provided');
+      this.emit('socketError', new Error('No token provided'));
       return null;
     }
 
-    console.log('🔌 Attempting to connect to Socket.IO at:', `${SOCKET_URL}/chat`);
-    console.log('Token present:', !!token);
+    console.log('🔌 Attempting to connect to Socket.IO...');
+    console.log('URL:', SOCKET_URL);
+    console.log('Namespace:', '/chat');
+    console.log('Token:', token.substring(0, 20) + '...');
 
     try {
+      // Connect to the /chat namespace on the Socket.IO server
       this.socket = io(`${SOCKET_URL}/chat`, {
         auth: {
           token: token
@@ -35,14 +39,16 @@ class SocketService {
         reconnectionDelayMax: 5000,
         reconnectionAttempts: 5,
         transports: ['websocket', 'polling'],
-        secure: true,
+        secure: false,  // Set to true only for https
         rejectUnauthorized: false,
-        forceNew: false
+        forceNew: false,
+        path: '/socket.io'  // Explicit path matching backend
       });
 
       // Connection events
       this.socket.on('connect', () => {
         console.log('✅ Socket connected:', this.socket.id);
+        console.log('Connected to namespace: /chat');
         this.emit('socketConnected');
       });
 
@@ -54,11 +60,14 @@ class SocketService {
       this.socket.on('connect_error', (error) => {
         console.error('❌ Socket connection error:', error);
         console.error('Error message:', error.message);
+        console.error('Error type:', error.type);
+        console.error('Error data:', error.data);
         this.emit('socketError', error);
       });
 
       this.socket.on('error', (error) => {
         console.error('❌ Socket error event:', error);
+        this.emit('socketError', error);
       });
 
       return this.socket;
@@ -105,15 +114,17 @@ class SocketService {
    */
   sendMessage(conversationId, content, attachments = [], messageType = 'text') {
     if (!this.socket?.connected) {
-      console.error('Socket not connected');
+      console.error('❌ Socket not connected, cannot send message');
       return;
     }
+    console.log('📤 Emitting sendMessage:', { conversationId, messageType, contentLength: content.length });
     this.socket.emit('sendMessage', {
       conversationId,
       content,
       attachments,
       messageType
     });
+    console.log('✅ Message emitted successfully');
   }
 
   /**

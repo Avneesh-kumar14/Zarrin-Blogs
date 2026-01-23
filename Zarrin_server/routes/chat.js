@@ -29,12 +29,20 @@ router.get(
   handleValidationErrors,
   async (req, res) => {
     try {
+      const userId = req.user?.id || req.user?._id;
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 20;
       
-      logger.info(`[CHAT] GET /conversations - User: ${req.user.id}, Page: ${page}, Limit: ${limit}`);
+      if (!userId) {
+        return res.status(401).json({ 
+          success: false,
+          error: 'User not authenticated' 
+        });
+      }
+      
+      logger.info(`[CHAT] GET /conversations - User: ${userId}, Page: ${page}, Limit: ${limit}`);
 
-      const result = await chatService.getUserConversations(req.user.id, page, limit);
+      const result = await chatService.getUserConversations(userId, page, limit);
       
       logger.info(`[CHAT] Conversations found: ${result.conversations.length}, Total: ${result.total}`);
 
@@ -49,9 +57,15 @@ router.get(
         }
       });
     } catch (error) {
-      logger.error('[CHAT] Error in GET /conversations:', error);
+      logger.error('[CHAT] Error in GET /conversations:', {
+        message: error.message,
+        userId: req.user?.id,
+        stack: error.stack
+      });
+      
       res.status(500).json({
         success: false,
+        error: 'Failed to fetch conversations',
         message: error.message
       });
     }
@@ -120,7 +134,12 @@ router.post(
   handleValidationErrors,
   async (req, res) => {
     try {
-      if (req.params.otherUserId === req.user.id) {
+      const currentUserId = req.user.id;
+      const otherUserId = req.params.otherUserId;
+      
+      logger.info(`[CHAT] POST /conversations/direct - Current user: ${currentUserId}, Other user: ${otherUserId}`);
+      
+      if (otherUserId === currentUserId) {
         return res.status(400).json({
           success: false,
           message: 'Cannot create conversation with yourself'
@@ -128,19 +147,29 @@ router.post(
       }
 
       const conversation = await chatService.getOrCreateDirectConversation(
-        req.user.id,
-        req.params.otherUserId
+        currentUserId,
+        otherUserId
       );
 
+      if (!conversation) {
+        logger.error('[CHAT] Conversation is null or undefined');
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to create or retrieve conversation'
+        });
+      }
+
+      logger.info(`[CHAT] Conversation created/retrieved: ${conversation._id}`);
+      
       res.status(201).json({
         success: true,
         data: conversation
       });
     } catch (error) {
-      logger.error('Error in POST /conversations/direct:', error);
+      logger.error('[CHAT] Error in POST /conversations/direct:', error);
       res.status(500).json({
         success: false,
-        message: error.message
+        message: error.message || 'Failed to get or create conversation'
       });
     }
   }
@@ -546,6 +575,201 @@ router.put(
       res.status(500).json({
         success: false,
         message: error.message
+      });
+    }
+  }
+);
+
+/**
+ * @route DELETE /api/chat/conversations/:conversationId
+ * @desc Delete a group conversation
+ * @access Private (Group owner only)
+ */
+router.delete(
+  '/conversations/:conversationId',
+  authMiddleware,
+  param('conversationId').isMongoId(),
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const userId = req.user?.id || req.user?._id;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'User not authenticated'
+        });
+      }
+
+      logger.info(`[CHAT] DELETE /conversations/${req.params.conversationId} - User: ${userId}`);
+
+      const conversation = await chatService.deleteGroupConversation(
+        req.params.conversationId,
+        userId
+      );
+
+      logger.info(`[CHAT] Group conversation deleted: ${req.params.conversationId}`);
+
+      res.json({
+        success: true,
+        message: 'Conversation deleted',
+        data: conversation
+      });
+    } catch (error) {
+      logger.error('Error in DELETE /conversations/:conversationId:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+);
+
+/**
+ * @route PUT /api/chat/conversations/:conversationId/group-info
+ * @desc Update group name and avatar
+ * @access Private (Group members)
+ */
+router.put(
+  '/conversations/:conversationId/group-info',
+  authMiddleware,
+  param('conversationId').isMongoId(),
+  body('conversationName').optional().trim(),
+  body('groupAvatar').optional(),
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const userId = req.user?.id || req.user?._id;
+      const { conversationName, groupAvatar } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'User not authenticated'
+        });
+      }
+
+      if (!conversationName && !groupAvatar) {
+        return res.status(400).json({
+          success: false,
+          error: 'Provide either conversationName or groupAvatar'
+        });
+      }
+
+      logger.info(`[CHAT] PUT /conversations/${req.params.conversationId}/group-info - User: ${userId}`);
+
+      const conversation = await chatService.updateGroupInfo(
+        req.params.conversationId,
+        { conversationName, groupAvatar },
+        userId
+      );
+
+      logger.info(`[CHAT] Group info updated: ${req.params.conversationId}`);
+
+      res.json({
+        success: true,
+        message: 'Group info updated',
+        data: conversation
+      });
+    } catch (error) {
+      logger.error('Error in PUT /group-info:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+);
+
+/**
+ * @route POST /api/chat/conversations/:conversationId/messages/upload
+ * @desc Upload images for messages
+ * @access Private
+ */
+router.post(
+  '/conversations/:conversationId/messages/upload',
+  authMiddleware,
+  param('conversationId').isMongoId(),
+  async (req, res) => {
+    try {
+      const conversationId = req.params.conversationId;
+      const userId = req.user?.id || req.user?._id;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'User not authenticated'
+        });
+      }
+
+      if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'No files uploaded'
+        });
+      }
+
+      logger.info(`[CHAT] POST /messages/upload - User: ${userId}, Conversation: ${conversationId}`);
+
+      // Get files from multer
+      const imageFiles = req.files.images;
+      const isMultiple = Array.isArray(imageFiles);
+      const filesToProcess = isMultiple ? imageFiles : [imageFiles];
+
+      // Upload to Cloudinary and collect URLs
+      const cloudinary = require('../utils/cloudinary');
+      const attachments = [];
+
+      for (const file of filesToProcess) {
+        try {
+          const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.v2.uploader.upload_stream(
+              {
+                resource_type: 'auto',
+                folder: 'zarrin_chat',
+                quality: 'auto',
+                fetch_format: 'auto'
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            stream.end(file.data);
+          });
+
+          attachments.push({
+            url: result.secure_url,
+            filename: file.name,
+            type: 'image',
+            size: file.size,
+            cloudinaryId: result.public_id
+          });
+
+          logger.info(`[CHAT] Image uploaded: ${result.public_id}`);
+        } catch (error) {
+          logger.error(`[CHAT] Failed to upload image ${file.name}:`, error);
+          // Continue with other files
+        }
+      }
+
+      if (attachments.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Failed to upload any images'
+        });
+      }
+
+      res.json({
+        success: true,
+        attachments: attachments,
+        count: attachments.length
+      });
+    } catch (error) {
+      logger.error('Error in POST /messages/upload:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to upload images'
       });
     }
   }

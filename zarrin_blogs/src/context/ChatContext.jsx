@@ -199,7 +199,10 @@ export const ChatProvider = ({ children, token }) => {
   // Create direct conversation
   const createDirectConversation = useCallback(async (otherUserId) => {
     try {
-      console.log('Creating direct conversation with user:', otherUserId);
+      console.log('🟡 Creating direct conversation with user:', otherUserId);
+      setLoading(true);
+      setError(null);
+      
       const response = await fetch(`${api}/api/chat/conversations/direct/${otherUserId}`, {
         method: 'POST',
         headers: {
@@ -208,25 +211,48 @@ export const ChatProvider = ({ children, token }) => {
         }
       });
 
+      console.log('✅ Direct conversation response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to create conversation (${response.status})`);
+        const errorMsg = errorData.message || `Failed to create conversation (${response.status})`;
+        console.error('❌ Error response:', errorData);
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
-      console.log('Conversation created successfully:', data);
-      setConversations(prev => [data.data, ...prev]);
+      console.log('✅ Conversation created successfully:', data);
+      
+      if (!data.data) {
+        throw new Error('No conversation data in response');
+      }
+
+      // Add to conversations list
+      setConversations(prev => {
+        const exists = prev.some(c => c._id === data.data._id);
+        if (exists) return prev;
+        return [data.data, ...prev];
+      });
+      
+      // Select the new conversation
       selectConversation(data.data);
+      console.log('🟢 Direct conversation ready:', data.data._id);
+      
     } catch (err) {
-      console.error('Error creating conversation:', err);
+      console.error('❌ Error creating conversation:', err);
       setError(err.message);
-      alert(`Error creating conversation: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   }, [token, selectConversation]);
 
   // Create group conversation
   const createGroupConversation = useCallback(async (groupName, participants, groupAvatar) => {
     try {
+      console.log('🟡 Creating group conversation:', groupName);
+      setLoading(true);
+      setError(null);
+      
       const response = await fetch(`${api}/api/chat/conversations/group`, {
         method: 'POST',
         headers: {
@@ -240,16 +266,38 @@ export const ChatProvider = ({ children, token }) => {
         })
       });
 
+      console.log('✅ Group conversation response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to create group conversation');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.message || `Failed to create group conversation (${response.status})`;
+        console.error('❌ Error response:', errorData);
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
-      setConversations(prev => [data.data, ...prev]);
+      console.log('✅ Group conversation created successfully:', data);
+      
+      if (!data.data) {
+        throw new Error('No conversation data in response');
+      }
+
+      // Add to conversations list
+      setConversations(prev => {
+        const exists = prev.some(c => c._id === data.data._id);
+        if (exists) return prev;
+        return [data.data, ...prev];
+      });
+      
+      // Select the new conversation
       selectConversation(data.data);
+      console.log('🟢 Group conversation ready:', data.data._id);
+      
     } catch (err) {
+      console.error('❌ Error creating group conversation:', err);
       setError(err.message);
-      console.error('Error creating group conversation:', err);
+    } finally {
+      setLoading(false);
     }
   }, [token, selectConversation]);
 

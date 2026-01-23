@@ -529,11 +529,87 @@ Create using: `node create-admin.js`
 - Check MongoDB Atlas connection string
 - Verify IP whitelist in MongoDB Atlas
 - Ensure network connectivity
+- **Server Startup with MongoDB**:
+  - Server starts immediately on port 8200 without waiting for MongoDB
+  - MongoDB connection is established asynchronously in the background
+  - If MongoDB is unreachable, server continues running in offline mode
+  - Check logs for `[DB] Connected to MongoDB` confirmation
+  - Use `/health` endpoint to check database status: `GET http://localhost:8200/health`
 
 ### Auth Issues
 - Clear token in localStorage
 - Verify JWT_SECRET is consistent
 - Check Authorization header format
+
+### Server Exits Immediately
+- Ensure all environment variables are set in `.env`
+- Check for unhandled promise rejections in logs
+- Verify Node.js version is v16 or higher
+- Use `npm start` from the Zarrin_server directory
+
+---
+
+## 🏥 Health Check Endpoint
+
+The server provides a health check endpoint for monitoring:
+
+```
+GET /api/health
+```
+
+**Response (Database Connected):**
+```json
+{
+  "status": "UP",
+  "timestamp": "2025-01-23T10:30:45.123Z",
+  "uptime": 145.678,
+  "database": {
+    "state": "connected",
+    "connected": true
+  },
+  "memory": {
+    "rss": 56789012,
+    "heapTotal": 23456789,
+    "heapUsed": 12345678,
+    "external": 567890
+  }
+}
+```
+
+**Response (Database Unavailable - Degraded Mode):**
+```json
+{
+  "status": "DEGRADED",
+  "timestamp": "2025-01-23T10:30:45.123Z",
+  "uptime": 145.678,
+  "database": {
+    "state": "disconnected",
+    "connected": false
+  },
+  "memory": { ... }
+}
+```
+
+---
+
+## ⚡ Server Startup Behavior
+
+### Async MongoDB Connection (New Behavior)
+- **Immediate**: Server binds to port 8200 and starts accepting requests
+- **Background**: MongoDB connection attempt starts asynchronously
+- **Benefit**: Server remains operational even if MongoDB is temporarily unavailable
+- **Status Check**: Use `/health` endpoint to verify database connectivity
+- **Models**: Loaded automatically once MongoDB connects
+- **Fallback**: Server continues running in offline/degraded mode if DB unavailable
+
+### Startup Sequence
+1. ✅ Environment variables loaded
+2. ✅ Middleware and routes configured
+3. ✅ Express app created
+4. ✅ Server listens on port 8200
+5. 🔄 MongoDB connection starts (async, non-blocking)
+6. 🔄 Models load once DB connects
+7. ✅ Ready to accept requests immediately
 
 ---
 
@@ -580,6 +656,7 @@ For issues or questions:
 
 ---
 
-**Last Updated**: November 23, 2025
+**Last Updated**: January 23, 2026
+**Status**: ✅ MongoDB Connection Fixed - Async Startup Implemented
 
 [Back to Main README](../README.md)

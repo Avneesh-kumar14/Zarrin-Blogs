@@ -41,6 +41,7 @@
   background: #31a24c;
   border: 3px solid white;
   border-radius: 50%;
+  animation: pulse-online 2s infinite;
 }
 
 .conversation-info {
@@ -87,4 +88,13 @@
 .conversation-item.active .conversation-name {
   color: #0a66c2;
   font-weight: 600;
+}
+
+@keyframes pulse-online {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(49, 162, 76, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(49, 162, 76, 0.2);
+  }
 }

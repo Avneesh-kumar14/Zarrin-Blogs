@@ -10,26 +10,73 @@ class ChatService {
    */
   async getOrCreateDirectConversation(userId1, userId2) {
     try {
+      logger.info(`[ChatService] Getting or creating direct conversation between ${userId1} and ${userId2}`);
+      
+      // Validate user IDs
+      if (!userId1 || !userId2) {
+        const error = new Error('Both user IDs are required');
+        logger.error('[ChatService] Validation failed:', error.message);
+        throw error;
+      }
+
+      // Validate users exist in database
+      const user1 = await User.findById(userId1);
+      const user2 = await User.findById(userId2);
+      
+      if (!user1 || !user2) {
+        const error = new Error('One or both users do not exist');
+        logger.error('[ChatService] User validation failed:', { userId1: !!user1, userId2: !!user2 });
+        throw error;
+      }
+
       // Find existing conversation
       let conversation = await Conversation.findOne({
         conversationType: 'direct',
         participants: { $all: [userId1, userId2] }
-      }).populate('participants', 'name username email');
+      })
+      .populate('participants', 'name username email profileImage')
+      .populate('lastMessage')
+      .exec();
+
+      if (conversation) {
+        logger.info(`[ChatService] Existing conversation found: ${conversation._id}`);
+        // Safely populate with error handling
+        try {
+          await conversation.populate('participants', 'name username email profileImage');
+        } catch (err) {
+          logger.warn('[ChatService] Could not populate participants:', err.message);
+          // Return without populated data if populate fails
+        }
+        return conversation;
+      }
 
       // If not found, create new conversation
-      if (!conversation) {
-        conversation = new Conversation({
-          participants: [userId1, userId2],
-          conversationType: 'direct'
-        });
-        await conversation.save();
-        await conversation.populate('participants', 'name username email');
+      logger.info(`[ChatService] Creating new direct conversation`);
+      conversation = new Conversation({
+        participants: [userId1, userId2],
+        conversationType: 'direct',
+        lastMessageTime: new Date()
+      });
+      
+      await conversation.save();
+      logger.info(`[ChatService] New conversation saved: ${conversation._id}`);
+      
+      // Populate participants with error handling
+      try {
+        await conversation.populate('participants', 'name username email profileImage');
+        logger.info(`[ChatService] Populated conversation with participants`);
+      } catch (err) {
+        logger.warn('[ChatService] Could not populate participants:', err.message);
+        // Return conversation data even if populate fails
       }
 
       return conversation;
     } catch (error) {
-      logger.error('Error in getOrCreateDirectConversation:', error);
-      throw new Error('Failed to get or create conversation');
+      logger.error('[ChatService] Error in getOrCreateDirectConversation:', {
+        message: error.message,
+        stack: error.stack
+      });
+      throw error;
     }
   }
 
@@ -38,19 +85,30 @@ class ChatService {
    */
   async createGroupConversation(creatorId, participantIds, conversationName, groupAvatar = null) {
     try {
+      logger.info(`[ChatService] Creating group conversation: ${conversationName} by ${creatorId}`);
+      
       // Ensure creator is included in participants
       const allParticipants = Array.from(new Set([creatorId, ...participantIds]));
+      logger.info(`[ChatService] Total participants: ${allParticipants.length}`);
 
       const conversation = new Conversation({
         participants: allParticipants,
         conversationType: 'group',
         conversationName,
         createdBy: creatorId,
-        groupAvatar
+        groupAvatar,
+        lastMessageTime: new Date()
       });
 
       await conversation.save();
-      await conversation.populate('participants', 'name username email');
+      logger.info(`[ChatService] Group conversation saved: ${conversation._id}`);
+      
+      try {
+        await conversation.populate('participants', 'name username email');
+        logger.info(`[ChatService] Group participants populated`);
+      } catch (err) {
+        logger.warn('[ChatService] Could not populate group participants:', err.message);
+      }
 
       // Create system message
       await this.createSystemMessage(
@@ -58,10 +116,11 @@ class ChatService {
         `${conversationName} group created`
       );
 
+      logger.info(`[ChatService] Group conversation created successfully: ${conversation._id}`);
       return conversation;
     } catch (error) {
-      logger.error('Error in createGroupConversation:', error);
-      throw new Error('Failed to create group conversation');
+      logger.error('[ChatService] Error in createGroupConversation:', error);
+      throw error;
     }
   }
 
@@ -73,15 +132,36 @@ class ChatService {
       const skip = (page - 1) * limit;
       logger.info(`[ChatService] getUserConversations - userId: ${userId}, page: ${page}, limit: ${limit}`);
 
-      const conversations = await Conversation.find({
+      // Validate userId is a valid ObjectId
+      if (!userId || typeof userId !== 'string' || userId.length !== 24) {
+        throw new Error('Invalid user ID format');
+      }
+
+      // Query without populate first to avoid schema registration issues
+      let query = Conversation.find({
         participants: userId,
         archivedBy: { $ne: userId }
       })
-        .populate('participants', 'name username email')
-        .populate('lastMessage')
         .sort({ lastMessageTime: -1 })
         .skip(skip)
         .limit(limit);
+
+      // Try to populate, but don't fail if it doesn't work
+      try {
+        query = query
+          .populate({
+            path: 'participants',
+            select: 'name username email profileImage'
+          })
+          .populate({
+            path: 'lastMessage',
+            select: 'content createdAt'
+          });
+      } catch (err) {
+        logger.warn('[ChatService] Could not set up population:', err.message);
+      }
+
+      const conversations = await query.exec();
 
       const total = await Conversation.countDocuments({
         participants: userId,
@@ -96,8 +176,12 @@ class ChatService {
         pages: Math.ceil(total / limit)
       };
     } catch (error) {
-      logger.error('[ChatService] Error in getUserConversations:', error);
-      throw new Error('Failed to fetch conversations');
+      logger.error('[ChatService] Error in getUserConversations:', {
+        message: error.message,
+        stack: error.stack,
+        userId
+      });
+      throw new Error(`Failed to fetch conversations: ${error.message}`);
     }
   }
 
@@ -106,14 +190,18 @@ class ChatService {
    */
   async sendMessage(conversationId, senderId, content, messageType = 'text', attachments = []) {
     try {
+      logger.info(`[ChatService] Sending message to conversation: ${conversationId}, from user: ${senderId}`);
+      
       // Verify user is participant in conversation
       const conversation = await Conversation.findById(conversationId);
       if (!conversation) {
+        logger.error('[ChatService] Conversation not found:', conversationId);
         throw new Error('Conversation not found');
       }
 
       const isParticipant = conversation.participants.some(id => id.toString() === senderId.toString());
       if (!isParticipant) {
+        logger.error('[ChatService] User not authorized to send message:', senderId);
         throw new Error('Not authorized to send message in this conversation');
       }
 
@@ -127,6 +215,8 @@ class ChatService {
       });
 
       await message.save();
+      logger.info(`[ChatService] Message saved: ${message._id}`);
+      
       await message.populate('senderId', 'name username email');
 
       // Update conversation's last message
@@ -134,11 +224,12 @@ class ChatService {
       conversation.lastMessagePreview = content.substring(0, 50);
       conversation.lastMessageTime = new Date();
       await conversation.save();
+      logger.info(`[ChatService] Conversation updated with latest message`);
 
       return message;
     } catch (error) {
-      logger.error('Error in sendMessage:', error);
-      throw new Error('Failed to send message');
+      logger.error('[ChatService] Error in sendMessage:', error);
+      throw error;
     }
   }
 
@@ -523,6 +614,77 @@ class ChatService {
     } catch (error) {
       logger.error('Error in pinConversation:', error);
       throw new Error('Failed to pin conversation');
+    }
+  }
+
+  /**
+   * Delete a group conversation (admin only)
+   */
+  async deleteGroupConversation(conversationId, userId) {
+    try {
+      const conversation = await Conversation.findById(conversationId);
+
+      if (!conversation) {
+        throw new Error('Conversation not found');
+      }
+
+      // Only conversation creator can delete
+      if (conversation.createdBy.toString() !== userId.toString()) {
+        throw new Error('Only group owner can delete this conversation');
+      }
+
+      // Soft delete by marking as deleted
+      conversation.isDeleted = true;
+      conversation.deletedAt = new Date();
+      conversation.deletedBy = userId;
+      
+      await conversation.save();
+
+      logger.info(`[ChatService] Group conversation deleted: ${conversationId}`);
+      return conversation;
+    } catch (error) {
+      logger.error('Error in deleteGroupConversation:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update group conversation info (name, avatar)
+   */
+  async updateGroupInfo(conversationId, updates, userId) {
+    try {
+      const conversation = await Conversation.findById(conversationId).populate('participants');
+
+      if (!conversation) {
+        throw new Error('Conversation not found');
+      }
+
+      // Check if user is a participant
+      const isParticipant = conversation.participants.some(
+        p => p._id.toString() === userId.toString()
+      );
+
+      if (!isParticipant) {
+        throw new Error('Only conversation members can update group info');
+      }
+
+      // Update name if provided
+      if (updates.conversationName) {
+        conversation.conversationName = updates.conversationName;
+      }
+
+      // Update avatar if provided
+      if (updates.groupAvatar) {
+        conversation.groupAvatar = updates.groupAvatar;
+      }
+
+      await conversation.save();
+
+      logger.info(`[ChatService] Group info updated: ${conversationId}`);
+      return conversation;
+    } catch (error) {
+      logger.error('Error in updateGroupInfo:', error);
+      throw error;
     }
   }
 }

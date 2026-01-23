@@ -53,6 +53,7 @@ const ChatWindow = ({ conversation }) => {
       <MessageInput 
         onSendMessage={handleSendMessage}
         isLoading={isLoading}
+        selectedConversation={conversation}
       />
     </div>
   );
