@@ -57,9 +57,14 @@ const Message = ({ message, showAvatar, conversation }) => {
             </p>
           )}
 
-          {message.attachments?.map((attachment, idx) => (
+          {message.attachments?.map((attachmentUrl, idx) => (
             <div key={idx} className="message-attachment">
-              <img src={attachment.url} alt={attachment.filename} />
+              <img 
+                src={attachmentUrl} 
+                alt={`Attachment ${idx + 1}`}
+                crossOrigin="anonymous"
+                referrerPolicy="no-referrer"
+              />
             </div>
           ))}
         </div>

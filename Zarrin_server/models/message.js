@@ -31,16 +31,8 @@ const MessageSchema = new Schema({
     default: 'text'
   },
 
-  // Media attachments (for images, files)
-  attachments: [
-    {
-      url: String,
-      type: String, // 'image', 'file', 'video'
-      filename: String,
-      size: Number, // in bytes
-      mimeType: String
-    }
-  ],
+  // Media attachments (for images, files) - just store URLs like blog stores images
+  attachments: [{ type: String }],
 
   // Track who has read the message
   readBy: [
@@ -139,5 +131,7 @@ const MessageSchema = new Schema({
 MessageSchema.index({ conversationId: 1, createdAt: -1 });
 MessageSchema.index({ isDeleted: 1, conversationId: 1 });
 MessageSchema.index({ isPinned: 1, conversationId: 1 });
+MessageSchema.index({ senderId: 1 }); // For faster deletion authorization checks
+MessageSchema.index({ conversationId: 1, isDeleted: 1 }); // For message queries
 
 module.exports = model('Message', MessageSchema);

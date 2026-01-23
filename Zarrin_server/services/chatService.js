@@ -191,6 +191,8 @@ class ChatService {
   async sendMessage(conversationId, senderId, content, messageType = 'text', attachments = []) {
     try {
       logger.info(`[ChatService] Sending message to conversation: ${conversationId}, from user: ${senderId}`);
+      logger.info(`[ChatService] Message type: ${messageType}, Attachments count: ${attachments.length}`);
+      logger.info(`[ChatService] Attachments data:`, JSON.stringify(attachments));
       
       // Verify user is participant in conversation
       const conversation = await Conversation.findById(conversationId);
@@ -213,6 +215,8 @@ class ChatService {
         messageType,
         attachments: messageType === 'image' || messageType === 'file' ? attachments : []
       });
+
+      logger.info(`[ChatService] Message object before save:`, JSON.stringify(message));
 
       await message.save();
       logger.info(`[ChatService] Message saved: ${message._id}`);
@@ -313,27 +317,40 @@ class ChatService {
   }
 
   /**
-   * Delete a message (soft delete)
+   * Delete a message (soft delete) - Atomic operation
    */
   async deleteMessage(messageId, userId) {
     try {
+      // First verify authorization (only sender can delete)
       const message = await Message.findById(messageId);
 
       if (!message) {
         throw new Error('Message not found');
       }
 
-      // Only sender or admin can delete
+      // Only sender can delete
       if (message.senderId.toString() !== userId.toString()) {
         throw new Error('Not authorized to delete this message');
       }
 
-      message.isDeleted = true;
-      message.deletedBy = userId;
-      message.content = '[Message deleted]';
-      await message.save();
+      // Use atomic updateOne for fast deletion without loading entire document
+      const result = await Message.updateOne(
+        { _id: messageId },
+        {
+          $set: {
+            isDeleted: true,
+            deletedBy: userId,
+            content: '[Message deleted]'
+          }
+        }
+      );
 
-      return message;
+      if (result.modifiedCount === 0) {
+        throw new Error('Failed to delete message');
+      }
+
+      // Return updated message for Socket.IO broadcast
+      return await Message.findById(messageId);
     } catch (error) {
       logger.error('Error in deleteMessage:', error);
       throw new Error('Failed to delete message');
@@ -341,10 +358,11 @@ class ChatService {
   }
 
   /**
-   * Edit a message
+   * Edit a message - Atomic operation
    */
   async editMessage(messageId, userId, newContent) {
     try {
+      // First verify authorization (only sender can edit)
       const message = await Message.findById(messageId);
 
       if (!message) {
@@ -356,16 +374,28 @@ class ChatService {
         throw new Error('Not authorized to edit this message');
       }
 
-      // Add to edit history
-      message.editHistory.push({
-        content: message.content,
-        editedAt: new Date()
-      });
+      // Use atomic update to add to history and update content
+      const result = await Message.updateOne(
+        { _id: messageId },
+        {
+          $push: {
+            editHistory: {
+              content: message.content,
+              editedAt: new Date()
+            }
+          },
+          $set: {
+            content: newContent
+          }
+        }
+      );
 
-      message.content = newContent;
-      await message.save();
+      if (result.modifiedCount === 0) {
+        throw new Error('Failed to edit message');
+      }
 
-      return message;
+      // Return updated message for Socket.IO broadcast
+      return await Message.findById(messageId);
     } catch (error) {
       logger.error('Error in editMessage:', error);
       throw new Error('Failed to edit message');
@@ -373,40 +403,92 @@ class ChatService {
   }
 
   /**
-   * Add reaction to message
+   * Add reaction to message - Atomic operation using MongoDB operators
    */
   async addReaction(messageId, userId, emoji) {
     try {
+      if (!emoji || emoji.trim() === '') {
+        throw new Error('Invalid emoji');
+      }
+
       const message = await Message.findById(messageId);
 
       if (!message) {
         throw new Error('Message not found');
       }
 
-      // Find or create reaction
-      let reaction = message.reactions.find(r => r.emoji === emoji);
+      // Check if user already has this reaction
+      const existingReaction = message.reactions.find(r => r.emoji === emoji);
+      
+      if (existingReaction) {
+        const userAlreadyReacted = existingReaction.users.some(id => id.toString() === userId.toString());
 
-      if (!reaction) {
-        reaction = { emoji, users: [] };
-        message.reactions.push(reaction);
-      }
+        if (userAlreadyReacted) {
+          // Remove reaction - use atomic $pull operator
+          const result = await Message.updateOne(
+            { _id: messageId },
+            {
+              $pull: {
+                'reactions.$[elem].users': userId
+              }
+            },
+            {
+              arrayFilters: [{ 'elem.emoji': emoji }]
+            }
+          );
 
-      // Check if user already reacted
-      const userIndex = reaction.users.findIndex(id => id.toString() === userId.toString());
+          if (result.modifiedCount === 0) {
+            throw new Error('Failed to remove reaction');
+          }
 
-      if (userIndex > -1) {
-        // Remove reaction if already exists
-        reaction.users.splice(userIndex, 1);
-        if (reaction.users.length === 0) {
-          message.reactions = message.reactions.filter(r => r.emoji !== emoji);
+          // Also remove the reaction object if it has no users
+          await Message.updateOne(
+            { _id: messageId },
+            {
+              $pull: {
+                reactions: { emoji: emoji, users: [] }
+              }
+            }
+          );
+        } else {
+          // Add user to existing reaction - use atomic $push operator
+          const result = await Message.updateOne(
+            { _id: messageId },
+            {
+              $push: {
+                'reactions.$[elem].users': userId
+              }
+            },
+            {
+              arrayFilters: [{ 'elem.emoji': emoji }]
+            }
+          );
+
+          if (result.modifiedCount === 0) {
+            throw new Error('Failed to add reaction');
+          }
         }
       } else {
-        // Add reaction
-        reaction.users.push(userId);
+        // Create new reaction - use atomic $push operator
+        const result = await Message.updateOne(
+          { _id: messageId },
+          {
+            $push: {
+              reactions: {
+                emoji: emoji,
+                users: [userId]
+              }
+            }
+          }
+        );
+
+        if (result.modifiedCount === 0) {
+          throw new Error('Failed to add reaction');
+        }
       }
 
-      await message.save();
-      return message;
+      // Return updated message for Socket.IO broadcast
+      return await Message.findById(messageId);
     } catch (error) {
       logger.error('Error in addReaction:', error);
       throw new Error('Failed to add reaction');

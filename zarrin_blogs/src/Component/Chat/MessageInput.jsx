@@ -98,10 +98,27 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
 
     setIsUploading(true);
     try {
+      // Verify socket is connected before uploading
+      if (!socketService.isConnected()) {
+        console.warn('⚠️ Socket not connected, attempting reconnect...');
+        socketService.reconnect();
+        // Wait for reconnection
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (!socketService.isConnected()) {
+          throw new Error('Socket connection unavailable. Please try again.');
+        }
+      }
+
       const formData = new FormData();
       selectedFiles.forEach(file => {
         formData.append('images', file);
       });
+
+      // Include caption/content if provided
+      if (message.trim()) {
+        formData.append('content', message.trim());
+      }
 
       const token = localStorage.getItem('token');
       const api = process.env.REACT_APP_API_URL || 'http://localhost:8200';
@@ -113,42 +130,44 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
           headers: {
             'Authorization': `Bearer ${token}`
           },
-          body: formData
+          body: formData,
+          timeout: 60000  // 60 second timeout for upload
         }
       );
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Upload failed with status ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('✅ Images uploaded successfully:', data);
+      console.log('✅ Images uploaded and message created:', data);
 
       // Clear files after successful upload
       setSelectedFiles([]);
       previewUrls.forEach(url => URL.revokeObjectURL(url));
       setPreviewUrls([]);
+      setMessage('');
 
-      // Send message about images
-      if (data.attachments && data.attachments.length > 0) {
-        onSendMessage(data.attachments);
-      }
+      // Message is already created on backend via upload endpoint
+      // The Socket.IO event will handle displaying it
+      // No need to call onSendMessage again
     } catch (error) {
       console.error('❌ Image upload error:', error);
-      alert('Failed to upload images');
+      alert(`Failed to upload images: ${error.message}`);
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleSendMessage = async () => {
-    // Send images if any
-    if (selectedFiles.length > 0 && message.trim() === '') {
+    // Send images with optional caption
+    if (selectedFiles.length > 0) {
       await uploadFiles();
       return;
     }
 
-    // Send text message
+    // Send text message only
     if (message.trim() && !isLoading && !isUploading) {
       onSendMessage(message.trim());
       setMessage('');
@@ -160,17 +179,6 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
 
       // Stop typing indicator
       socketService.emit('userStoppedTyping', {});
-    }
-    
-    // Send both text and images
-    if (message.trim() && selectedFiles.length > 0) {
-      // First upload images
-      await uploadFiles();
-      // Then send text
-      if (message.trim()) {
-        onSendMessage(message.trim());
-        setMessage('');
-      }
     }
   };
 

@@ -35,14 +35,18 @@ class SocketService {
           token: token
         },
         reconnection: true,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        reconnectionAttempts: 5,
+        reconnectionDelay: 500,           // Faster initial reconnection
+        reconnectionDelayMax: 10000,      // Increased max wait
+        reconnectionAttempts: 10,         // More reconnection attempts
         transports: ['websocket', 'polling'],
-        secure: false,  // Set to true only for https
+        secure: false,                    // Set to true only for https
         rejectUnauthorized: false,
         forceNew: false,
-        path: '/socket.io'  // Explicit path matching backend
+        path: '/socket.io',               // Explicit path matching backend
+        timeout: 30000,                   // 30 second connection timeout
+        multiplex: true,                  // Allow multiple connections
+        randomizationFactor: 0.5,         // Randomize reconnection delay
+        maxHttpBufferSize: 1e6            // 1MB buffer for large uploads
       });
 
       // Connection events
@@ -70,6 +74,21 @@ class SocketService {
         this.emit('socketError', error);
       });
 
+      // Handle reconnection attempts
+      this.socket.on('reconnect_attempt', () => {
+        console.log('🔄 Socket reconnection attempt...');
+      });
+
+      this.socket.on('reconnect', () => {
+        console.log('✅ Socket reconnected successfully');
+        this.emit('socketConnected');
+      });
+
+      this.socket.on('reconnect_failed', () => {
+        console.error('❌ Socket reconnection failed');
+        this.emit('socketError', new Error('Failed to reconnect after max attempts'));
+      });
+
       return this.socket;
     } catch (error) {
       console.error('❌ Socket initialization error:', error);
@@ -78,12 +97,35 @@ class SocketService {
   }
 
   /**
-   * Disconnect socket
+   * Disconnect socket safely
    */
   disconnect() {
     if (this.socket) {
-      this.socket.disconnect();
+      try {
+        if (this.socket.connected) {
+          this.socket.disconnect();
+        }
+      } catch (error) {
+        console.error('Error disconnecting socket:', error);
+      }
       this.socket = null;
+    }
+  }
+
+  /**
+   * Check if socket is connected
+   */
+  isConnected() {
+    return this.socket?.connected || false;
+  }
+
+  /**
+   * Force reconnect if disconnected
+   */
+  reconnect() {
+    if (this.socket && !this.socket.connected) {
+      console.log('🔄 Forcing socket reconnection...');
+      this.socket.connect();
     }
   }
 

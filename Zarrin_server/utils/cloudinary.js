@@ -63,8 +63,23 @@ const deleteFromCloudinary = async (publicId) => {
   }
 };
 
+// Convert Cloudinary URL to proxy URL to avoid tracking prevention warnings
+const getProxyUrl = (cloudinaryUrl) => {
+  if (!cloudinaryUrl || !cloudinaryUrl.includes('res.cloudinary.com')) {
+    return cloudinaryUrl;
+  }
+  
+  try {
+    // Return proxy URL with the original URL as a query parameter
+    return `/api/upload/proxy?url=${encodeURIComponent(cloudinaryUrl)}`;
+  } catch (error) {
+    console.error('URL proxy conversion error:', error);
+    return cloudinaryUrl;
+  }
+};
+
 module.exports = {
   uploadToCloudinary,
   deleteFromCloudinary,
-  cloudinary
-};
+  cloudinary,
+  getProxyUrl};

@@ -41,10 +41,12 @@ export const ChatProvider = ({ children, token }) => {
       const handleSocketDisconnected = (reason) => {
         console.log('🔴 Socket disconnected in ChatProvider:', reason);
         setSocketConnected(false);
+        // Don't set error to avoid blocking UI
       };
 
       const handleSocketError = (error) => {
         console.log('🟠 Socket error in ChatProvider:', error);
+        // Socket will auto-reconnect, don't show error
       };
 
       socketService.on('socketConnected', handleSocketConnected);
@@ -65,11 +67,12 @@ export const ChatProvider = ({ children, token }) => {
       socketService.on('callEnded', handleCallEnded);
 
       return () => {
-        console.log('ChatProvider: Cleaning up socket connection');
+        console.log('ChatProvider: Cleaning up socket listeners');
         socketService.off('socketConnected', handleSocketConnected);
         socketService.off('socketDisconnected', handleSocketDisconnected);
         socketService.off('socketError', handleSocketError);
-        socketService.disconnect();
+        // Don't disconnect socket on cleanup - let it reconnect automatically
+        // socketService.disconnect();
       };
     } else {
       console.warn('ChatProvider: No token provided for socket connection');

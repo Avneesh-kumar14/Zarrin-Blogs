@@ -4,6 +4,25 @@ const { body, param, query, validationResult } = require('express-validator');
 const { auth: authMiddleware } = require('../middleware/auth');
 const logger = require('../utils/logger');
 const chatService = require('../services/chatService');
+const multer = require('multer');
+
+// Configure multer for image uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB
+  },
+  fileFilter: (req, file, cb) => {
+    logger.info(`[MULTER] Processing file: ${file.fieldname}, mimetype: ${file.mimetype}, size: ${file.size}`);
+    // Allow only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      logger.error(`[MULTER] Rejected file: ${file.filename} - invalid mimetype: ${file.mimetype}`);
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 /**
  * Error handler middleware
@@ -683,17 +702,30 @@ router.put(
 
 /**
  * @route POST /api/chat/conversations/:conversationId/messages/upload
- * @desc Upload images for messages
+ * @desc Upload images and create message with attachments
  * @access Private
  */
 router.post(
   '/conversations/:conversationId/messages/upload',
   authMiddleware,
+  (req, res, next) => {
+    upload.array('images', 10)(req, res, (err) => {
+      if (err) {
+        logger.error(`[MULTER ERROR] ${err.message}`);
+        return res.status(400).json({
+          success: false,
+          error: `File upload error: ${err.message}`
+        });
+      }
+      next();
+    });
+  },
   param('conversationId').isMongoId(),
   async (req, res) => {
     try {
       const conversationId = req.params.conversationId;
       const userId = req.user?.id || req.user?._id;
+      const { content = '' } = req.body; // Optional caption/content
 
       if (!userId) {
         return res.status(401).json({
@@ -702,28 +734,37 @@ router.post(
         });
       }
 
-      if (!req.files || Object.keys(req.files).length === 0) {
+      logger.info(`[CHAT] POST /messages/upload - User: ${userId}, Conversation: ${conversationId}`);
+
+      // Get files from multer - req.files is an array when using .array()
+      const imageFiles = req.files;
+      
+      if (!imageFiles || !Array.isArray(imageFiles) || imageFiles.length === 0) {
         return res.status(400).json({
           success: false,
-          error: 'No files uploaded'
+          error: 'No images found in request'
         });
       }
 
-      logger.info(`[CHAT] POST /messages/upload - User: ${userId}, Conversation: ${conversationId}`);
+      // Filter out undefined/invalid files
+      const validFiles = imageFiles.filter(file => file && file.buffer && file.buffer.length > 0);
 
-      // Get files from multer
-      const imageFiles = req.files.images;
-      const isMultiple = Array.isArray(imageFiles);
-      const filesToProcess = isMultiple ? imageFiles : [imageFiles];
+      if (validFiles.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'No valid image files to upload'
+        });
+      }
 
       // Upload to Cloudinary and collect URLs
-      const cloudinary = require('../utils/cloudinary');
+      const cloudinaryUtils = require('../utils/cloudinary');
+      const { getProxyUrl } = cloudinaryUtils;
       const attachments = [];
 
-      for (const file of filesToProcess) {
+      for (const file of validFiles) {
         try {
           const result = await new Promise((resolve, reject) => {
-            const stream = cloudinary.v2.uploader.upload_stream(
+            const stream = cloudinaryUtils.cloudinary.uploader.upload_stream(
               {
                 resource_type: 'auto',
                 folder: 'zarrin_chat',
@@ -735,20 +776,21 @@ router.post(
                 else resolve(result);
               }
             );
-            stream.end(file.data);
+            stream.end(file.buffer);
           });
 
-          attachments.push({
-            url: result.secure_url,
-            filename: file.name,
-            type: 'image',
-            size: file.size,
-            cloudinaryId: result.public_id
-          });
+          // Use proxy URL to avoid tracking prevention warnings
+          const proxyUrl = getProxyUrl(result.secure_url);
+
+          // Store just the URL, like how blog stores images
+          attachments.push(proxyUrl);
 
           logger.info(`[CHAT] Image uploaded: ${result.public_id}`);
         } catch (error) {
-          logger.error(`[CHAT] Failed to upload image ${file.name}:`, error);
+          logger.error(`[CHAT] Failed to upload image:`, { 
+            filename: file?.name || 'unknown',
+            error: error.message 
+          });
           // Continue with other files
         }
       }
@@ -760,9 +802,45 @@ router.post(
         });
       }
 
+      // Create message with attachments using chatService
+      const message = await chatService.sendMessage(
+        conversationId,
+        userId,
+        content || `Shared ${attachments.length} image(s)`,
+        'image',
+        attachments
+      );
+
+      logger.info(`[CHAT] Message created with attachments: ${message._id}`);
+
+      // Broadcast to Socket.IO room
+      const roomName = `conversation_${conversationId}`;
+      const ioInstance = req.app.get('io');
+      if (ioInstance) {
+        ioInstance.of('/chat').to(roomName).emit('newMessage', {
+          _id: message._id,
+          conversationId,
+          senderId: message.senderId,
+          content: message.content,
+          messageType: message.messageType,
+          attachments: message.attachments,
+          createdAt: message.createdAt,
+          readBy: []
+        });
+      }
+
       res.json({
         success: true,
-        attachments: attachments,
+        message: {
+          _id: message._id,
+          conversationId,
+          senderId: message.senderId,
+          content: message.content,
+          messageType: message.messageType,
+          attachments: message.attachments,
+          createdAt: message.createdAt,
+          readBy: []
+        },
         count: attachments.length
       });
     } catch (error) {

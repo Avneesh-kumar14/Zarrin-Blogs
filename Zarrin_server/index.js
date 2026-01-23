@@ -131,7 +131,7 @@ try {
 
   // 5. File Upload Middleware (Multer)
   const multer = require('multer');
-  const upload = multer({
+  const generalUpload = multer({
     storage: multer.memoryStorage(),
     limits: {
       fileSize: 5 * 1024 * 1024 // 5MB
@@ -146,9 +146,8 @@ try {
     }
   });
 
-  // Apply multer to file upload routes
-  app.use('/api/chat/conversations/:conversationId/messages/upload', upload.array('images', 10));
-  app.use('/api/upload', upload.single('image'));
+  // Apply multer to general upload route (chat uploads will be handled in their route)
+  app.use('/api/upload', generalUpload.single('image'));
 
   // 6. Parameter Pollution Prevention
   app.use(preventParameterPollution);
