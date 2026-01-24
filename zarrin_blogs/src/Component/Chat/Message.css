@@ -74,9 +74,12 @@
 }
 
 .message-attachment img {
-  max-width: 200px;
+  max-width: 300px;
+  max-height: 300px;
   border-radius: 12px;
   display: block;
+  object-fit: cover;
+  background-color: #f0f0f0;
 }
 
 .message-reactions {
