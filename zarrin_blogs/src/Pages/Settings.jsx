@@ -270,7 +270,7 @@ const Settings = () => {
       }
 
       // Call delete account API
-      const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
       const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
 
       console.log('🗑️ Attempting to delete account for user:', user._id);

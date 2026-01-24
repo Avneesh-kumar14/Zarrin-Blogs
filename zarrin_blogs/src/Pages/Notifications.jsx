@@ -18,7 +18,7 @@ const Notifications = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+  const API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
   const API_URL = API_BASE.includes('/api') ? API_BASE : `${API_BASE}/api`;
   const token = localStorage.getItem('token');
 

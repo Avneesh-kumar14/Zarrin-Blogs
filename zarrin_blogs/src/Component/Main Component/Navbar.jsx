@@ -101,7 +101,7 @@ const Navbar = () => {
         console.log('📌 Fetching stats for user:', parsedUser._id);
         
         // Construct API URL properly
-        const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+        const apiBase = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
         const apiUrl = apiBase.includes('/api') ? apiBase : `${apiBase}/api`;
         const fetchUrl = `${apiUrl}/users/${parsedUser._id}`;
         console.log('📍 Fetch URL:', fetchUrl);

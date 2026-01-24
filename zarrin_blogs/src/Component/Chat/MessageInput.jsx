@@ -121,7 +121,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
       }
 
       const token = localStorage.getItem('token');
-      const api = process.env.REACT_APP_API_URL || 'http://localhost:8200';
+      const api = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
 
       const response = await fetch(
         `${api}/api/chat/conversations/${selectedConversation._id}/messages/upload`,

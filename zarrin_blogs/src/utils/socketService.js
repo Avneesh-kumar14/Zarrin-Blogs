@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-const SOCKET_URL = process.env.REACT_APP_API_URL || 'http://localhost:8200';
+const SOCKET_URL = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
 
 class SocketService {
   constructor() {

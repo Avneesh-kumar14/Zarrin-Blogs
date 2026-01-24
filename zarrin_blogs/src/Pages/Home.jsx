@@ -32,7 +32,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   // Construct API URL properly
-  let API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8200';
+  let API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
   const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
 
   useEffect(() => {
