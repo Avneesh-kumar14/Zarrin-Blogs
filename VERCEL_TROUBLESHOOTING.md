@@ -308,4 +308,4 @@ Provide these details:
 
 **Share a screenshot or error message if you're stuck!**
 
- ho
+ ho ja deploy 
