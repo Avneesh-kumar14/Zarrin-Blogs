@@ -320,13 +320,6 @@ class SocketService {
   }
 
   /**
-   * Get socket connection status
-   */
-  isConnected() {
-    return this.socket?.connected || false;
-  }
-
-  /**
    * Get socket ID
    */
   getSocketId() {
@@ -335,4 +328,5 @@ class SocketService {
 }
 
 // Singleton instance
-export default new SocketService();
+const socketService = new SocketService();
+export default socketService;

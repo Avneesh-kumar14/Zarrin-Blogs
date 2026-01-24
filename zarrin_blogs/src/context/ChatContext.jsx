@@ -20,11 +20,96 @@ export const ChatProvider = ({ children, token }) => {
   const [messages, setMessages] = useState([]);
   const [typingUsers, setTypingUsers] = useState(new Map());
   const [onlineUsers, setOnlineUsers] = useState(new Set());
+  // eslint-disable-next-line no-unused-vars
   const [unreadCounts, setUnreadCounts] = useState(new Map());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [socketConnected, setSocketConnected] = useState(false);
+
+  // Socket event handlers wrapped in useCallback (defined first to avoid 'used before define' errors)
+  const handleNewMessage = useCallback((message) => {
+    setMessages(prev => [...prev, message]);
+  }, []);
+
+  const handleUserOnline = useCallback((data) => {
+    setOnlineUsers(prev => new Set([...prev, data.userId]));
+  }, []);
+
+  const handleUserOffline = useCallback((data) => {
+    setOnlineUsers(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(data.userId);
+      return newSet;
+    });
+  }, []);
+
+  const handleUserTyping = useCallback((data) => {
+    if (selectedConversation && data.conversationId === selectedConversation._id) {
+      setTypingUsers(prev => new Map(prev).set(data.userId, data.username));
+    }
+  }, [selectedConversation]);
+
+  const handleUserStoppedTyping = useCallback((data) => {
+    if (selectedConversation && data.conversationId === selectedConversation._id) {
+      setTypingUsers(prev => {
+        const newMap = new Map(prev);
+        newMap.delete(data.userId);
+        return newMap;
+      });
+    }
+  }, [selectedConversation]);
+
+  const handleMessagesRead = useCallback((data) => {
+    // Update UI to show read status
+  }, []);
+
+  const handleMessageDeleted = useCallback((data) => {
+    if (selectedConversation && data.conversationId === selectedConversation._id) {
+      setMessages(prev => prev.filter(msg => msg._id !== data.messageId));
+    }
+  }, [selectedConversation]);
+
+  const handleMessageEdited = useCallback((data) => {
+    if (selectedConversation && data.conversationId === selectedConversation._id) {
+      setMessages(prev =>
+        prev.map(msg =>
+          msg._id === data.messageId ? { ...msg, content: data.content } : msg
+        )
+      );
+    }
+  }, [selectedConversation]);
+
+  const handleReactionAdded = useCallback((data) => {
+    if (selectedConversation && data.conversationId === selectedConversation._id) {
+      setMessages(prev =>
+        prev.map(msg =>
+          msg._id === data.messageId ? { ...msg, reactions: data.reactions } : msg
+        )
+      );
+    }
+  }, [selectedConversation]);
+
+  const handleUserJoined = useCallback((data) => {
+    // Handle user joined group
+  }, []);
+
+  const handleUserLeft = useCallback((data) => {
+    // Handle user left group
+  }, []);
+
+  const handleIncomingCall = useCallback((data) => {
+    // Handle incoming call
+  }, []);
+
+  const handleCallEnded = useCallback((data) => {
+    // Handle call ended
+  }, []);
+
+  // eslint-disable-next-line no-unused-vars
+  const handleSocketError = useCallback((error) => {
+    setError(error.message);
+  }, []);
 
   // Initialize Socket connection
   useEffect(() => {
@@ -44,14 +129,8 @@ export const ChatProvider = ({ children, token }) => {
         // Don't set error to avoid blocking UI
       };
 
-      const handleSocketError = (error) => {
-        console.log('🟠 Socket error in ChatProvider:', error);
-        // Socket will auto-reconnect, don't show error
-      };
-
       socketService.on('socketConnected', handleSocketConnected);
       socketService.on('socketDisconnected', handleSocketDisconnected);
-      socketService.on('socketError', handleSocketError);
       socketService.on('newMessage', handleNewMessage);
       socketService.on('userOnline', handleUserOnline);
       socketService.on('userOffline', handleUserOffline);
@@ -70,7 +149,6 @@ export const ChatProvider = ({ children, token }) => {
         console.log('ChatProvider: Cleaning up socket listeners');
         socketService.off('socketConnected', handleSocketConnected);
         socketService.off('socketDisconnected', handleSocketDisconnected);
-        socketService.off('socketError', handleSocketError);
         // Don't disconnect socket on cleanup - let it reconnect automatically
         // socketService.disconnect();
       };
@@ -78,7 +156,7 @@ export const ChatProvider = ({ children, token }) => {
       console.warn('ChatProvider: No token provided for socket connection');
       setSocketConnected(false);
     }
-  }, [token]);
+  }, [token, handleNewMessage, handleUserOnline, handleUserOffline, handleUserTyping, handleUserStoppedTyping, handleMessagesRead, handleMessageDeleted, handleMessageEdited, handleReactionAdded, handleUserJoined, handleUserLeft, handleIncomingCall, handleCallEnded]);
 
   // Fetch conversations
   const fetchConversations = useCallback(async (page = 1) => {
@@ -303,89 +381,6 @@ export const ChatProvider = ({ children, token }) => {
       setLoading(false);
     }
   }, [token, selectConversation]);
-
-  // Socket event handlers
-  const handleNewMessage = (message) => {
-    setMessages(prev => [...prev, message]);
-  };
-
-  const handleUserOnline = (data) => {
-    setOnlineUsers(prev => new Set([...prev, data.userId]));
-  };
-
-  const handleUserOffline = (data) => {
-    setOnlineUsers(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(data.userId);
-      return newSet;
-    });
-  };
-
-  const handleUserTyping = (data) => {
-    if (selectedConversation && data.conversationId === selectedConversation._id) {
-      setTypingUsers(prev => new Map(prev).set(data.userId, data.username));
-    }
-  };
-
-  const handleUserStoppedTyping = (data) => {
-    if (selectedConversation && data.conversationId === selectedConversation._id) {
-      setTypingUsers(prev => {
-        const newMap = new Map(prev);
-        newMap.delete(data.userId);
-        return newMap;
-      });
-    }
-  };
-
-  const handleMessagesRead = (data) => {
-    // Update UI to show read status
-  };
-
-  const handleMessageDeleted = (data) => {
-    if (selectedConversation && data.conversationId === selectedConversation._id) {
-      setMessages(prev => prev.filter(msg => msg._id !== data.messageId));
-    }
-  };
-
-  const handleMessageEdited = (data) => {
-    if (selectedConversation && data.conversationId === selectedConversation._id) {
-      setMessages(prev =>
-        prev.map(msg =>
-          msg._id === data.messageId ? { ...msg, content: data.content } : msg
-        )
-      );
-    }
-  };
-
-  const handleReactionAdded = (data) => {
-    if (selectedConversation && data.conversationId === selectedConversation._id) {
-      setMessages(prev =>
-        prev.map(msg =>
-          msg._id === data.messageId ? { ...msg, reactions: data.reactions } : msg
-        )
-      );
-    }
-  };
-
-  const handleUserJoined = (data) => {
-    // Handle user joined group
-  };
-
-  const handleUserLeft = (data) => {
-    // Handle user left group
-  };
-
-  const handleIncomingCall = (data) => {
-    // Handle incoming call
-  };
-
-  const handleCallEnded = (data) => {
-    // Handle call ended
-  };
-
-  const handleSocketError = (error) => {
-    setError(error.message);
-  };
 
   // Context value
   const value = {

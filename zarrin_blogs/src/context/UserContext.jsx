@@ -10,13 +10,7 @@ export const UserProvider = ({ children }) => {
   const API_URL = process.env.REACT_APP_API_BASE_URL ? `${process.env.REACT_APP_API_BASE_URL}/api` : 'https://zarrin-blogs-backend.onrender.com/api';
   const token = localStorage.getItem('token');
 
-  // Fetch user settings on mount
-  useEffect(() => {
-    if (token) {
-      fetchUserSettings();
-    }
-  }, [token]);
-
+  // Fetch user settings callback
   const fetchUserSettings = useCallback(async () => {
     try {
       setLoading(true);
@@ -71,6 +65,13 @@ export const UserProvider = ({ children }) => {
       setLoading(false);
     }
   }, [API_URL, token]);
+
+  // Fetch user settings on mount
+  useEffect(() => {
+    if (token) {
+      fetchUserSettings();
+    }
+  }, [token, fetchUserSettings]);
 
   const updateUserProfile = useCallback(async (profileData) => {
     try {
