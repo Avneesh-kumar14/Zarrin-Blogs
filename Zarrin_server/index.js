@@ -305,10 +305,34 @@ try {
       const server = http.createServer(app);
       console.log('[SERVER] HTTP server created');
 
+      // Define allowed origins for Socket.IO CORS
+      const socketAllowedOrigins = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'https://zarrin-blogs.vercel.app'
+      ];
+
       // Initialize Socket.IO with CORS and connection settings
       const io = socketIO(server, {
         cors: {
-          origin: allowedOrigins,
+          origin: function (origin, callback) {
+            // Allow no origin (mobile apps, curl)
+            if (!origin) return callback(null, true);
+            // Allow localhost for development
+            if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+              return callback(null, true);
+            }
+            // Allow all Vercel domains
+            if (origin.includes('vercel.app')) {
+              return callback(null, true);
+            }
+            // Allow configured origins
+            if (socketAllowedOrigins.includes(origin)) {
+              return callback(null, true);
+            }
+            return callback(null, true);
+          },
           credentials: true,
           methods: ['GET', 'POST', 'PUT', 'DELETE']
         },
