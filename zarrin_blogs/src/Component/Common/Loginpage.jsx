@@ -51,7 +51,8 @@ const Login = () => {
           'Content-Type': 'application/json'
         },
         // CRITICAL: Include credentials for authentication in production
-        credentials: 'include'
+        credentials: 'include',
+        body: JSON.stringify(loginData) // CRITICAL: Send login data to backend
       });
       
       let data = await res.json();
