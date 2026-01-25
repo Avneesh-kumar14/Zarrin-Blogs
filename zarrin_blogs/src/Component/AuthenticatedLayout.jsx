@@ -8,6 +8,7 @@ export default function AuthenticatedLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const [hasValidated, setHasValidated] = useState(false);
+  const API_URL = process.env.REACT_APP_API_BASE_URL ? `${process.env.REACT_APP_API_BASE_URL}/api` : 'https://zarrin-blogs-backend.onrender.com/api';
 
   useEffect(() => {
     // Skip validation if already validated in this session
@@ -29,7 +30,7 @@ export default function AuthenticatedLayout() {
 
       try {
         // Validate token with backend
-        const response = await fetch('http://localhost:8200/api/auth/validate', {
+        const response = await fetch(`${API_URL}/auth/validate`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

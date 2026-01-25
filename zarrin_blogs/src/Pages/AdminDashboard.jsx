@@ -17,11 +17,12 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const token = localStorage.getItem('token');
   const userData = JSON.parse(localStorage.getItem('user') || '{}');
+  const API_URL = process.env.REACT_APP_API_BASE_URL ? `${process.env.REACT_APP_API_BASE_URL}/api` : 'https://zarrin-blogs-backend.onrender.com/api';
 
   const fetchDashboard = useCallback(async () => {
     try {
       setLoading(true);
-      const dashRes = await fetch('http://localhost:8200/api/admin/dashboard', {
+      const dashRes = await fetch(`${API_URL}/admin/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -30,21 +31,21 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
       setDashboard(dashData);
 
       // Fetch analytics
-      const analyticsRes = await fetch('http://localhost:8200/api/admin/analytics', {
+      const analyticsRes = await fetch(`${API_URL}/admin/analytics`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const analyticsData = await analyticsRes.json();
       setAnalytics(analyticsData);
 
       // Fetch users
-      const usersRes = await fetch(`http://localhost:8200/api/admin/users?page=1&limit=10`, {
+      const usersRes = await fetch(`${API_URL}/admin/users?page=1&limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const usersData = await usersRes.json();
       setUsers(usersData.users);
 
       // Fetch blogs
-      const blogsRes = await fetch(`http://localhost:8200/api/admin/blogs?page=1&limit=10`, {
+      const blogsRes = await fetch(`${API_URL}/admin/blogs?page=1&limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const blogsData = await blogsRes.json();
@@ -73,7 +74,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
       isConfirmation: true,
       onConfirm: async () => {
         try {
-          const res = await fetch(`http://localhost:8200/api/admin/users/${userId}`, {
+          const res = await fetch(`${API_URL}/admin/users/${userId}`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -95,7 +96,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
       isConfirmation: true,
       onConfirm: async () => {
         try {
-          const res = await fetch(`http://localhost:8200/api/admin/blogs/${blogId}`, {
+          const res = await fetch(`${API_URL}/admin/blogs/${blogId}`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` }
           });

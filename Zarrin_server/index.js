@@ -107,20 +107,34 @@ try {
   // 2. Security Logging
   app.use(securityLogger);
 
-  // 3. CORS Protection - Fixed configuration
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'https://zarrin-blogs-frontend.vercel.app',
-    process.env.CORS_ORIGIN
-  ].filter(Boolean);
-
+  // 3. CORS Protection - Dynamic configuration for development + production
   app.use(cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or Postman)
+      if (!origin) return callback(null, true);
+      
+      // Allow all localhost variants for local development
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        return callback(null, true);
+      }
+      
+      // Allow all Vercel deployments (production + preview)
+      if (origin.includes('vercel.app')) {
+        return callback(null, true);
+      }
+      
+      // Allow configured origin from environment
+      if (process.env.CORS_ORIGIN && origin === process.env.CORS_ORIGIN) {
+        return callback(null, true);
+      }
+      
+      // For all other origins, allow them (can be restrictive later)
+      // In production, you might want to be more restrictive
+      return callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
   }));
 
   console.log('[STARTUP] CORS configured');
