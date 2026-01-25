@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Heart, MessageCircle, UserPlus, Bookmark, TrendingUp, Check, Trash2, RefreshCw, Eye, Bell } from 'lucide-react';
+import { Heart, MessageCircle, UserPlus, Bookmark, TrendingUp, Check, Trash2, Bell } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 
 const Notifications = () => {
@@ -13,36 +13,12 @@ const Notifications = () => {
   const [filter, setFilter] = useState('all');
   const [alert, setAlert] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [loadingStats, setLoadingStats] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
 
   const API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
   const API_URL = API_BASE.includes('/api') ? API_BASE : `${API_BASE}/api`;
   const token = localStorage.getItem('token');
 
-  // Real-time notifications fetching (like Navbar pattern)
-  useEffect(() => {
-    if (!token) {
-      setAlert({ type: 'error', message: 'Please login to view notifications' });
-      return;
-    }
-
-    // Fetch immediately on load
-    fetchNotifications();
-    fetchStats();
-
-    // Set up real-time interval (refresh every 5 seconds like navbar dropdown)
-    const notifInterval = setInterval(() => {
-      fetchNotifications();
-      fetchStats();
-    }, 5000);
-
-    return () => clearInterval(notifInterval);
-  }, [filter, token]);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
       let url = `${API_URL}/notifications`;
@@ -60,7 +36,6 @@ const Notifications = () => {
         },
         signal: AbortSignal.timeout(5000) // 5 second timeout
       });
-
       if (!response.ok) {
         console.error('❌ Response not OK:', response.status, response.statusText);
         throw new Error('Failed to fetch notifications');
@@ -89,11 +64,10 @@ const Notifications = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, token, filter]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
-      setLoadingStats(true);
       const url = `${API_URL}/notifications/stats`;
       console.log('📊 Fetching stats from:', url);
       
@@ -125,12 +99,30 @@ const Notifications = () => {
       } else {
         console.error('⚠️ Error fetching stats:', error.message);
       }
-    } finally {
-      setLoadingStats(false);
     }
-  };
+  }, [API_URL, token]);
 
-  const handleMarkAllRead = async () => {
+  // Real-time notifications fetching (like Navbar pattern)
+  useEffect(() => {
+    if (!token) {
+      setAlert({ type: 'error', message: 'Please login to view notifications' });
+      return;
+    }
+
+    // Fetch immediately on load
+    fetchNotifications();
+    fetchStats();
+
+    // Set up real-time interval (refresh every 5 seconds like navbar dropdown)
+    const notifInterval = setInterval(() => {
+      fetchNotifications();
+      fetchStats();
+    }, 5000);
+
+    return () => clearInterval(notifInterval);
+  }, [filter, token, fetchNotifications, fetchStats]);
+
+  const handleMarkAllRead = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/notifications/read-all`, {
@@ -159,9 +151,9 @@ const Notifications = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, token, fetchNotifications]);
 
-  const handleMarkAsRead = async (notificationId) => {
+  const handleMarkAsRead = useCallback(async (notificationId) => {
     try {
       const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
         method: 'PUT',
@@ -192,9 +184,9 @@ const Notifications = () => {
         console.error('⚠️ Error marking as read:', error.message);
       }
     }
-  };
+  }, [API_URL, token, fetchNotifications]);
 
-  const handleDeleteNotification = async (notificationId) => {
+  const handleDeleteNotification = useCallback(async (notificationId) => {
     try {
       const response = await fetch(`${API_URL}/notifications/${notificationId}`, {
         method: 'DELETE',
@@ -218,9 +210,9 @@ const Notifications = () => {
       }
       setAlert({ type: 'error', message: 'Failed to delete notification' });
     }
-  };
+  }, [API_URL, token]);
 
-  const handleFollowBack = async (notificationId, followerId) => {
+  const handleFollowBack = useCallback(async (notificationId, followerId) => {
     try {
       const response = await fetch(`${API_URL}/users/${followerId}/follow`, {
         method: 'POST',
@@ -244,7 +236,7 @@ const Notifications = () => {
       }
       setAlert({ type: 'error', message: 'Failed to follow user' });
     }
-  };
+  }, [API_URL, token, fetchNotifications]);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 

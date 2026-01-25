@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Plus, Smile, Image as ImageIcon, X } from 'lucide-react';
-import socketService from '../../utils/socketService';
+import { Send, Smile, Image as ImageIcon, X } from 'lucide-react';
+import { socketService } from '../../utils/socketService';
 import EmojiPicker from './EmojiPicker';
 import './MessageInput.css';
 

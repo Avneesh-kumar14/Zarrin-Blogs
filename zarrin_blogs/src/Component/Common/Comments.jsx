@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { MessageCircle, Trash2, Edit2, X } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { MessageCircle, Trash2, Edit2 } from 'lucide-react';
 import Heading from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
 import Button from '../Common/Button';
@@ -16,11 +16,7 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
   const [charCount, setCharCount] = useState(0);
 
   // Fetch comments on mount
-  useEffect(() => {
-    fetchComments();
-  }, [blogId]);
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(
@@ -35,7 +31,11 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [blogId]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [blogId, fetchComments]);
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();

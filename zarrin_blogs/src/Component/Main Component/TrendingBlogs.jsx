@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Flame, Eye, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,11 +11,7 @@ const TrendingBlogs = () => {
   let API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
   const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
 
-  useEffect(() => {
-    fetchTrendingBlogs();
-  }, []);
-
-  const fetchTrendingBlogs = async () => {
+  const fetchTrendingBlogs = useCallback(async () => {
     try {
       setLoading(true);
       console.log('📡 Fetching trending from:', `${API_URL}/trending?limit=6`);
@@ -30,7 +26,11 @@ const TrendingBlogs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchTrendingBlogs();
+  }, [fetchTrendingBlogs]);
 
   if (loading) {
     return (

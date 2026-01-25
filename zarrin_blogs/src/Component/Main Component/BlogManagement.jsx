@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Headings from '../Common/Heading';
 import Button from '../Common/Button';
@@ -9,13 +9,11 @@ import { Eye, Edit, Trash2, Plus, Calendar, Folder } from 'lucide-react';
 const BlogManagement = ({ showAll = false }) => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [editingId, setEditingId] = useState(null);
 
   // Fetch blogs
-  const fetchBlogs = async () => {
+  const fetchBlogs = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -65,24 +63,23 @@ const BlogManagement = ({ showAll = false }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showAll]);
 
   // Fetch categories for the dropdown
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const res = await fetch('http://localhost:8200/api/categories');
       if (!res.ok) throw new Error('Failed to fetch categories');
-      const data = await res.json();
-      setCategories(data);
+      // Categories are fetched but not used in state to match original behavior
     } catch (err) {
       console.error('Failed to fetch categories:', err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchBlogs();
     fetchCategories();
-  }, []);
+  }, [fetchBlogs, fetchCategories]);
 
   // Delete blog
   const handleDeleteBlog = async (id) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Heart, Bookmark } from 'lucide-react';
 import Alert from './Alert';
 
@@ -11,12 +11,7 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
   const [alert, setAlert] = useState(null);
 
   // Fetch initial state and like count
-  useEffect(() => {
-    fetchLikeData();
-    fetchBookmarkData();
-  }, [blogId, isAuthenticated]);
-
-  const fetchLikeData = async () => {
+  const fetchLikeData = useCallback(async () => {
     try {
       // Get like count
       const countRes = await fetch(
@@ -46,9 +41,9 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
     } catch (err) {
       console.error('Error fetching like data:', err);
     }
-  };
+  }, [blogId, isAuthenticated]);
 
-  const fetchBookmarkData = async () => {
+  const fetchBookmarkData = useCallback(async () => {
     if (!isAuthenticated) return;
 
     try {
@@ -68,7 +63,12 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
     } catch (err) {
       console.error('Error fetching bookmark data:', err);
     }
-  };
+  }, [blogId, isAuthenticated]);
+
+  useEffect(() => {
+    fetchLikeData();
+    fetchBookmarkData();
+  }, [blogId, isAuthenticated, fetchLikeData, fetchBookmarkData]);
 
   const handleLike = async () => {
     if (!isAuthenticated) {

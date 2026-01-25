@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { User, Mail, FileText, ArrowLeft, UserCheck, UserPlus, Calendar, BookOpen, Heart } from 'lucide-react';
+import { User, Mail, FileText, ArrowLeft, UserCheck, UserPlus, Calendar, BookOpen } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 import Paragraph from '../Component/Common/Paragraph';
 
@@ -20,7 +20,7 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
 
   const getUserId = (user) => user?._id || user?.id;
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       console.log('=== Fetching Profile ===');
@@ -82,7 +82,7 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
       setUser(null);
       setLoading(false);
     }
-  };
+  }, [userId, ownProfile, loggedInUser]);
 
   useEffect(() => {
     // Skip fetch if requirements not met
@@ -95,7 +95,7 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
     }
     
     fetchProfile();
-  }, [userId, ownProfile, loggedInUser]);
+  }, [userId, ownProfile, loggedInUser, fetchProfile]);
 
   const handleFollowToggle = async () => {
     if (!token) {

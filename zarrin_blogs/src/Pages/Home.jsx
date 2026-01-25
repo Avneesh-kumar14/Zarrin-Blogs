@@ -20,8 +20,8 @@
  * Project: Zarrin Blog Platform
  */
 
-import React, { useState, useEffect } from 'react'
-import { ArrowRight, Clock, User, Zap, BookOpen, Sparkles, Pen, Star, Share2, Shield, TrendingUp, Heart, Eye, MessageCircle, Users, Award, Quote, CheckCircle, Play, Bookmark } from 'lucide-react'
+import React, { useState, useEffect, useCallback } from 'react'
+import { ArrowRight, Clock, User, Zap, BookOpen, Sparkles, Share2, Shield, TrendingUp, Heart, Eye, MessageCircle, Users, Award, Quote, CheckCircle, Play, Bookmark, Star } from 'lucide-react'
 import TrendingBlogs from '../Component/Main Component/TrendingBlogs'
 
 const Home = () => {
@@ -34,10 +34,6 @@ const Home = () => {
   // Construct API URL properly
   let API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
   const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
-
-  useEffect(() => {
-    fetchAllData();
-  }, []);
 
   /**
    * Home Page Debug:
@@ -52,7 +48,7 @@ const Home = () => {
    * - Frontend correctly maps response data
    * - Data is not filtered out accidentally on frontend
    */
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -112,7 +108,11 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   // Category data for section
   const categories = [

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Users, FileText, Eye, Heart, TrendingUp, Trash2, Edit2, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -15,20 +15,10 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
-  const [page, setPage] = useState(1);
   const token = localStorage.getItem('token');
   const userData = JSON.parse(localStorage.getItem('user') || '{}');
 
-  // Check if user is admin
-  useEffect(() => {
-    if (!isAuthenticated || userData.role !== 'admin') {
-      navigate('/login');
-      return;
-    }
-    fetchDashboard();
-  }, [isAuthenticated]);
-
-  const fetchDashboard = async () => {
+  const fetchDashboard = useCallback(async () => {
     try {
       setLoading(true);
       const dashRes = await fetch('http://localhost:8200/api/admin/dashboard', {
@@ -47,14 +37,14 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
       setAnalytics(analyticsData);
 
       // Fetch users
-      const usersRes = await fetch(`http://localhost:8200/api/admin/users?page=${page}&limit=10`, {
+      const usersRes = await fetch(`http://localhost:8200/api/admin/users?page=1&limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const usersData = await usersRes.json();
       setUsers(usersData.users);
 
       // Fetch blogs
-      const blogsRes = await fetch(`http://localhost:8200/api/admin/blogs?page=${page}&limit=10`, {
+      const blogsRes = await fetch(`http://localhost:8200/api/admin/blogs?page=1&limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const blogsData = await blogsRes.json();
@@ -65,7 +55,16 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  // Check if user is admin
+  useEffect(() => {
+    if (!isAuthenticated || userData.role !== 'admin') {
+      navigate('/login');
+      return;
+    }
+    fetchDashboard();
+  }, [isAuthenticated, userData.role, navigate, fetchDashboard]);
 
   const handleDeleteUser = async (userId) => {
     setAlert({

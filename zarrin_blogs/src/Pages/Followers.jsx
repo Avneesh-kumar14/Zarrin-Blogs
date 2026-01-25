@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Users, ArrowLeft, Mail, FileText, UserPlus, UserCheck, Heart, BookOpen } from 'lucide-react';
 import Heading from '../Component/Common/Heading';
@@ -15,26 +15,12 @@ const Followers = () => {
   const [userName, setUserName] = useState('');
 
   const storedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-  const loggedInUser = (storedUser && Object.keys(storedUser).length > 0) ? storedUser : {};
+  const loggedInUser = useMemo(() => (storedUser && Object.keys(storedUser).length > 0) ? storedUser : {}, [storedUser]);
   const token = localStorage.getItem('token');
   
   const getUserId = (user) => user?._id || user?.id;
 
-  useEffect(() => {
-    console.log('🔍 Followers useEffect triggered');
-    console.log('userId from useParams():', userId);
-    console.log('typeof userId:', typeof userId);
-    
-    if (userId && userId !== 'undefined') {
-      console.log('✅ Valid userId, calling fetchFollowers');
-      fetchFollowers();
-    } else {
-      console.warn('❌ Invalid userId:', userId);
-      setLoading(false);
-    }
-  }, [userId]);
-
-  const fetchFollowers = async () => {
+  const fetchFollowers = useCallback(async () => {
     try {
       console.log('🔍 DEBUG: fetchFollowers called');
       console.log('userId:', userId);
@@ -87,7 +73,21 @@ const Followers = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, token, loggedInUser]);
+
+  useEffect(() => {
+    console.log('🔍 Followers useEffect triggered');
+    console.log('userId from useParams():', userId);
+    console.log('typeof userId:', typeof userId);
+    
+    if (userId && userId !== 'undefined') {
+      console.log('✅ Valid userId, calling fetchFollowers');
+      fetchFollowers();
+    } else {
+      console.warn('❌ Invalid userId:', userId);
+      setLoading(false);
+    }
+  }, [userId, fetchFollowers]);
 
   const handleFollowToggle = async (followerId) => {
     if (!token) {

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import socketService from '../utils/socketService';
+import { socketService } from '../utils/socketService';
 
 const ChatContext = createContext();
 
@@ -20,8 +20,7 @@ export const ChatProvider = ({ children, token }) => {
   const [messages, setMessages] = useState([]);
   const [typingUsers, setTypingUsers] = useState(new Map());
   const [onlineUsers, setOnlineUsers] = useState(new Set());
-  // eslint-disable-next-line no-unused-vars
-  const [unreadCounts, setUnreadCounts] = useState(new Map());
+  const [unreadCounts] = useState(new Map());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,7 +105,6 @@ export const ChatProvider = ({ children, token }) => {
     // Handle call ended
   }, []);
 
-  // eslint-disable-next-line no-unused-vars
   const handleSocketError = useCallback((error) => {
     setError(error.message);
   }, []);
@@ -144,11 +142,26 @@ export const ChatProvider = ({ children, token }) => {
       socketService.on('userLeftConversation', handleUserLeft);
       socketService.on('incomingCall', handleIncomingCall);
       socketService.on('callEnded', handleCallEnded);
+      socketService.on('socketError', handleSocketError);
 
       return () => {
         console.log('ChatProvider: Cleaning up socket listeners');
         socketService.off('socketConnected', handleSocketConnected);
         socketService.off('socketDisconnected', handleSocketDisconnected);
+        socketService.off('newMessage', handleNewMessage);
+        socketService.off('userOnline', handleUserOnline);
+        socketService.off('userOffline', handleUserOffline);
+        socketService.off('userIsTyping', handleUserTyping);
+        socketService.off('userStoppedTyping', handleUserStoppedTyping);
+        socketService.off('messagesRead', handleMessagesRead);
+        socketService.off('messageDeleted', handleMessageDeleted);
+        socketService.off('messageEdited', handleMessageEdited);
+        socketService.off('reactionAdded', handleReactionAdded);
+        socketService.off('userJoinedConversation', handleUserJoined);
+        socketService.off('userLeftConversation', handleUserLeft);
+        socketService.off('incomingCall', handleIncomingCall);
+        socketService.off('callEnded', handleCallEnded);
+        socketService.off('socketError', handleSocketError);
         // Don't disconnect socket on cleanup - let it reconnect automatically
         // socketService.disconnect();
       };
@@ -156,7 +169,7 @@ export const ChatProvider = ({ children, token }) => {
       console.warn('ChatProvider: No token provided for socket connection');
       setSocketConnected(false);
     }
-  }, [token, handleNewMessage, handleUserOnline, handleUserOffline, handleUserTyping, handleUserStoppedTyping, handleMessagesRead, handleMessageDeleted, handleMessageEdited, handleReactionAdded, handleUserJoined, handleUserLeft, handleIncomingCall, handleCallEnded]);
+  }, [token, handleNewMessage, handleUserOnline, handleUserOffline, handleUserTyping, handleUserStoppedTyping, handleMessagesRead, handleMessageDeleted, handleMessageEdited, handleReactionAdded, handleUserJoined, handleUserLeft, handleIncomingCall, handleCallEnded, handleSocketError]);
 
   // Fetch conversations
   const fetchConversations = useCallback(async (page = 1) => {

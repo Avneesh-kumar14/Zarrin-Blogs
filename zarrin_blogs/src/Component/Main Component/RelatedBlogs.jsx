@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Heading from '../Common/Heading';
@@ -9,11 +9,7 @@ const RelatedBlogs = ({ blogId }) => {
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchRelatedBlogs();
-  }, [blogId]);
-
-  const fetchRelatedBlogs = async () => {
+  const fetchRelatedBlogs = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`http://localhost:8200/api/related/blog/${blogId}`);
@@ -25,7 +21,11 @@ const RelatedBlogs = ({ blogId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [blogId]);
+
+  useEffect(() => {
+    fetchRelatedBlogs();
+  }, [blogId, fetchRelatedBlogs]);
 
   if (loading) {
     return (

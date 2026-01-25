@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bookmark, ArrowRight, Trash2, Clock, User, BookmarkX, Sparkles } from 'lucide-react';
 import Heading from '../Component/Common/Heading';
@@ -13,15 +13,7 @@ const Bookmarks = ({ isAuthenticated }) => {
   const [deleting, setDeleting] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    fetchBookmarks();
-  }, [isAuthenticated, navigate]);
-
-  const fetchBookmarks = async () => {
+  const fetchBookmarks = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -46,9 +38,15 @@ const Bookmarks = ({ isAuthenticated }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
-  const handleRemoveBookmark = async (blogId) => {
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    fetchBookmarks();
+  }, [isAuthenticated, navigate, fetchBookmarks]);  const handleRemoveBookmark = async (blogId) => {
     setAlert({
       type: 'warning',
       message: 'Remove this bookmark? This action cannot be undone.',

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Search as SearchIcon, Filter, ArrowRight, Users, X } from 'lucide-react';
+import { Search as SearchIcon, Filter, ArrowRight, Users } from 'lucide-react';
 import Heading from '../Component/Common/Heading';
 import Paragraph from '../Component/Common/Paragraph';
 import Button from '../Component/Common/Button';
@@ -97,16 +97,7 @@ const Search = () => {
   };
 
   // Search when params change
-  useEffect(() => {
-    if (query.trim()) {
-      performSearch();
-    } else {
-      setResults([]);
-      setUserResults([]);
-    }
-  }, [query, searchType, category, sortBy]);
-
-  const performSearch = async () => {
+  const performSearch = useCallback(async () => {
     setLoading(true);
     try {
       if (searchType === 'users') {
@@ -154,7 +145,16 @@ const Search = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [query, searchType, category, sortBy, setSearchParams]);
+
+  useEffect(() => {
+    if (query.trim()) {
+      performSearch();
+    } else {
+      setResults([]);
+      setUserResults([]);
+    }
+  }, [query, searchType, category, sortBy, performSearch]);
 
   const handleSearch = (e) => {
     e.preventDefault();
