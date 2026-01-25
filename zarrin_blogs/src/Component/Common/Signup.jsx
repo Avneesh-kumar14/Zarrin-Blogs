@@ -6,6 +6,7 @@ import Logo from './Logo';
 import Alert from './Alert';
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Eye, EyeOff, CheckCircle, ArrowRight } from 'lucide-react';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -46,9 +47,10 @@ const Signup = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:8200/api/auth/signup', {
+      const res = await fetch(getApiUrl('/api/auth/signup'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({ name, email, password })
       });
       const data = await res.json();

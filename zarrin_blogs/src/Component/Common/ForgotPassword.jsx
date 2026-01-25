@@ -6,6 +6,7 @@ import Logo from './Logo';
 import Alert from './Alert';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -35,9 +36,10 @@ const ForgotPassword = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:8200/api/auth/forgot-password', {
+      const res = await fetch(getApiUrl('/api/auth/forgot-password'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({ email: trimmedEmail.toLowerCase() })
       });
 

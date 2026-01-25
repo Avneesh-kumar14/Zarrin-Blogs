@@ -6,6 +6,7 @@ import Logo from './Logo';
 import Alert from './Alert';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { getApiUrl } from '../../utils/apiConfig'; // Import centralized API config
 
 const Login = () => {
   const navigate = useNavigate();
@@ -43,12 +44,14 @@ const Login = () => {
       
       console.log('📤 Login attempt with:', { email: loginData.email, password: '***' });
       
-      const res = await fetch('http://localhost:8200/api/auth/login', {
+      // Use dynamic API URL from environment - production ready
+      const res = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(loginData)
+        // CRITICAL: Include credentials for authentication in production
+        credentials: 'include'
       });
       
       let data = await res.json();
@@ -97,12 +100,15 @@ const Login = () => {
       
       setAlert({ type: 'success', message: 'Login successful!' });
       
-      const validateRes = await fetch('http://localhost:8200/api/auth/validate', {
+      // Validate token with Render backend
+      const validateRes = await fetch(getApiUrl('/api/auth/validate'), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${data.token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        // CRITICAL: Include credentials for authentication in production
+        credentials: 'include'
       });
 
       if (!validateRes.ok) {

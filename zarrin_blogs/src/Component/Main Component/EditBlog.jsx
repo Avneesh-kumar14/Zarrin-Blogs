@@ -7,6 +7,7 @@ import Paragraph from '../Common/Paragraph';
 import Button from '../Common/Button';
 import Image from '../Common/Image';
 import Alert from '../Common/Alert';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const EditBlog = () => {
   const { id } = useParams();
@@ -30,7 +31,9 @@ const EditBlog = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const res = await fetch(`http://localhost:8200/api/blogs/${id}`);
+        const res = await fetch(getApiUrl(`/api/blogs/${id}`), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (!res.ok) throw new Error('Failed to fetch blog');
         const data = await res.json();
         setBlog(data);
@@ -51,7 +54,9 @@ const EditBlog = () => {
     // Fetch categories
     const fetchCategories = async () => {
       try {
-        const res = await fetch('http://localhost:8200/api/categories');
+        const res = await fetch(getApiUrl('/api/categories'), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (!res.ok) throw new Error('Failed to fetch categories');
         const data = await res.json();
         setCategories(data);
@@ -80,11 +85,12 @@ const EditBlog = () => {
         const formData = new FormData();
         formData.append('image', file);
 
-        const res = await fetch('http://localhost:8200/api/upload/upload', {
+        const res = await fetch(getApiUrl('/api/upload/upload'), {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
           },
+          credentials: 'include', // CRITICAL: include cookies for production CORS
           body: formData
         });
 
@@ -158,12 +164,13 @@ const EditBlog = () => {
 
       console.log('Sending update payload:', updatePayload);
       
-      const res = await fetch(`http://localhost:8200/api/blogs/${id}`, {
+      const res = await fetch(getApiUrl(`/api/blogs/${id}`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify(updatePayload)
       });
 

@@ -6,6 +6,7 @@ import Logo from './Logo';
 import Alert from './Alert';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -30,9 +31,10 @@ const ResetPassword = () => {
       }
 
       try {
-        const res = await fetch('http://localhost:8200/api/auth/verify-reset-token', {
+        const res = await fetch(getApiUrl('/api/auth/verify-reset-token'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include', // CRITICAL: include cookies for production CORS
           body: JSON.stringify({ token })
         });
 
@@ -81,9 +83,10 @@ const ResetPassword = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:8200/api/auth/reset-password-with-token', {
+      const res = await fetch(getApiUrl('/api/auth/reset-password-with-token'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({ token, newPassword: password, confirmPassword })
       });
 

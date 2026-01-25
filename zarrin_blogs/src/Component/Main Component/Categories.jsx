@@ -11,6 +11,7 @@ import {
 import Heading from "../Common/Heading";
 import Paragraph from "../Common/Paragraph";
 import Alert from "../Common/Alert";
+import { getApiUrl } from "../../utils/apiConfig";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -29,7 +30,9 @@ const Categories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8200/api/categories");
+      const res = await fetch(getApiUrl("/api/categories"), {
+        credentials: 'include' // CRITICAL: include cookies for production CORS
+      });
       if (!res.ok) throw new Error();
       setCategories(await res.json());
     } catch {
@@ -44,12 +47,13 @@ const Categories = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8200/api/categories", {
+      const res = await fetch(getApiUrl("/api/categories"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({ name: newCategory.trim() })
       });
 
@@ -74,9 +78,10 @@ const Categories = () => {
         try {
           setDeleteLoading(id);
           const token = localStorage.getItem("token");
-          await fetch(`http://localhost:8200/api/categories/${id}`, {
+          await fetch(getApiUrl(`/api/categories/${id}`), {
             method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
+            credentials: 'include' // CRITICAL: include cookies for production CORS
           });
           setCategories(categories.filter((c) => c._id !== id));
           setAlert({ type: 'success', message: 'Category deleted successfully!' });

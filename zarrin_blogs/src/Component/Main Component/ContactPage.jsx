@@ -7,6 +7,7 @@ import Paragraph from '../Common/Paragraph';
 import Heading from '../Common/Heading';
 import Button from '../Common/Button';
 import Alert from '../Common/Alert';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -33,14 +34,14 @@ const ContactPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8200/api/contact', {
+      const response = await fetch(getApiUrl('/api/contact'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
-        credentials: 'include'
+        credentials: 'include' // CRITICAL: include cookies for production CORS
       });
 
       const data = await response.json();

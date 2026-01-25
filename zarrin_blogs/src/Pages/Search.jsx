@@ -5,6 +5,7 @@ import Heading from '../Component/Common/Heading';
 import Paragraph from '../Component/Common/Paragraph';
 import Button from '../Component/Common/Button';
 import Alert from '../Component/Common/Alert';
+import { getApiUrl } from '../utils/apiConfig';
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,7 +27,9 @@ const Search = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('http://localhost:8200/api/categories');
+        const res = await fetch(getApiUrl('/api/categories'), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (!res.ok) throw new Error('Failed to fetch categories');
         const data = await res.json();
         setCategories(data);
@@ -56,13 +59,17 @@ const Search = () => {
   const fetchLiveUserSuggestions = async (searchQuery) => {
     try {
       // Try to use the API search endpoint first
-      const res = await fetch(`http://localhost:8200/api/users/search?query=${encodeURIComponent(searchQuery)}`);
+      const res = await fetch(getApiUrl(`/api/users/search?query=${encodeURIComponent(searchQuery)}`), {
+        credentials: 'include' // CRITICAL: include cookies for production CORS
+      });
       if (res.ok) {
         const users = await res.json();
         setLiveUserSuggestions(Array.isArray(users) ? users : []);
       } else {
         // Fallback: fetch all users if search endpoint fails
-        const allUsersRes = await fetch('http://localhost:8200/api/users');
+        const allUsersRes = await fetch(getApiUrl('/api/users'), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (allUsersRes.ok) {
           const allUsers = await allUsersRes.json();
           const filtered = allUsers
@@ -75,7 +82,9 @@ const Search = () => {
       console.error('Error fetching user suggestions:', err);
       // Final fallback: try to fetch all users
       try {
-        const allUsersRes = await fetch('http://localhost:8200/api/users');
+        const allUsersRes = await fetch(getApiUrl('/api/users'), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (allUsersRes.ok) {
           const allUsers = await allUsersRes.json();
           const filtered = allUsers
@@ -102,13 +111,17 @@ const Search = () => {
     try {
       if (searchType === 'users') {
         // Search users by name ONLY (not by email)
-        const res = await fetch(`http://localhost:8200/api/users/search?query=${encodeURIComponent(query)}`);
+        const res = await fetch(getApiUrl(`/api/users/search?query=${encodeURIComponent(query)}`), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (res.ok) {
           const data = await res.json();
           setUserResults(Array.isArray(data) ? data : []);
         } else {
           // Fallback: fetch all users and filter by name ONLY
-          const allUsersRes = await fetch('http://localhost:8200/api/users');
+          const allUsersRes = await fetch(getApiUrl('/api/users'), {
+            credentials: 'include' // CRITICAL: include cookies for production CORS
+          });
           if (allUsersRes.ok) {
             const allUsers = await allUsersRes.json();
             // Filter ONLY by name, NOT by email
@@ -126,7 +139,9 @@ const Search = () => {
         if (category !== 'all') params.append('category', category);
         params.append('sortBy', sortBy);
 
-        const res = await fetch(`http://localhost:8200/api/search?${params}`);
+        const res = await fetch(getApiUrl(`/api/search?${params}`), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (!res.ok) throw new Error('Search failed');
         const data = await res.json();
         setResults(data.blogs || []);

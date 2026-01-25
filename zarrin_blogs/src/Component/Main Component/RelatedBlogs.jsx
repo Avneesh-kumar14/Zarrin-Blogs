@@ -3,6 +3,7 @@ import { Link, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Heading from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const RelatedBlogs = ({ blogId }) => {
   const navigate = useNavigate();
@@ -12,7 +13,9 @@ const RelatedBlogs = ({ blogId }) => {
   const fetchRelatedBlogs = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:8200/api/related/blog/${blogId}`);
+      const res = await fetch(getApiUrl(`/api/related/blog/${blogId}`), {
+        credentials: 'include' // CRITICAL: include cookies for production CORS
+      });
       if (!res.ok) throw new Error('Failed to fetch related blogs');
       const data = await res.json();
       setRelated(data);

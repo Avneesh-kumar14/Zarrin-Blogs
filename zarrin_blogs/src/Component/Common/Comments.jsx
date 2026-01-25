@@ -4,6 +4,7 @@ import Heading from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
 import Button from '../Common/Button';
 import Alert from '../Common/Alert';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const Comments = ({ blogId, currentUser, isAuthenticated }) => {
   const [comments, setComments] = useState([]);
@@ -20,7 +21,10 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:8200/api/comments/blog/${blogId}`
+        getApiUrl(`/api/comments/blog/${blogId}`),
+        {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        }
       );
       if (!res.ok) throw new Error('Failed to fetch comments');
       const data = await res.json();
@@ -55,12 +59,13 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
     try {
       setSubmitting(true);
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8200/api/comments', {
+      const res = await fetch(getApiUrl('/api/comments'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({
           blogId,
           content: newComment
@@ -95,12 +100,13 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:8200/api/comments/${commentId}`, {
+      const res = await fetch(getApiUrl(`/api/comments/${commentId}`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({ content: editingText })
       });
 
@@ -125,11 +131,12 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
       onConfirm: async () => {
         try {
           const token = localStorage.getItem('token');
-          const res = await fetch(`http://localhost:8200/api/comments/${commentId}`, {
+          const res = await fetch(getApiUrl(`/api/comments/${commentId}`), {
             method: 'DELETE',
             headers: {
               Authorization: `Bearer ${token}`
-            }
+            },
+            credentials: 'include' // CRITICAL: include cookies for production CORS
           });
 
           if (!res.ok) throw new Error('Failed to delete comment');

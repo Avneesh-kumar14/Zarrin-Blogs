@@ -4,6 +4,7 @@ import { FileText, Trash2, Edit2, Plus } from 'lucide-react';
 import Heading from '../Component/Common/Heading';
 import Paragraph from '../Component/Common/Paragraph';
 import Alert from '../Component/Common/Alert';
+import { getApiUrl } from '../utils/apiConfig';
 
 const Drafts = ({ isAuthenticated, currentUser }) => {
   const navigate = useNavigate();
@@ -51,11 +52,12 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
 
       console.log('📥 Fetching drafts for user:', userId);
       
-      const res = await fetch(`http://localhost:8200/api/users/${userId}/drafts`, {
+      const res = await fetch(getApiUrl(`/api/users/${userId}/drafts`), {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include' // CRITICAL: include cookies for production CORS
       });
 
       console.log('📊 Response status:', res.status);
@@ -86,11 +88,12 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
         try {
           setDeleting(blogId);
           const token = localStorage.getItem('token');
-          const res = await fetch(`http://localhost:8200/api/blogs/${blogId}`, {
+          const res = await fetch(getApiUrl(`/api/blogs/${blogId}`), {
             method: 'DELETE',
             headers: {
               Authorization: `Bearer ${token}`
-            }
+            },
+            credentials: 'include' // CRITICAL: include cookies for production CORS
           });
 
           if (!res.ok) throw new Error('Failed to delete draft');

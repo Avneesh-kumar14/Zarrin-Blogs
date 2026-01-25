@@ -4,6 +4,7 @@ import { Users, ArrowLeft, Mail, FileText, UserPlus, UserCheck, Heart, BookOpen 
 import Heading from '../Component/Common/Heading';
 import Paragraph from '../Component/Common/Paragraph';
 import Alert from '../Component/Common/Alert';
+import { getApiUrl } from '../utils/apiConfig';
 
 const Followers = () => {
   const { userId } = useParams();
@@ -31,9 +32,11 @@ const Followers = () => {
       
       setLoading(true);
       console.log('Fetching from API with userId:', userId);
-      console.log('Full URL:', `http://localhost:8200/api/users/${userId}`);
+      console.log('Full URL:', getApiUrl(`/api/users/${userId}`));
 
-      const res = await fetch(`http://localhost:8200/api/users/${userId}`);
+      const res = await fetch(getApiUrl(`/api/users/${userId}`), {
+        credentials: 'include' // CRITICAL: include cookies for production CORS
+      });
       console.log('API Response Status:', res.status, res.statusText);
       if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
       const userData = await res.json();
@@ -47,7 +50,9 @@ const Followers = () => {
         for (const follower of userData.followers) {
           const followerId = getUserId(follower);
           try {
-            const userRes = await fetch(`http://localhost:8200/api/users/${followerId}`);
+            const userRes = await fetch(getApiUrl(`/api/users/${followerId}`), {
+              credentials: 'include' // CRITICAL: include cookies for production CORS
+            });
             if (userRes.ok) {
               const fullUserData = await userRes.json();
               followersDetails.push(fullUserData);
@@ -97,11 +102,12 @@ const Followers = () => {
 
     try {
       const method = followingMap[followerId] ? 'DELETE' : 'POST';
-      const res = await fetch(`http://localhost:8200/api/users/${followerId}/follow`, {
+      const res = await fetch(getApiUrl(`/api/users/${followerId}/follow`), {
         method,
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
+        credentials: 'include' // CRITICAL: include cookies for production CORS
       });
 
       // Parse error response properly

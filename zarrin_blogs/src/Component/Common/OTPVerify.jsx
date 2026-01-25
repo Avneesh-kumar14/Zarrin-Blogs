@@ -6,6 +6,7 @@ import Button from './Button';
 import Logo from './Logo';
 import Alert from './Alert';
 import { Mail, Lock } from 'lucide-react';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const OTPVerify = () => {
   const navigate = useNavigate();
@@ -43,9 +44,10 @@ const OTPVerify = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:8200/api/auth/verify-otp', {
+      const res = await fetch(getApiUrl('/api/auth/verify-otp'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({ email, otp: otp.trim() })
       });
 
@@ -80,9 +82,10 @@ const OTPVerify = () => {
     setResendLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8200/api/auth/resend-otp', {
+      const res = await fetch(getApiUrl('/api/auth/resend-otp'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({ email })
       });
 

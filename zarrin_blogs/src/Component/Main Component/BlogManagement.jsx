@@ -5,6 +5,7 @@ import Button from '../Common/Button';
 import Paragraph from '../Common/Paragraph';
 import Alert from '../Common/Alert';
 import { Eye, Edit, Trash2, Plus, Calendar, Folder } from 'lucide-react';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const BlogManagement = ({ showAll = false }) => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const BlogManagement = ({ showAll = false }) => {
       let endpoint;
       
       if (showAll) {
-        endpoint = 'http://localhost:8200/api/blogs';
+        endpoint = getApiUrl('/api/blogs'); // Use centralized API URL for production
       } else {
         // For MyBlogs, get user's own blogs
         if (!userData._id && !userData.id) {
@@ -36,14 +37,15 @@ const BlogManagement = ({ showAll = false }) => {
           return;
         }
         const userId = userData._id || userData.id;
-        endpoint = `http://localhost:8200/api/blogs/user/${userId}`;
+        endpoint = getApiUrl(`/api/blogs/user/${userId}`); // Use centralized API URL for production
       }
       
       console.log('Fetching blogs from:', endpoint);
       const res = await fetch(endpoint, {
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: 'include' // CRITICAL: include cookies for production CORS
       });
       
       if (!res.ok) {
@@ -68,7 +70,9 @@ const BlogManagement = ({ showAll = false }) => {
   // Fetch categories for the dropdown
   const fetchCategories = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:8200/api/categories');
+      const res = await fetch(getApiUrl('/api/categories'), {
+        credentials: 'include' // CRITICAL: include cookies for production CORS
+      });
       if (!res.ok) throw new Error('Failed to fetch categories');
       // Categories are fetched but not used in state to match original behavior
     } catch (err) {
@@ -89,11 +93,12 @@ const BlogManagement = ({ showAll = false }) => {
       isConfirmation: true,
       onConfirm: async () => {
         try {
-          const res = await fetch(`http://localhost:8200/api/blogs/${id}`, {
+          const res = await fetch(getApiUrl(`/api/blogs/${id}`), {
             method: 'DELETE',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            credentials: 'include' // CRITICAL: include cookies for production CORS
           });
           if (!res.ok) throw new Error('Failed to delete blog');
           setAlert({ type: 'success', message: 'Blog deleted successfully!' });

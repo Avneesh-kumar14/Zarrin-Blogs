@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Heart, Bookmark } from 'lucide-react';
 import Alert from './Alert';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
   const [isLiked, setIsLiked] = useState(false);
@@ -15,7 +16,10 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
     try {
       // Get like count
       const countRes = await fetch(
-        `http://localhost:8200/api/likes/count/${blogId}`
+        getApiUrl(`/api/likes/count/${blogId}`),
+        {
+          credentials: 'include' // CRITICAL for production: include cookies/JWT in CORS requests
+        }
       );
       if (countRes.ok) {
         const countData = await countRes.json();
@@ -26,11 +30,12 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
       if (isAuthenticated) {
         const token = localStorage.getItem('token');
         const checkRes = await fetch(
-          `http://localhost:8200/api/likes/check/${blogId}`,
+          getApiUrl(`/api/likes/check/${blogId}`),
           {
             headers: {
               Authorization: `Bearer ${token}`
-            }
+            },
+            credentials: 'include' // CRITICAL: include cookies for production CORS
           }
         );
         if (checkRes.ok) {
@@ -49,11 +54,12 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(
-        `http://localhost:8200/api/bookmarks/check/${blogId}`,
+        getApiUrl(`/api/bookmarks/check/${blogId}`),
         {
           headers: {
             Authorization: `Bearer ${token}`
-          }
+          },
+          credentials: 'include' // CRITICAL: include cookies for production CORS
         }
       );
       if (res.ok) {
@@ -83,12 +89,13 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
       if (isLiked) {
         // Unlike
         const res = await fetch(
-          `http://localhost:8200/api/likes/${blogId}`,
+          getApiUrl(`/api/likes/${blogId}`),
           {
             method: 'DELETE',
             headers: {
               Authorization: `Bearer ${token}`
-            }
+            },
+            credentials: 'include' // CRITICAL: include cookies for production CORS
           }
         );
 
@@ -100,13 +107,14 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
       } else {
         // Like
         const res = await fetch(
-          `http://localhost:8200/api/likes/${blogId}`,
+          getApiUrl(`/api/likes/${blogId}`),
           {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`
             },
+            credentials: 'include', // CRITICAL: include cookies for production CORS
             body: JSON.stringify({})
           }
         );
@@ -140,12 +148,13 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
       if (isBookmarked) {
         // Remove bookmark
         const res = await fetch(
-          `http://localhost:8200/api/bookmarks/${blogId}`,
+          getApiUrl(`/api/bookmarks/${blogId}`),
           {
             method: 'DELETE',
             headers: {
               Authorization: `Bearer ${token}`
-            }
+            },
+            credentials: 'include' // CRITICAL: include cookies for production CORS
           }
         );
 
@@ -158,13 +167,14 @@ const LikeBookmarkButtons = ({ blogId, isAuthenticated, onLikeChange }) => {
       } else {
         // Add bookmark
         const res = await fetch(
-          `http://localhost:8200/api/bookmarks/${blogId}`,
+          getApiUrl(`/api/bookmarks/${blogId}`),
           {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`
             },
+            credentials: 'include', // CRITICAL: include cookies for production CORS
             body: JSON.stringify({})
           }
         );

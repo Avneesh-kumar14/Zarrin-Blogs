@@ -7,7 +7,8 @@ import Paragraph from "../Common/Paragraph";
 import Button from "../Common/Button";
 import Image from "../Common/Image";
 import Alert from "../Common/Alert";
-import { X } from "lucide-react"; 
+import { X } from "lucide-react";
+import { getApiUrl } from '../../utils/apiConfig';
 
 const BlogForm = () => {
   const [title, setTitle] = useState("");
@@ -20,7 +21,9 @@ const BlogForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('http://localhost:8200/api/categories');
+        const res = await fetch(getApiUrl('/api/categories'), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (!res.ok) {
           console.error('Failed to fetch categories:', res.status);
           throw new Error(`Failed to fetch categories: ${res.status}`);
@@ -52,12 +55,13 @@ const BlogForm = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8200/api/categories', {
+      const res = await fetch(getApiUrl('/api/categories'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify({ name: newCategory.trim() })
       });
 
@@ -96,11 +100,12 @@ const BlogForm = () => {
         const formData = new FormData();
         formData.append('image', file);
 
-        const res = await fetch('http://localhost:8200/api/upload/upload', {
+        const res = await fetch(getApiUrl('/api/upload/upload'), {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
           },
+          credentials: 'include', // CRITICAL: include cookies for production CORS
           body: formData
         });
 
@@ -168,12 +173,13 @@ const BlogForm = () => {
         images: images.map(img => img.cloudinaryUrl || img.preview)
       };
 
-      const res = await fetch('http://localhost:8200/api/blogs', {
+      const res = await fetch(getApiUrl('/api/blogs'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
+        credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify(blogData)
       });
       if (!res.ok) {

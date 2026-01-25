@@ -510,6 +510,7 @@ import Comments from '../Common/Comments';
 import LikeBookmarkButtons from '../Common/LikeBookmarkButtons';
 import RelatedBlogs from './RelatedBlogs';
 import { ArrowLeft, Calendar, User, Clock } from 'lucide-react';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const BlogPreview = () => {
   const { id } = useParams();
@@ -524,7 +525,9 @@ const BlogPreview = () => {
 
   useEffect(() => {
     const fetchBlog = async () => {
-      const res = await fetch(`http://localhost:8200/api/blogs/${id}`);
+      const res = await fetch(getApiUrl(`/api/blogs/${id}`), {
+        credentials: 'include' // CRITICAL: include cookies for production CORS
+      });
       const data = await res.json();
       setBlog(data);
 

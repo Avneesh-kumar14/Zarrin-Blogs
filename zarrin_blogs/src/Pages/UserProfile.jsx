@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { User, Mail, FileText, ArrowLeft, UserCheck, UserPlus, Calendar, BookOpen } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 import Paragraph from '../Component/Common/Paragraph';
+import { getApiUrl } from '../utils/apiConfig';
 
 const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
   const { userId } = useParams();
@@ -51,7 +52,9 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
       // Always fetch from API to get complete data with populated followers/following
       if (profileUserId) {
         console.log('Fetching from API for userId:', profileUserId);
-        const res = await fetch(`http://localhost:8200/api/users/${profileUserId}`);
+        const res = await fetch(getApiUrl(`/api/users/${profileUserId}`), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         console.log('API response status:', res.status);
         if (!res.ok) throw new Error('Failed to fetch user');
         userData = await res.json();
@@ -68,7 +71,9 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
       
       const userIdForBlogs = getUserId(userData);
       if (userIdForBlogs) {
-        const blogsRes = await fetch(`http://localhost:8200/api/users/${userIdForBlogs}/blogs`);
+        const blogsRes = await fetch(getApiUrl(`/api/users/${userIdForBlogs}/blogs`), {
+          credentials: 'include' // CRITICAL: include cookies for production CORS
+        });
         if (blogsRes.ok) {
           const blogs = await blogsRes.json();
           setUserBlogs(Array.isArray(blogs) ? blogs : []);
@@ -105,11 +110,12 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
 
     try {
       const method = isFollowing ? 'DELETE' : 'POST';
-      const res = await fetch(`http://localhost:8200/api/users/${user._id}/follow`, {
+      const res = await fetch(getApiUrl(`/api/users/${user._id}/follow`), {
         method,
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
+        credentials: 'include' // CRITICAL: include cookies for production CORS
       });
 
       if (!res.ok) throw new Error('Failed to update follow status');

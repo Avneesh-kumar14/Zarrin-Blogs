@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Users, ArrowLeft, Mail, FileText, UserPlus, UserCheck, Star, BookOpen } from 'lucide-react';
 import Paragraph from '../Component/Common/Paragraph';
 import Alert from '../Component/Common/Alert';
+import { getApiUrl } from '../utils/apiConfig';
 
 const Following = () => {
   const { userId } = useParams();
@@ -25,9 +26,11 @@ const Following = () => {
       console.log('🔍 DEBUG: fetchFollowing called');
       console.log('userId from useParams:', userId);
       console.log('Type of userId:', typeof userId);
-      console.log('Full URL will be:', `http://localhost:8200/api/users/${userId}`);
+      console.log('Full URL will be:', getApiUrl(`/api/users/${userId}`));
 
-      const res = await fetch(`http://localhost:8200/api/users/${userId}`);
+      const res = await fetch(getApiUrl(`/api/users/${userId}`), {
+        credentials: 'include' // CRITICAL: include cookies for production CORS
+      });
       console.log('API Response Status:', res.status, res.statusText);
       if (!res.ok) throw new Error('Failed to fetch user');
       const userData = await res.json();
@@ -43,7 +46,9 @@ const Following = () => {
         for (const followedUser of userData.following) {
           const followedUserId = getUserId(followedUser);
           try {
-            const userRes = await fetch(`http://localhost:8200/api/users/${followedUserId}`);
+            const userRes = await fetch(getApiUrl(`/api/users/${followedUserId}`), {
+              credentials: 'include' // CRITICAL: include cookies for production CORS
+            });
             if (userRes.ok) {
               const fullUserData = await userRes.json();
               followingDetails.push(fullUserData);
@@ -94,11 +99,12 @@ const Following = () => {
 
     try {
       const method = followingMap[userId] ? 'DELETE' : 'POST';
-      const res = await fetch(`http://localhost:8200/api/users/${userId}/follow`, {
+      const res = await fetch(getApiUrl(`/api/users/${userId}/follow`), {
         method,
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
+        credentials: 'include' // CRITICAL: include cookies for production CORS
       });
 
       // Parse error response properly

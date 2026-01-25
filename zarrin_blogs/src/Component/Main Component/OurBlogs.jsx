@@ -3,6 +3,7 @@ import Headings from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
 import Cards from '../Common/Cards';
 import Pagination from '../Pagination';
+import { getApiUrl } from '../../utils/apiConfig';
 
 const OurBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -21,7 +22,10 @@ const OurBlogs = () => {
         setLoading(true);
         // ✅ Fetch with pagination parameters
         const res = await fetch(
-          `http://localhost:8200/api/blogs?page=${currentPage}&limit=${itemsPerPage}`
+          getApiUrl(`/api/blogs?page=${currentPage}&limit=${itemsPerPage}`),
+          {
+            credentials: 'include' // CRITICAL: include cookies for production CORS
+          }
         );
         if (!res.ok) throw new Error('Failed to fetch blogs');
         

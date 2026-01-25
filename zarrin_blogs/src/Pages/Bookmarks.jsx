@@ -5,6 +5,7 @@ import Heading from '../Component/Common/Heading';
 import Paragraph from '../Component/Common/Paragraph';
 import Button from '../Component/Common/Button';
 import Alert from '../Component/Common/Alert';
+import { getApiUrl } from '../utils/apiConfig';
 
 const Bookmarks = ({ isAuthenticated }) => {
   const navigate = useNavigate();
@@ -17,10 +18,11 @@ const Bookmarks = ({ isAuthenticated }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8200/api/bookmarks', {
+      const res = await fetch(getApiUrl('/api/bookmarks'), {
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
+        credentials: 'include' // CRITICAL: include cookies for production CORS
       });
 
       if (!res.ok) {
@@ -56,12 +58,13 @@ const Bookmarks = ({ isAuthenticated }) => {
           setDeleting(blogId);
           const token = localStorage.getItem('token');
           const res = await fetch(
-            `http://localhost:8200/api/bookmarks/${blogId}`,
+            getApiUrl(`/api/bookmarks/${blogId}`),
             {
               method: 'DELETE',
               headers: {
                 Authorization: `Bearer ${token}`
-              }
+              },
+              credentials: 'include' // CRITICAL: include cookies for production CORS
             }
           );
 
