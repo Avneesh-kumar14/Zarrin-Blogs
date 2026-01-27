@@ -79,7 +79,8 @@ export default function Dashboard() {
         }
 
         console.log('Fetching stats with token:', token.substring(0, 20) + '...');
-        const res = await fetch("/api/stats", {
+        const API_URL = process.env.REACT_APP_API_BASE_URL ? `${process.env.REACT_APP_API_BASE_URL}/api` : 'http://localhost:8200/api';
+        const res = await fetch(`${API_URL}/stats`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',

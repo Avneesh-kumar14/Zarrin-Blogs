@@ -6,20 +6,20 @@ const logger = require('../utils/logger');
 const chatService = require('../services/chatService');
 const multer = require('multer');
 
-// Configure multer for image uploads
+// Configure multer for image and video uploads
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
+    fileSize: 25 * 1024 * 1024 // 25MB for videos
   },
   fileFilter: (req, file, cb) => {
     logger.info(`[MULTER] Processing file: ${file.fieldname}, mimetype: ${file.mimetype}, size: ${file.size}`);
-    // Allow only image files
-    if (file.mimetype.startsWith('image/')) {
+    // Allow image and video files
+    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
       cb(null, true);
     } else {
       logger.error(`[MULTER] Rejected file: ${file.filename} - invalid mimetype: ${file.mimetype}`);
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Only image and video files are allowed'));
     }
   }
 });
@@ -702,7 +702,7 @@ router.put(
 
 /**
  * @route POST /api/chat/conversations/:conversationId/messages/upload
- * @desc Upload images and create message with attachments
+ * @desc Upload images and videos and create message with attachments
  * @access Private
  */
 router.post(
@@ -737,22 +737,22 @@ router.post(
       logger.info(`[CHAT] POST /messages/upload - User: ${userId}, Conversation: ${conversationId}`);
 
       // Get files from multer - req.files is an array when using .array()
-      const imageFiles = req.files;
+      const mediaFiles = req.files;
       
-      if (!imageFiles || !Array.isArray(imageFiles) || imageFiles.length === 0) {
+      if (!mediaFiles || !Array.isArray(mediaFiles) || mediaFiles.length === 0) {
         return res.status(400).json({
           success: false,
-          error: 'No images found in request'
+          error: 'No media files found in request'
         });
       }
 
       // Filter out undefined/invalid files
-      const validFiles = imageFiles.filter(file => file && file.buffer && file.buffer.length > 0);
+      const validFiles = mediaFiles.filter(file => file && file.buffer && file.buffer.length > 0);
 
       if (validFiles.length === 0) {
         return res.status(400).json({
           success: false,
-          error: 'No valid image files to upload'
+          error: 'No valid media files to upload'
         });
       }
 

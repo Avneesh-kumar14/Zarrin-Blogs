@@ -4,7 +4,7 @@ import { socketService } from '../../utils/socketService';
 import EmojiPicker from './EmojiPicker';
 import './MessageInput.css';
 
-const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
+const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError = () => {} }) => {
   const [message, setMessage] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -56,15 +56,19 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
     // Validate file types and size
     const validFiles = files.filter(file => {
       const isImage = file.type.startsWith('image/');
-      const isUnder5MB = file.size <= 5 * 1024 * 1024;
+      const isVideo = file.type.startsWith('video/');
+      const isUnder25MB = file.size <= 25 * 1024 * 1024; // 25MB for videos, 5MB for images
+      const fileSize = file.type.startsWith('video/') ? 25 * 1024 * 1024 : 5 * 1024 * 1024;
+      const isUnderLimit = file.size <= fileSize;
       
-      if (!isImage) {
-        alert(`${file.name} is not an image`);
+      if (!isImage && !isVideo) {
+        onError(`${file.name} - Only images and videos are allowed`, 'error');
         return false;
       }
       
-      if (!isUnder5MB) {
-        alert(`${file.name} is larger than 5MB`);
+      if (!isUnderLimit) {
+        const limit = file.type.startsWith('video/') ? '25MB' : '5MB';
+        onError(`${file.name} is larger than ${limit}`, 'error');
         return false;
       }
       
@@ -154,7 +158,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
       // No need to call onSendMessage again
     } catch (error) {
       console.error('❌ Image upload error:', error);
-      alert(`Failed to upload images: ${error.message}`);
+      onError(`Failed to upload images: ${error.message}`, 'error');
     } finally {
       setIsUploading(false);
     }
@@ -197,18 +201,30 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
       {previewUrls.length > 0 && (
         <div className="file-preview-container">
           <div className="file-preview-grid">
-            {previewUrls.map((url, idx) => (
-              <div key={idx} className="file-preview-item">
-                <img src={url} alt={`Preview ${idx}`} />
-                <button
-                  className="file-preview-remove"
-                  onClick={() => removeFile(idx)}
-                  title="Remove image"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ))}
+            {previewUrls.map((url, idx) => {
+              const file = selectedFiles[idx];
+              const isVideo = file?.type?.startsWith('video/');
+              return (
+                <div key={idx} className="file-preview-item">
+                  {isVideo ? (
+                    <video 
+                      src={url} 
+                      controls
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <img src={url} alt={`Preview ${idx}`} />
+                  )}
+                  <button
+                    className="file-preview-remove"
+                    onClick={() => removeFile(idx)}
+                    title="Remove file"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              );
+            })}
           </div>
           {selectedFiles.length > 0 && (
             <div className="file-preview-actions">
@@ -231,7 +247,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
         <div className="input-actions-left">
           <button 
             className="btn-attach" 
-            title="Attach images"
+            title="Attach photos or videos"
             onClick={() => fileInputRef.current?.click()}
           >
             <ImageIcon size={20} />
@@ -240,7 +256,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation }) => {
             ref={fileInputRef}
             type="file"
             multiple
-            accept="image/*"
+            accept="image/*,video/*"
             onChange={handleFileSelect}
             style={{ display: 'none' }}
           />

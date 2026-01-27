@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, Edit, Smile } from 'lucide-react';
+import { Trash2, Edit, Smile, CheckCheck, Check } from 'lucide-react';
 import { useChatContext } from '../../context/ChatContext';
 import './Message.css';
 
@@ -8,6 +8,10 @@ const Message = ({ message, showAvatar, conversation }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(message.content);
   const [showEmojis, setShowEmojis] = useState(false);
+
+  // Get current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const currentUserId = currentUser._id || currentUser.id;
 
   const handleDelete = () => {
     if (window.confirm('Delete this message?')) {
@@ -29,17 +33,24 @@ const Message = ({ message, showAvatar, conversation }) => {
 
   const isSystemMessage = message.messageType === 'system';
   const senderName = message.senderId?.name || 'Unknown';
+  const isSentByMe = message.senderId._id === currentUserId;
+
+  // Format timestamp
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
-    <div className={`message-wrapper ${message.senderId._id === conversation._id ? 'own' : ''}`}>
-      {showAvatar && (
+    <div className={`message-wrapper ${isSentByMe ? 'sent' : 'received'}`}>
+      {!isSentByMe && showAvatar && (
         <div className="message-avatar">
           {message.senderId?.email?.[0]?.toUpperCase() || 'U'}
         </div>
       )}
 
-      <div className={`message ${message.senderId._id === conversation._id ? 'own-message' : 'other-message'}`}>
-        {!isSystemMessage && showAvatar && (
+      <div className={`message ${isSentByMe ? 'own-message' : 'other-message'}`}>
+        {!isSystemMessage && !isSentByMe && showAvatar && (
           <div className="message-sender">{senderName}</div>
         )}
 
@@ -57,16 +68,37 @@ const Message = ({ message, showAvatar, conversation }) => {
             </p>
           )}
 
-          {message.attachments?.map((attachmentUrl, idx) => (
-            <div key={idx} className="message-attachment">
-              <img 
-                src={attachmentUrl} 
-                alt={`Attachment ${idx + 1}`}
-                crossOrigin="anonymous"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          ))}
+          {message.attachments?.map((attachmentUrl, idx) => {
+            // Determine if attachment is video based on URL or MIME type
+            const isVideoFile = attachmentUrl.includes('.mp4') || 
+                               attachmentUrl.includes('.webm') || 
+                               attachmentUrl.includes('.mov') ||
+                               attachmentUrl.includes('video');
+            
+            return (
+              <div key={idx} className="message-attachment">
+                {isVideoFile ? (
+                  <video 
+                    src={attachmentUrl}
+                    controls
+                    style={{
+                      maxWidth: '300px',
+                      maxHeight: '300px',
+                      borderRadius: '12px',
+                      display: 'block'
+                    }}
+                  />
+                ) : (
+                  <img 
+                    src={attachmentUrl} 
+                    alt={`Attachment ${idx + 1}`}
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Reactions */}
@@ -98,20 +130,24 @@ const Message = ({ message, showAvatar, conversation }) => {
                 >
                   <Smile size={16} />
                 </button>
-                <button
-                  className="btn-action"
-                  onClick={handleEdit}
-                  title="Edit message"
-                >
-                  <Edit size={16} />
-                </button>
-                <button
-                  className="btn-action"
-                  onClick={handleDelete}
-                  title="Delete message"
-                >
-                  <Trash2 size={16} />
-                </button>
+                {isSentByMe && (
+                  <button
+                    className="btn-action"
+                    onClick={handleEdit}
+                    title="Edit message"
+                  >
+                    <Edit size={16} />
+                  </button>
+                )}
+                {isSentByMe && (
+                  <button
+                    className="btn-action"
+                    onClick={handleDelete}
+                    title="Delete message"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </>
             )}
           </div>
@@ -132,12 +168,14 @@ const Message = ({ message, showAvatar, conversation }) => {
           </div>
         )}
 
-        <div className="message-time">
-          {new Date(message.createdAt).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
-          {message.editHistory?.length > 0 && <span className="edited">(edited)</span>}
+        <div className="message-meta">
+          <span className="message-time">{formatTime(message.createdAt)}</span>
+          {isSentByMe && (
+            <span className="message-status" title={message.isRead ? 'Read' : 'Delivered'}>
+              {message.isRead ? <CheckCheck size={16} /> : <Check size={16} />}
+            </span>
+          )}
+          {message.editHistory?.length > 0 && <span className="edited-badge">(edited)</span>}
         </div>
       </div>
     </div>
