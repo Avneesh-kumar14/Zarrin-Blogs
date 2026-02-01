@@ -151,13 +151,14 @@ const Footer = () => {
             <div className="flex gap-3">
               {[FaXTwitter, FaInstagram, FaLinkedinIn, FaGithub].map(
                 (Icon, i) => (
-                  <a
+                  <button
                     key={i}
-                    href="#"
+                    onClick={() => {}}
                     className="w-9 h-9 rounded-lg bg-zinc-800 hover:bg-cyan-600 flex items-center justify-center transition"
+                    aria-label={`Social media link ${i + 1}`}
                   >
                     <Icon size={14} />
-                  </a>
+                  </button>
                 )
               )}
             </div>

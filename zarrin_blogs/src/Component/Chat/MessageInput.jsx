@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Smile, Image as ImageIcon, X } from 'lucide-react';
 import { socketService } from '../../utils/socketService';
 import EmojiPicker from './EmojiPicker';
-import './MessageInput.css';
 
 const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError = () => {} }) => {
   const [message, setMessage] = useState('');
@@ -13,6 +12,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+  const pickerRef = useRef(null);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -22,12 +22,30 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
     }
   }, [message]);
 
+  // Fix emoji picker positioning - click outside to close
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    if (showEmojiPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showEmojiPicker]);
+
   const handleTyping = (e) => {
     const value = e.target.value;
     setMessage(value);
 
     // Emit typing indicator
-    socketService.emit('userTyping', { characterCount: value.length });
+    try {
+      socketService.emit('userTyping', { characterCount: value.length });
+    } catch (err) {
+      console.warn('Error emitting typing event:', err);
+    }
 
     // Clear timeout and set new one
     if (typingTimeoutRef.current) {
@@ -35,7 +53,11 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
     }
 
     typingTimeoutRef.current = setTimeout(() => {
-      socketService.emit('userStoppedTyping', {});
+      try {
+        socketService.emit('userStoppedTyping', {});
+      } catch (err) {
+        console.warn('Error stopping typing:', err);
+      }
     }, 1000);
   };
 
@@ -46,18 +68,17 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
 
     // Focus back on textarea
     if (textareaRef.current) {
-      textareaRef.current.focus();
+      setTimeout(() => textareaRef.current?.focus(), 100);
     }
   };
 
   const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files || []);
     
-    // Validate file types and size
+    // BUG FIX: Validate file types and size
     const validFiles = files.filter(file => {
       const isImage = file.type.startsWith('image/');
       const isVideo = file.type.startsWith('video/');
-      const isUnder25MB = file.size <= 25 * 1024 * 1024; // 25MB for videos, 5MB for images
       const fileSize = file.type.startsWith('video/') ? 25 * 1024 * 1024 : 5 * 1024 * 1024;
       const isUnderLimit = file.size <= fileSize;
       
@@ -84,15 +105,17 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
     }
 
     // Reset input
-    e.target.value = '';
+    if (e.target) e.target.value = '';
   };
 
   const removeFile = (index) => {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
     setPreviewUrls(prev => {
       const newPreviews = prev.filter((_, i) => i !== index);
-      // Cleanup old preview URL
-      URL.revokeObjectURL(prev[index]);
+      // Cleanup old preview URL - BUG FIX
+      if (prev[index]) {
+        URL.revokeObjectURL(prev[index]);
+      }
       return newPreviews;
     });
   };
@@ -102,11 +125,10 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
 
     setIsUploading(true);
     try {
-      // Verify socket is connected before uploading
+      // BUG FIX: Better socket reconnection handling
       if (!socketService.isConnected()) {
         console.warn('⚠️ Socket not connected, attempting reconnect...');
-        socketService.reconnect();
-        // Wait for reconnection
+        socketService.reconnect?.();
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         if (!socketService.isConnected()) {
@@ -119,7 +141,6 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
         formData.append('images', file);
       });
 
-      // Include caption/content if provided
       if (message.trim()) {
         formData.append('content', message.trim());
       }
@@ -135,7 +156,6 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
             'Authorization': `Bearer ${token}`
           },
           body: formData,
-          timeout: 60000  // 60 second timeout for upload
         }
       );
 
@@ -145,7 +165,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
       }
 
       const data = await response.json();
-      console.log('✅ Images uploaded and message created:', data);
+      console.log('✅ Images uploaded:', data);
 
       // Clear files after successful upload
       setSelectedFiles([]);
@@ -153,9 +173,9 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
       setPreviewUrls([]);
       setMessage('');
 
-      // Message is already created on backend via upload endpoint
-      // The Socket.IO event will handle displaying it
-      // No need to call onSendMessage again
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
     } catch (error) {
       console.error('❌ Image upload error:', error);
       onError(`Failed to upload images: ${error.message}`, 'error');
@@ -165,24 +185,24 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
   };
 
   const handleSendMessage = async () => {
-    // Send images with optional caption
     if (selectedFiles.length > 0) {
       await uploadFiles();
       return;
     }
 
-    // Send text message only
     if (message.trim() && !isLoading && !isUploading) {
       onSendMessage(message.trim());
       setMessage('');
       
-      // Reset textarea height
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
 
-      // Stop typing indicator
-      socketService.emit('userStoppedTyping', {});
+      try {
+        socketService.emit('userStoppedTyping', {});
+      } catch (err) {
+        console.warn('Error stopping typing:', err);
+      }
     }
   };
 
@@ -196,112 +216,116 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
   const canSend = (message.trim() || selectedFiles.length > 0) && !isLoading && !isUploading;
 
   return (
-    <div className="message-input-container">
-      {/* File previews */}
+    <div className="w-full border-t border-gray-200 bg-white">
+      {/* File previews - BUG FIX: Better responsive grid */}
       {previewUrls.length > 0 && (
-        <div className="file-preview-container">
-          <div className="file-preview-grid">
+        <div className="p-3 md:p-4 border-b border-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
             {previewUrls.map((url, idx) => {
               const file = selectedFiles[idx];
               const isVideo = file?.type?.startsWith('video/');
               return (
-                <div key={idx} className="file-preview-item">
+                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100">
                   {isVideo ? (
                     <video 
                       src={url} 
-                      controls
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <img src={url} alt={`Preview ${idx}`} />
+                    <img src={url} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
                   )}
                   <button
-                    className="file-preview-remove"
+                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-50 transition rounded"
                     onClick={() => removeFile(idx)}
                     title="Remove file"
                   >
-                    <X size={16} />
+                    <X size={20} className="text-white opacity-0 group-hover:opacity-100" />
                   </button>
                 </div>
               );
             })}
           </div>
           {selectedFiles.length > 0 && (
-            <div className="file-preview-actions">
-              <button
-                className="btn-clear-files"
-                onClick={() => {
-                  setSelectedFiles([]);
-                  previewUrls.forEach(url => URL.revokeObjectURL(url));
-                  setPreviewUrls([]);
-                }}
-              >
-                Clear all
-              </button>
-            </div>
+            <button
+              className="mt-2 text-xs md:text-sm px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded transition"
+              onClick={() => {
+                setSelectedFiles([]);
+                previewUrls.forEach(url => URL.revokeObjectURL(url));
+                setPreviewUrls([]);
+              }}
+            >
+              Clear all
+            </button>
           )}
         </div>
       )}
 
-      <div className="message-input-wrapper">
-        <div className="input-actions-left">
-          <button 
-            className="btn-attach" 
-            title="Attach photos or videos"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <ImageIcon size={20} />
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept="image/*,video/*"
-            onChange={handleFileSelect}
-            style={{ display: 'none' }}
-          />
-          
+      <div className="flex items-end gap-2 md:gap-3 p-3 md:p-4">
+        {/* Left Actions */}
+        <button 
+          className="p-2 hover:bg-gray-100 rounded-lg transition flex-shrink-0"
+          title="Attach photos or videos"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <ImageIcon size={20} className="text-gray-600" />
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*,video/*"
+          onChange={handleFileSelect}
+          style={{ display: 'none' }}
+        />
+        
+        {/* Emoji Button - BUG FIX: Better positioning relative container */}
+        <div className="relative">
           <button
-            className="btn-emoji"
+            className="p-2 hover:bg-gray-100 rounded-lg transition flex-shrink-0"
             title="Add emoji"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           >
-            <Smile size={20} />
+            <Smile size={20} className="text-gray-600" />
           </button>
+          
+          {/* Emoji Picker - BUG FIX: Better positioning and z-index */}
+          {showEmojiPicker && (
+            <div ref={pickerRef} className="absolute bottom-full left-0 z-50 mb-2">
+              <EmojiPicker
+                onEmojiSelect={handleEmojiSelect}
+                onClose={() => setShowEmojiPicker(false)}
+              />
+            </div>
+          )}
         </div>
 
+        {/* Textarea - BUG FIX: Better overflow handling */}
         <textarea
           ref={textareaRef}
-          className="message-textarea"
+          className="flex-1 resize-none px-4 py-2 md:py-3 text-sm md:text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
           placeholder="Type a message... (Shift+Enter for new line)"
           value={message}
           onChange={handleTyping}
           onKeyPress={handleKeyPress}
           rows={1}
           disabled={isLoading || isUploading}
+          style={{ minHeight: '40px', maxHeight: '120px' }}
         />
 
+        {/* Send Button */}
         <button
-          className="btn-send"
+          className="p-2 md:p-2.5 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white rounded-lg transition flex-shrink-0"
           onClick={handleSendMessage}
           disabled={!canSend}
           title="Send message"
         >
           {isUploading ? (
-            <div className="spinner-small" />
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <Send size={20} />
           )}
         </button>
       </div>
-
-      {/* Emoji Picker Modal */}
-      {showEmojiPicker && (
-        <EmojiPicker
-          onEmojiSelect={handleEmojiSelect}
-          onClose={() => setShowEmojiPicker(false)}
-        />
-      )}
     </div>
   );
 };

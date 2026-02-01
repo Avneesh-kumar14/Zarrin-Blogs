@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Users, ArrowLeft, Mail, FileText, UserPlus, UserCheck, Star, BookOpen } from 'lucide-react';
 import Paragraph from '../Component/Common/Paragraph';
@@ -15,12 +15,12 @@ const Following = () => {
   const [userName, setUserName] = useState('');
 
   const storedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-  const loggedInUser = (storedUser && Object.keys(storedUser).length > 0) ? storedUser : {};
+  const loggedInUser = useMemo(() => (storedUser && Object.keys(storedUser).length > 0) ? storedUser : {}, [storedUser]);
   const token = localStorage.getItem('token');
   
   const getUserId = (user) => user?._id || user?.id;
 
-  const fetchFollowing = async () => {
+  const fetchFollowing = useCallback(async () => {
     try {
       setLoading(true);
       console.log('🔍 DEBUG: fetchFollowing called');
@@ -29,7 +29,7 @@ const Following = () => {
       console.log('Full URL will be:', getApiUrl(`/api/users/${userId}`));
 
       const res = await fetch(getApiUrl(`/api/users/${userId}`), {
-        credentials: 'include' // CRITICAL: include cookies for production CORS
+        credentials: 'include'
       });
       console.log('API Response Status:', res.status, res.statusText);
       if (!res.ok) throw new Error('Failed to fetch user');
@@ -38,32 +38,18 @@ const Following = () => {
       
       setUserName(userData.name);
       
-      // Fetch full details for each followed user
+      // API returns fully populated following array - use it directly!
       if (userData.following && Array.isArray(userData.following)) {
-        const followingDetails = [];
+        setFollowing(userData.following);
+        
+        // Build following map from logged-in user's following list
         const followMap = {};
-        
-        for (const followedUser of userData.following) {
-          const followedUserId = getUserId(followedUser);
-          try {
-            const userRes = await fetch(getApiUrl(`/api/users/${followedUserId}`), {
-              credentials: 'include' // CRITICAL: include cookies for production CORS
-            });
-            if (userRes.ok) {
-              const fullUserData = await userRes.json();
-              followingDetails.push(fullUserData);
-              
-              // Check if logged in user is following this person
-              if (token) {
-                followMap[followedUserId] = loggedInUser.following?.some(f => getUserId(f) === followedUserId) || false;
-              }
-            }
-          } catch (err) {
-            console.error('Error fetching user details:', err);
-          }
+        if (token && loggedInUser?.following) {
+          userData.following.forEach(followedUser => {
+            const followedUserId = getUserId(followedUser);
+            followMap[followedUserId] = loggedInUser.following.some(f => getUserId(f) === followedUserId);
+          });
         }
-        
-        setFollowing(followingDetails);
         setFollowingMap(followMap);
       } else {
         setFollowing([]);
@@ -74,7 +60,7 @@ const Following = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, token, loggedInUser.following]);
 
   useEffect(() => {
     console.log('🔍 Following useEffect triggered');
@@ -88,8 +74,7 @@ const Following = () => {
       console.warn('❌ Invalid userId:', userId);
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, fetchFollowing]);
 
   const handleFollowToggle = async (userId) => {
     if (!token) {
@@ -98,7 +83,8 @@ const Following = () => {
     }
 
     try {
-      const method = followingMap[userId] ? 'DELETE' : 'POST';
+      const isCurrentlyFollowing = followingMap[userId];
+      const method = isCurrentlyFollowing ? 'DELETE' : 'POST';
       const res = await fetch(getApiUrl(`/api/users/${userId}/follow`), {
         method,
         headers: {
@@ -113,17 +99,30 @@ const Following = () => {
         throw new Error(errorData.message || `Failed to update follow status (${res.status})`);
       }
       
+      // Update followingMap state
       setFollowingMap(prev => ({
         ...prev,
         [userId]: !prev[userId]
       }));
       
-      // Refetch the user's following list to get updated data
-      await fetchFollowing();
+      // Update the followed user object to reflect changes (professional approach)
+      setFollowing(prevFollowing => 
+        prevFollowing.map(followedUser => {
+          if (followedUser._id === userId) {
+            return {
+              ...followedUser,
+              followers: isCurrentlyFollowing 
+                ? followedUser.followers.filter(f => f._id !== loggedInUser._id)
+                : [...(followedUser.followers || []), { _id: loggedInUser._id }]
+            };
+          }
+          return followedUser;
+        })
+      );
       
       setAlert({
         type: 'success',
-        message: followingMap[userId] ? 'Unfollowed successfully' : 'Followed successfully'
+        message: isCurrentlyFollowing ? 'Unfollowed successfully' : 'Followed successfully'
       });
     } catch (err) {
       console.error('❌ Follow toggle error:', err);

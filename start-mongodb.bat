@@ -1,4 +1,22 @@
-@echo off
+<div className="chat-header">
+  <h2>{conversation.otherName || 'User'}</h2>
+  
+  {/* Add this line - Call button */}
+  <CallButton 
+    recipientId={conversation.otherId || conversation.participants?.[1]?._id}
+    conversationId={conversation._id}
+    recipientName={conversation.otherName || conversation.participants?.[1]?.name}
+  />
+</div><div className="chat-header">
+  <h2>{conversation.otherName || 'User'}</h2>
+  
+  {/* Add this line - Call button */}
+  <CallButton 
+    recipientId={conversation.otherId || conversation.participants?.[1]?._id}
+    conversationId={conversation._id}
+    recipientName={conversation.otherName || conversation.participants?.[1]?.name}
+  />
+</div>@echo off
 REM MongoDB Quick Start Script for Windows
 
 echo [*] Checking if Docker is running...

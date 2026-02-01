@@ -5,7 +5,7 @@ import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
-  const { user, loading: userLoading, updateUserProfile, updateAvatar, changePassword, updateWritingPreferences, updatePrivacy, updateNotifications, clearUser } = useUser();
+  const { user, updateUserProfile, updateAvatar, changePassword, updateWritingPreferences, updatePrivacy, updateNotifications, clearUser } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [alert, setAlert] = useState(null);

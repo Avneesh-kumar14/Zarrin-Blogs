@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Headings from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
 import Cards from '../Common/Cards';
 import Pagination from '../Pagination';

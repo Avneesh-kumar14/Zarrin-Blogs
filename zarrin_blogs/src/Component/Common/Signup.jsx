@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import Paragraph from './Paragraph';
-import Button from './Button';
 import Headings from './Heading';
-import Logo from './Logo';
 import Alert from './Alert';
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Eye, EyeOff, CheckCircle, ArrowRight } from 'lucide-react';

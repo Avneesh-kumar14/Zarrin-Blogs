@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Users, ArrowLeft, Mail, FileText, UserPlus, UserCheck, Heart, BookOpen } from 'lucide-react';
-import Heading from '../Component/Common/Heading';
 import Paragraph from '../Component/Common/Paragraph';
 import Alert from '../Component/Common/Alert';
 import { getApiUrl } from '../utils/apiConfig';
@@ -35,7 +34,7 @@ const Followers = () => {
       console.log('Full URL:', getApiUrl(`/api/users/${userId}`));
 
       const res = await fetch(getApiUrl(`/api/users/${userId}`), {
-        credentials: 'include' // CRITICAL: include cookies for production CORS
+        credentials: 'include'
       });
       console.log('API Response Status:', res.status, res.statusText);
       if (!res.ok) throw new Error(`Failed to fetch user: ${res.status}`);
@@ -43,31 +42,19 @@ const Followers = () => {
       console.log('User data received:', userData);
       
       setUserName(userData.name);
+      
+      // API returns fully populated followers array - use it directly!
       if (userData.followers && Array.isArray(userData.followers)) {
-        const followersDetails = [];
+        setFollowers(userData.followers);
+        
+        // Build following map from logged-in user's following list
         const followMap = {};
-        
-        for (const follower of userData.followers) {
-          const followerId = getUserId(follower);
-          try {
-            const userRes = await fetch(getApiUrl(`/api/users/${followerId}`), {
-              credentials: 'include' // CRITICAL: include cookies for production CORS
-            });
-            if (userRes.ok) {
-              const fullUserData = await userRes.json();
-              followersDetails.push(fullUserData);
-              
-              // Check if logged in user is following this person
-              if (token) {
-                followMap[followerId] = loggedInUser.following?.some(f => getUserId(f) === followerId) || false;
-              }
-            }
-          } catch (err) {
-            console.error('Error fetching user details:', err);
-          }
+        if (token && loggedInUser?.following) {
+          userData.followers.forEach(follower => {
+            const followerId = getUserId(follower);
+            followMap[followerId] = loggedInUser.following.some(f => getUserId(f) === followerId);
+          });
         }
-        
-        setFollowers(followersDetails);
         setFollowingMap(followMap);
       } else {
         setFollowers([]);
@@ -78,7 +65,7 @@ const Followers = () => {
     } finally {
       setLoading(false);
     }
-  }, [userId, token, loggedInUser]);
+  }, [userId, token, loggedInUser.following]);
 
   useEffect(() => {
     console.log('🔍 Followers useEffect triggered');
@@ -101,7 +88,8 @@ const Followers = () => {
     }
 
     try {
-      const method = followingMap[followerId] ? 'DELETE' : 'POST';
+      const isCurrentlyFollowing = followingMap[followerId];
+      const method = isCurrentlyFollowing ? 'DELETE' : 'POST';
       const res = await fetch(getApiUrl(`/api/users/${followerId}/follow`), {
         method,
         headers: {
@@ -116,17 +104,30 @@ const Followers = () => {
         throw new Error(errorData.message || `Failed to update follow status (${res.status})`);
       }
       
+      // Update followingMap state
       setFollowingMap(prev => ({
         ...prev,
         [followerId]: !prev[followerId]
       }));
       
-      // Refetch the user's followers list to get updated data
-      await fetchFollowers();
+      // Update the follower object to reflect changes (professional approach)
+      setFollowers(prevFollowers => 
+        prevFollowers.map(follower => {
+          if (follower._id === followerId) {
+            return {
+              ...follower,
+              followers: isCurrentlyFollowing 
+                ? follower.followers.filter(f => f._id !== loggedInUser._id)
+                : [...(follower.followers || []), { _id: loggedInUser._id }]
+            };
+          }
+          return follower;
+        })
+      );
       
       setAlert({
         type: 'success',
-        message: followingMap[followerId] ? 'Unfollowed successfully' : 'Followed successfully'
+        message: isCurrentlyFollowing ? 'Unfollowed successfully' : 'Followed successfully'
       });
     } catch (err) {
       console.error('❌ Follow toggle error:', err);

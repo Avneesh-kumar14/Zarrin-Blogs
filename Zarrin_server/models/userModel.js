@@ -68,6 +68,10 @@ const UserSchema = new Schema({
     }],
     bio: { type: String, default: '' },
     avatar: { type: String, default: '' },
+    dateOfBirth: { 
+        type: Date, 
+        default: null 
+    },
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

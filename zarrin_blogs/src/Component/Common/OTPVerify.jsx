@@ -5,7 +5,7 @@ import Headings from './Heading';
 import Button from './Button';
 import Logo from './Logo';
 import Alert from './Alert';
-import { Mail, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { getApiUrl } from '../../utils/apiConfig';
 
 const OTPVerify = () => {

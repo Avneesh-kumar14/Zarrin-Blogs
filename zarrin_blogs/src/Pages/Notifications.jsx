@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Heart, MessageCircle, UserPlus, Bookmark, TrendingUp, Check, Trash2, Bell } from 'lucide-react';
+import { Heart, MessageCircle, UserPlus, Bookmark, TrendingUp, Check, Bell } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 
 const Notifications = () => {

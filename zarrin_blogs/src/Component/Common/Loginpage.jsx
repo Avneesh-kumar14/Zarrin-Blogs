@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import Paragraph from './Paragraph';
 import Headings from './Heading';
-import Button from './Button';
-import Logo from './Logo';
 import Alert from './Alert';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
@@ -15,6 +13,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [rateLimitReset, setRateLimitReset] = useState(null);
 
   const handleSubmit = async (e) => {

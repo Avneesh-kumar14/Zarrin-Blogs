@@ -1,8 +1,7 @@
 
 
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, ChevronDown, MessageCircle } from 'lucide-react';
-import Image from '../Common/Image';
+import { Mail, Phone, MapPin, Send, CheckCircle, ChevronDown, MessageCircle } from 'lucide-react';
 import Paragraph from '../Common/Paragraph';
 import Heading from '../Common/Heading';
 import Button from '../Common/Button';
@@ -325,12 +324,12 @@ const ContactPage = () => {
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               Still have questions? Join our Discord community to chat with the team and other writers in real-time!
             </p>
-            <a
-              href="#"
+            <button
+              onClick={() => window.open('https://discord.gg/', '_blank')}
               className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
             >
               Join Discord Community
-            </a>
+            </button>
           </div>
         </div>
 

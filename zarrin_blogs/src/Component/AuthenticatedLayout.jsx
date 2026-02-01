@@ -2,12 +2,17 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import SideBar from "./Main Component/SideBar";
 import DashboardNavbar from "./Main Component/DashboardNavbar";
+import CallNotification from "./Chat/CallComponents/CallNotification";
+import CallModal from "./Chat/CallComponents/CallModal";
 
 export default function AuthenticatedLayout() {
+  // eslint-disable-next-line no-unused-vars
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const [hasValidated, setHasValidated] = useState(false);
+  // API_URL is constant and doesn't change - safe to use in effects
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const API_URL = process.env.REACT_APP_API_BASE_URL ? `${process.env.REACT_APP_API_BASE_URL}/api` : 'https://zarrin-blogs-backend.onrender.com/api';
 
   useEffect(() => {
@@ -79,6 +84,10 @@ export default function AuthenticatedLayout() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto bg-gray-50">
           <Outlet />
+          
+          {/* Call Components */}
+          <CallNotification />
+          <CallModal />
         </div>
       </div>
     </div>

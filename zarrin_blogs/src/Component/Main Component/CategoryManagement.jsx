@@ -13,11 +13,7 @@ const CategoryManagement = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/categories', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const res = await fetch('/api/categories');
       const data = await res.json();
       setCategories(data);
     } catch (err) {

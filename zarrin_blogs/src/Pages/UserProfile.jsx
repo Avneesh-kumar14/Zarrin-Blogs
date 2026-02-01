@@ -2,8 +2,20 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { User, Mail, FileText, ArrowLeft, UserCheck, UserPlus, Calendar, BookOpen } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
-import Paragraph from '../Component/Common/Paragraph';
 import { getApiUrl } from '../utils/apiConfig';
+
+// Helper function to calculate age from date of birth
+const calculateAge = (dateOfBirth) => {
+  if (!dateOfBirth) return null;
+  const today = new Date();
+  const birthDate = new Date(dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age >= 0 ? age : null;
+};
 
 const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
   const { userId } = useParams();
@@ -262,9 +274,17 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
                 <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent mb-2">
                   {user.name}
                 </h1>
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-4">
-                  <Mail size={18} />
-                  <span className="text-lg">{user.email}</span>
+                <div className="flex flex-col gap-3 mb-4">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <Mail size={18} />
+                    <span className="text-lg">{user.email}</span>
+                  </div>
+                  {user.dateOfBirth && (
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                      <Calendar size={18} />
+                      <span className="text-lg">Age: {calculateAge(user.dateOfBirth)} years old</span>
+                    </div>
+                  )}
                 </div>
                 {user.bio && (
                   <p className="text-lg text-gray-700 dark:text-gray-300 italic max-w-2xl leading-relaxed">

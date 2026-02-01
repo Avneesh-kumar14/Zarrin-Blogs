@@ -6,9 +6,9 @@ import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-route
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { UserProvider } from './context/UserContext.jsx';
 import { ChatProvider } from './context/ChatContext.jsx';
+import { CallProvider } from './context/CallContext.jsx';
 import Home from './Pages/Home.jsx';
 import Footer from './Component/Main Component/Footer.jsx';
-import Usercomponent from './Component/Common/Usercontact.jsx'
 import Error from './Component/Main Component/Error.jsx';
 import Signup from './Component/Common/Signup.jsx';
 import BlogPreview from './Component/Main Component/BlogPreview.jsx';
@@ -100,9 +100,11 @@ function App() {
     <ThemeProvider>
       <UserProvider>
         <ChatProvider token={token}>
-          <BrowserRouter>
-            <AppWrapper />
-          </BrowserRouter>
+          <CallProvider>
+            <BrowserRouter>
+              <AppWrapper />
+            </BrowserRouter>
+          </CallProvider>
         </ChatProvider>
       </UserProvider>
     </ThemeProvider>

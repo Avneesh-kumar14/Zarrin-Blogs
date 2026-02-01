@@ -23,7 +23,6 @@ import {
   MessageCircle
 } from 'lucide-react';
 import Heading from '../Common/Heading';
-import Logo from '../Common/Logo';
 import { ThemeContext } from '../../context/ThemeContext';
 
 const Navbar = () => {

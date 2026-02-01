@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   Trash2,
-  X,
   Plus,
   Folder,
   CheckCircle,
-  AlertTriangle,
   Loader2
 } from "lucide-react";
 import Heading from "../Common/Heading";

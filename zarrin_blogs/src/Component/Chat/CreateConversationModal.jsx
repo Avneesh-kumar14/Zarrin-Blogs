@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useChatContext } from '../../context/ChatContext';
-import './CreateConversationModal.css';
 
 const api = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
 
@@ -92,20 +91,26 @@ const CreateConversationModal = ({ onClose }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <div className="modal-header">
-          <h2>New Conversation</h2>
-          <button className="btn-close" onClick={onClose}>
-            <X size={24} />
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-96 flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 md:p-5 border-b border-gray-200">
+          <h2 className="text-lg md:text-xl font-bold text-gray-900">New Conversation</h2>
+          <button className="p-1 hover:bg-gray-100 rounded-lg transition" onClick={onClose}>
+            <X size={24} className="text-gray-600" />
           </button>
         </div>
 
-        <div className="modal-content">
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-4">
           {/* Mode Selector */}
-          <div className="mode-selector">
+          <div className="flex gap-2 border-b border-gray-200 pb-4">
             <button
-              className={`mode-btn ${mode === 'direct' ? 'active' : ''}`}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
+                mode === 'direct'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
               onClick={() => {
                 setMode('direct');
                 setSelectedUsers([]);
@@ -115,7 +120,11 @@ const CreateConversationModal = ({ onClose }) => {
               Direct Message
             </button>
             <button
-              className={`mode-btn ${mode === 'group' ? 'active' : ''}`}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
+                mode === 'group'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
               onClick={() => {
                 setMode('group');
                 setSelectedUsers([]);
@@ -130,63 +139,78 @@ const CreateConversationModal = ({ onClose }) => {
           {mode === 'group' && (
             <input
               type="text"
-              placeholder="Group name"
+              placeholder="Group name (e.g., 'Project Team')"
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              className="group-name-input"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
             />
           )}
 
           {/* User Search */}
           <input
             type="text"
-            placeholder="Search users..."
+            placeholder="Search users by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="user-search-input"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
           />
 
+          {/* Error Message */}
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              ⚠️ {error}
+            </div>
+          )}
+
           {/* Users List */}
-          <div className="users-list">
-            {error && (
-              <div style={{ color: 'red', padding: '10px', marginBottom: '10px', borderRadius: '4px', backgroundColor: '#ffe0e0' }}>
-                Error: {error}
-              </div>
-            )}
+          <div className="space-y-2 max-h-48 overflow-y-auto">
             {loading ? (
-              <p>Loading users...</p>
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                <span className="ml-2 text-gray-600 text-sm">Loading users...</span>
+              </div>
             ) : users.length === 0 ? (
-              <p>No users available</p>
+              <p className="text-center text-gray-500 py-8 text-sm">No users available</p>
             ) : filteredUsers.length === 0 ? (
-              <p>No users found matching your search</p>
+              <p className="text-center text-gray-500 py-8 text-sm">No users found matching your search</p>
             ) : (
               filteredUsers.map(user => (
-                <label key={user._id} className="user-checkbox">
+                <label
+                  key={user._id}
+                  className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition"
+                >
                   <input
                     type="checkbox"
                     checked={selectedUsers.includes(user._id)}
                     onChange={() => handleUserSelect(user._id)}
                     disabled={mode === 'direct' && selectedUsers.length === 1 && !selectedUsers.includes(user._id)}
+                    className="w-4 h-4 rounded cursor-pointer"
                   />
-                  <span className="user-info">
-                    <strong>{user.name}</strong>
-                    <small>{user.email}</small>
-                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-gray-900 text-sm truncate">{user.name}</div>
+                    <div className="text-xs text-gray-600 truncate">{user.email}</div>
+                  </div>
                 </label>
               ))
             )}
           </div>
         </div>
 
-        <div className="modal-actions">
+        {/* Actions */}
+        <div className="flex gap-2 p-4 md:p-5 border-t border-gray-200 bg-gray-50">
           <button
-            className="btn-cancel"
+            className="flex-1 px-4 py-2 text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm md:text-base"
             onClick={onClose}
           >
             Cancel
           </button>
           <button
-            className="btn-create"
+            className={`flex-1 px-4 py-2 font-medium rounded-lg text-white transition text-sm md:text-base ${
+              (mode === 'direct' && selectedUsers.length === 1) ||
+              (mode === 'group' && selectedUsers.length > 0 && groupName.trim())
+                ? 'bg-blue-500 hover:bg-blue-600 cursor-pointer'
+                : 'bg-gray-300 cursor-not-allowed'
+            }`}
             onClick={handleCreateConversation}
             disabled={
               (mode === 'direct' && selectedUsers.length !== 1) ||

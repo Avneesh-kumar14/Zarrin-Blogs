@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useChatContext } from '../../context/ChatContext';
+import { ArrowLeft } from 'lucide-react';
 import ConversationList from './ConversationList';
 import ChatWindow from './ChatWindow';
-import ChatDebug from './ChatDebug';
-import './Chat.css';
 
 const Chat = ({ userToken }) => {
+  const [showChatOnMobile, setShowChatOnMobile] = useState(false);
   const {
     conversations,
     selectedConversation,
@@ -14,7 +14,6 @@ const Chat = ({ userToken }) => {
     socketConnected,
     fetchConversations
   } = useChatContext();
-  const [conversationError, setConversationError] = useState(null);
 
   useEffect(() => {
     const loadConversations = async () => {
@@ -23,7 +22,6 @@ const Chat = ({ userToken }) => {
         await fetchConversations();
       } catch (err) {
         console.error('❌ Failed to load conversations:', err);
-        setConversationError('Failed to load conversations');
       }
     };
 
@@ -43,14 +41,22 @@ const Chat = ({ userToken }) => {
     }
   }, [socketConnected, fetchConversations]);
 
+  // Show chat on mobile when selected
+  useEffect(() => {
+    if (selectedConversation) {
+      setShowChatOnMobile(true);
+    }
+  }, [selectedConversation]);
+
+  const handleBackToList = () => {
+    setShowChatOnMobile(false);
+  };
+
   return (
-    <div className="chat-container">
-      {/* Debug Panel */}
-      <ChatDebug />
-      
-      <div className="chat-wrapper">
-        {/* Conversation List Sidebar */}
-        <div className="chat-sidebar">
+    <div className="h-screen w-full flex bg-gray-100">
+      <div className="flex w-full h-full">
+        {/* Conversation List Sidebar - Hidden on mobile when chat is open */}
+        <div className={`${showChatOnMobile ? 'hidden md:flex' : 'flex'} w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex-col overflow-hidden`}>
           <ConversationList 
             conversations={conversations}
             loading={loading}
@@ -58,15 +64,30 @@ const Chat = ({ userToken }) => {
           />
         </div>
 
-        {/* Chat Window */}
-        <div className="chat-main">
+        {/* Chat Window - Shown on mobile when selected, always visible on desktop */}
+        <div className={`${showChatOnMobile ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-white`}>
           {selectedConversation ? (
-            <ChatWindow conversation={selectedConversation} />
+            <>
+              {/* Back Button for Mobile */}
+              <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white">
+                <button
+                  onClick={handleBackToList}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-700"
+                  title="Back to conversations"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <span className="text-sm font-semibold text-gray-900">
+                  {selectedConversation.participantName || selectedConversation.groupName || 'Chat'}
+                </span>
+              </div>
+              <ChatWindow conversation={selectedConversation} />
+            </>
           ) : (
-            <div className="no-conversation">
-              <div className="no-conversation-icon">💬</div>
-              <h2>Select a conversation to start messaging</h2>
-              <p>Choose from your existing conversations or start a new one</p>
+            <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-600">
+              <div className="text-6xl mb-4 opacity-50">💬</div>
+              <h2 className="text-xl font-semibold mb-2 text-gray-900">Select a conversation to start messaging</h2>
+              <p className="text-sm text-gray-500">Choose from your existing conversations or start a new one</p>
             </div>
           )}
         </div>

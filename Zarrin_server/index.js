@@ -220,6 +220,9 @@ try {
   // ✅ Chat routes (protected by auth middleware)
   app.use('/api/chat', chatRoutes);
 
+  // ✅ Calls routes (protected by auth middleware)
+  app.use('/api/calls', require('./routes/calls'));
+
   // ✅ Reading Progress routes (protected by auth middleware)
   app.use('/api/reading-progress', readingProgressRoutes);
 

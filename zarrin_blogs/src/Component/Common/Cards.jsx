@@ -3,7 +3,6 @@ import React from 'react';
 import Paragraph from './Paragraph';
 import Image from './Image';
 import Heading from './Heading';
-import Button from './Button';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Calendar, Heart, MessageCircle } from 'lucide-react';

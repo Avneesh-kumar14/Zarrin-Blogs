@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import OurBlogs from '../Component/Main Component/OurBlogs'
-import Heading from '../Component/Common/Heading'
-import Paragraph from '../Component/Common/Paragraph'
-import { BookOpen, Sparkles, ArrowRight, Flame, Star, Clock, TrendingUp, Search, Filter } from 'lucide-react'
+import { Sparkles, Flame, Star, Clock, TrendingUp, ArrowRight } from 'lucide-react'
 
 const Blog = () => {
   const [activeFilter, setActiveFilter] = useState('featured')

@@ -21,15 +21,68 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { ArrowRight, Clock, User, Zap, BookOpen, Sparkles, Share2, Shield, TrendingUp, Heart, Eye, MessageCircle, Users, Award, Quote, CheckCircle, Play, Bookmark, Star } from 'lucide-react'
-import TrendingBlogs from '../Component/Main Component/TrendingBlogs'
+import { useNavigate } from 'react-router-dom'
+import { ArrowRight, Zap, BookOpen, Sparkles, TrendingUp, Users, Award, Quote, CheckCircle, Play, Star } from 'lucide-react'
+
+// Follow Button Component
+const FollowButton = ({ writerId, writerName }) => {
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const token = localStorage.getItem('token');
+
+  const toggleFollow = async (e) => {
+    e.stopPropagation(); // Prevent card click
+    if (!token) {
+      alert('Please login to follow writers');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const apiBase = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
+      const apiUrl = apiBase.includes('/api') ? apiBase : `${apiBase}/api`;
+      const url = isFollowing ? `${apiUrl}/users/${writerId}/unfollow` : `${apiUrl}/users/${writerId}/follow`;
+
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setIsFollowing(!isFollowing);
+      } else {
+        console.error('Failed to toggle follow');
+      }
+    } catch (error) {
+      console.error('Error toggling follow:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={toggleFollow}
+      disabled={isLoading}
+      className={`w-full px-4 py-2 font-semibold rounded-lg transition-all ${
+        isFollowing
+          ? 'bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-slate-600'
+          : 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white'
+      } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+    >
+      {isLoading ? 'Loading...' : isFollowing ? 'Following' : 'Follow'}
+    </button>
+  );
+};
 
 const Home = () => {
+  const navigate = useNavigate();
   const [featuredBlog, setFeaturedBlog] = useState(null);
-  const [recentBlogs, setRecentBlogs] = useState([]);
   const [trendingBlogs, setTrendingBlogs] = useState([]);
   const [topWriters, setTopWriters] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   // Construct API URL properly
   let API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
@@ -50,8 +103,6 @@ const Home = () => {
    */
   const fetchAllData = useCallback(async () => {
     try {
-      setLoading(true);
-      
       // Fetch blogs - get published blogs sorted by createdAt (most recent first)
       const blogsRes = await fetch(`${API_URL}/blogs?status=published&sort=createdAt&order=desc`);
       if (blogsRes.ok) {
@@ -70,7 +121,6 @@ const Home = () => {
         if (blogs.length > 0) {
           console.log('✅ Blogs fetched:', blogs.length);
           setFeaturedBlog(blogs[0]);  // First blog as featured
-          setRecentBlogs(blogs.slice(1, 9));  // Next 8 as recent
           
           // For trending, sort by likes count
           const trendingBlogs = blogs
@@ -105,8 +155,6 @@ const Home = () => {
       }
     } catch (err) {
       console.error('❌ Error fetching home data:', err);
-    } finally {
-      setLoading(false);
     }
   }, [API_URL]);
 
@@ -470,7 +518,7 @@ const Home = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {topWriters.length > 0 ? (
               topWriters.map((writer, index) => (
-                <div key={writer._id} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card overflow-hidden rounded-2xl bg-white dark:bg-slate-800">
+                <div key={writer._id} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card overflow-hidden rounded-2xl bg-white dark:bg-slate-800 cursor-pointer group" onClick={() => navigate(`/profile/${writer._id}`)}>
                   <div className="h-24 bg-gradient-to-br from-[#6366F1] via-[#EC4899] to-[#8B5CF6]"></div>
                   <div className="p-6 -mt-12 relative">
                     <div className="relative inline-block mb-4">
@@ -505,9 +553,7 @@ const Home = () => {
                       </div>
                     </div>
 
-                    <button className="w-full px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white font-semibold rounded-lg transition-all">
-                      Follow
-                    </button>
+                    <FollowButton writerId={writer._id} writerName={writer.name} />
                   </div>
                 </div>
               ))
@@ -519,81 +565,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Recent Articles Grid */}
-      <section className="py-20 bg-white dark:bg-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <Clock className="w-8 h-8 text-[#6366F1]" />
-                <h2 className="text-4xl font-bold text-gray-900 dark:text-white">Latest Articles</h2>
-              </div>
-              <p className="text-lg text-gray-600 dark:text-gray-400">Fresh content from our community</p>
-            </div>
-            <a href="/blog" className="hidden md:flex gap-2 items-center px-6 py-3 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition-all text-gray-900 dark:text-white font-semibold">
-              View All
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {recentBlogs.slice(3, 6).map((article) => (
-              <a key={article._id} href={`/blog/${article._id}/preview`} className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl bg-white dark:bg-slate-800 flex flex-col h-full">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={article.images && article.images[0] ? article.images[0] : (article.image || '/Assets/beach.png')}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute top-4 right-4">
-                    <button className="h-8 w-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center">
-                      <Bookmark className="w-4 h-4 text-gray-900" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-6 flex-grow space-y-4">
-                  <div className="inline-flex px-3 py-1 bg-[#6366F1]/10 text-[#6366F1] text-xs font-bold rounded-full">
-                    {article.category || 'Featured'}
-                  </div>
-
-                  <h3 className="text-xl font-bold line-clamp-2 group-hover:text-[#6366F1] transition-colors text-gray-900 dark:text-white">
-                    {article.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                    {article.description || 'Discover an insightful story...'}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700 mt-auto">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                        {article.author?.name?.charAt(0) || 'A'}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{article.author?.name || 'Author'}</p>
-                        <p className="text-xs text-gray-500">{article.readingTime || '5'} min</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <Heart className="w-4 h-4" />
-                        {Math.floor(Math.random() * 1000)}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MessageCircle className="w-4 h-4" />
-                        {Math.floor(Math.random() * 100)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials */}
       <section className="py-20 bg-gray-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

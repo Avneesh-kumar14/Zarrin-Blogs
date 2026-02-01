@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bookmark, ArrowRight, Trash2, Clock, User, BookmarkX, Sparkles } from 'lucide-react';
-import Heading from '../Component/Common/Heading';
+import { Bookmark, ArrowRight, Trash2, Clock, BookmarkX, Sparkles } from 'lucide-react';
 import Paragraph from '../Component/Common/Paragraph';
-import Button from '../Component/Common/Button';
 import Alert from '../Component/Common/Alert';
 import { getApiUrl } from '../utils/apiConfig';
 

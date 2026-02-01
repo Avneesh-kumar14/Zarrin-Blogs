@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Users, FileText, Eye, Heart, TrendingUp, Trash2, Edit2, ArrowLeft } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Users, FileText, Eye, Heart, TrendingUp, Trash2, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Heading from '../Component/Common/Heading';
 import Paragraph from '../Component/Common/Paragraph';
@@ -17,6 +17,8 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const token = localStorage.getItem('token');
   const userData = JSON.parse(localStorage.getItem('user') || '{}');
+  // API_URL is constant and doesn't change - safe to use in callbacks
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const API_URL = process.env.REACT_APP_API_BASE_URL ? `${process.env.REACT_APP_API_BASE_URL}/api` : 'https://zarrin-blogs-backend.onrender.com/api';
 
   const fetchDashboard = useCallback(async () => {

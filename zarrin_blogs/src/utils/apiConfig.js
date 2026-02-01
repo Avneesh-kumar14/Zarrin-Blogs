@@ -83,9 +83,11 @@ export const fetchApi = async (path, options = {}) => {
   return response.json();
 };
 
-export default {
+const config = {
   API_BASE_URL,
   getApiUrl,
   apiCall,
   fetchApi,
 };
+
+export default config;
