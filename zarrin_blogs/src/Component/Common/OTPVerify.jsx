@@ -65,6 +65,9 @@ const OTPVerify = () => {
 
       // Save token and user data to localStorage
       localStorage.setItem('token', data.token);
+      if (data.refreshToken) {
+        localStorage.setItem('refreshToken', data.refreshToken);
+      }
       localStorage.setItem('user', JSON.stringify(data.user));
 
       setAlert({ type: 'success', message: 'Email verified! Redirecting to dashboard...' });

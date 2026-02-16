@@ -94,8 +94,12 @@ const Login = () => {
       };
       
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       localStorage.setItem('token', data.token);
+      if (data.refreshToken) {
+        localStorage.setItem('refreshToken', data.refreshToken);
+      }
       localStorage.setItem('user', JSON.stringify(normalizedUser));
       
       setAlert({ type: 'success', message: 'Login successful!' });

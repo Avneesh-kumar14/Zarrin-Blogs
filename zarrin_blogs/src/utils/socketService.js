@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { refreshAccessToken } from './api';
 
 const SOCKET_URL = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
 
@@ -6,6 +7,7 @@ class SocketService {
   constructor() {
     this.socket = null;
     this.listeners = new Map();
+    this.isRefreshingToken = false;
   }
 
   /**
@@ -61,12 +63,35 @@ class SocketService {
         this.emit('socketDisconnected', reason);
       });
 
-      this.socket.on('connect_error', (error) => {
+      this.socket.on('connect_error', async (error) => {
         console.error('❌ Socket connection error:', error);
         console.error('Error message:', error.message);
         console.error('Error type:', error.type);
         console.error('Error data:', error.data);
-        this.emit('socketError', error);
+        
+        // Check if error is due to expired token
+        if (error.message && error.message.includes('jwt expired')) {
+          console.log('🔄 Token expired, attempting to refresh...');
+          
+          if (!this.isRefreshingToken) {
+            this.isRefreshingToken = true;
+            try {
+              const newToken = await refreshAccessToken();
+              if (newToken) {
+                console.log('✅ Token refreshed, reconnecting socket...');
+                this.socket.auth.token = newToken;
+                this.socket.connect();
+              } else {
+                console.error('❌ Token refresh failed');
+                this.emit('socketError', error);
+              }
+            } finally {
+              this.isRefreshingToken = false;
+            }
+          }
+        } else {
+          this.emit('socketError', error);
+        }
       });
 
       this.socket.on('error', (error) => {

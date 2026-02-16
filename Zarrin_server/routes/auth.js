@@ -363,8 +363,9 @@ router.post('/verify-otp', authLimiter, async (req, res) => {
     // Send welcome email
     await sendWelcomeEmail(normalizedEmail, user.name);
 
-    // Generate token
-    const token = generateToken(user);
+    // Generate token pair
+    const { generateTokenPair } = require('../utils/generateToken');
+    const { accessToken, refreshToken } = generateTokenPair(user);
 
     console.log('Email verified successfully for:', normalizedEmail);
 
@@ -378,7 +379,8 @@ router.post('/verify-otp', authLimiter, async (req, res) => {
         role: user.role,
         isEmailVerified: user.isEmailVerified
       },
-      token
+      token: accessToken,
+      refreshToken
     });
   } catch (err) {
     console.error('OTP verification error:', err);
@@ -497,15 +499,16 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       role: foundUser.role
     });
 
-    // Generate token
-    const token = generateToken(foundUser);
+    // Generate token pair
+    const { generateTokenPair } = require('../utils/generateToken');
+    const { accessToken, refreshToken } = generateTokenPair(foundUser);
     
-    if (!token) {
+    if (!accessToken || !refreshToken) {
       console.error('Token generation failed');
-      throw new Error('Failed to generate authentication token');
+      throw new Error('Failed to generate authentication tokens');
     }
 
-    console.log('Token generated successfully, sending response');
+    console.log('Tokens generated successfully, sending response');
     
     // Send response
     res.json({ 
@@ -519,7 +522,8 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
         avatar: foundUser.avatar || '',
         isEmailVerified: foundUser.isEmailVerified
       }, 
-      token 
+      token: accessToken,
+      refreshToken 
     });
   } catch (err) {
     console.error('Login error details:', {
@@ -652,6 +656,52 @@ router.post('/reset-password-with-token', async (req, res) => {
     res.status(200).json({ message: 'Password reset successful. Please login with your new password.' });
   } catch (err) {
     console.error('Reset password error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// ✅ REFRESH TOKEN endpoint - Generate new access token from refresh token
+router.post('/refresh-token', async (req, res) => {
+  try {
+    const refreshToken = req.body.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'No refresh token provided' });
+    }
+
+    const { REFRESH_SECRET } = require('../utils/generateToken');
+    const jwt = require('jsonwebtoken');
+
+    try {
+      const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+      const user = await User.findById(decoded.id).select('-password');
+
+      if (!user) {
+        return res.status(401).json({ message: 'User not found' });
+      }
+
+      // Generate new token pair
+      const { generateTokenPair } = require('../utils/generateToken');
+      const { accessToken, refreshToken: newRefreshToken } = generateTokenPair(user);
+
+      res.json({
+        accessToken,
+        refreshToken: newRefreshToken,
+        user: {
+          _id: user._id,
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar || ''
+        }
+      });
+    } catch (jwtError) {
+      console.error('Refresh token verification failed:', jwtError.message);
+      return res.status(401).json({ message: 'Invalid or expired refresh token' });
+    }
+  } catch (err) {
+    console.error('Refresh token error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
