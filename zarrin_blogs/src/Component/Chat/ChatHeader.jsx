@@ -44,11 +44,11 @@ const ChatHeader = ({ conversation }) => {
   const status = getTypingStatus() || getContactStatus();
 
   return (
-    <div className="flex items-center justify-between p-3 md:p-4 border-b border-border-default bg-surface-primary dark:bg-surface-dark gap-4">
+    <div className="flex items-center justify-between p-3 sm:p-3.5 md:p-4 border-b border-border-light bg-surface-primary dark:bg-surface-dark gap-3 sm:gap-4 h-14 md:h-16 flex-shrink-0 shadow-sm hover:shadow-md transition-shadow duration-200">
       {/* Left Side - Avatar and Info */}
-      <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-        <div className="relative">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary text-on-secondary font-semibold flex items-center justify-center flex-shrink-0 text-sm md:text-base overflow-hidden">
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
+        <div className="relative flex-shrink-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full bg-primary text-white text-on-primary font-semibold flex items-center justify-center text-sm md:text-base overflow-hidden shadow-md">
             {conversation.groupAvatar ? (
               <img src={conversation.groupAvatar} alt="Group" className="w-full h-full object-cover" />
             ) : (
@@ -56,31 +56,43 @@ const ChatHeader = ({ conversation }) => {
             )}
           </div>
           {!isGroup && onlineUsers.has(conversation.participants[0]?._id) && (
-            <div className="absolute bottom-0 right-0 w-3 h-3 md:w-3.5 md:h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
           )}
         </div>
         
         <div className="flex-1 min-w-0">
-          <h2 className="text-sm md:text-lg font-semibold text-text-primary truncate">{displayName}</h2>
-          <p className={`text-xs md:text-sm ${typingUsers.size > 0 ? 'text-primary font-medium' : 'text-text-secondary'}`}>
+          <h2 className="text-sm sm:text-base md:text-lg font-semibold text-text-primary truncate">
+            {displayName}
+          </h2>
+          <p className={`text-xs sm:text-sm transition-colors duration-200 ${
+            typingUsers.size > 0 
+              ? 'text-primary font-medium animate-pulse' 
+              : 'text-text-secondary'
+          }`}>
             {status}
           </p>
         </div>
       </div>
 
       {/* Right Side - Actions */}
-      <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
         <CallButton 
           recipientId={isGroup ? null : conversation.participants[0]?._id}
           conversationId={conversation._id}
           recipientName={isGroup ? null : conversation.participants[0]?.name}
           disabled={isGroup}
         />
-        <button className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition" title="Conversation info">
+        <button 
+          className="p-2 md:p-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95" 
+          title="Conversation info"
+        >
           <Info size={18} className="text-text-secondary" />
         </button>
         {isGroup && (
-          <button className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition" title="Group settings">
+          <button 
+            className="p-2 md:p-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-all duration-200 hover:scale-110 active:scale-95" 
+            title="Group settings"
+          >
             <Settings size={18} className="text-text-secondary" />
           </button>
         )}

@@ -216,16 +216,19 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
   const canSend = (message.trim() || selectedFiles.length > 0) && !isLoading && !isUploading;
 
   return (
-    <div className="w-full border-t border-border-default bg-surface-primary dark:bg-surface-dark">
-      {/* File previews - BUG FIX: Better responsive grid */}
+    <div className="w-full border-t border-border-light bg-surface-primary dark:bg-surface-dark flex-shrink-0">
+      {/* File previews - Smooth animations */}
       {previewUrls.length > 0 && (
-        <div className="p-3 md:p-4 border-b border-border-light">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+        <div className="p-3 md:p-4 border-b border-border-light animate-in slide-in-from-bottom duration-300 bg-neutral-50 dark:bg-neutral-800">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
             {previewUrls.map((url, idx) => {
               const file = selectedFiles[idx];
               const isVideo = file?.type?.startsWith('video/');
               return (
-                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                <div 
+                  key={idx} 
+                  className="relative group aspect-square rounded-lg overflow-hidden bg-neutral-200 dark:bg-neutral-700 ring-2 ring-transparent hover:ring-primary transition-all duration-200 animate-in fade-in scale-in-95 duration-300"
+                >
                   {isVideo ? (
                     <video 
                       src={url} 
@@ -235,11 +238,11 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
                     <img src={url} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
                   )}
                   <button
-                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-50 transition rounded"
+                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-200 rounded"
                     onClick={() => removeFile(idx)}
                     title="Remove file"
                   >
-                    <X size={20} className="text-white opacity-0 group-hover:opacity-100" />
+                    <X size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                   </button>
                 </div>
               );
@@ -247,7 +250,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
           </div>
           {selectedFiles.length > 0 && (
             <button
-              className="mt-2 text-xs md:text-sm px-3 py-1.5 bg-error-bg text-error hover:bg-error-bg rounded transition"
+              className="mt-3 text-xs md:text-sm px-3 py-1.5 bg-error text-white hover:bg-red-600 rounded-lg transition-all duration-200 active:scale-95"
               onClick={() => {
                 setSelectedFiles([]);
                 previewUrls.forEach(url => URL.revokeObjectURL(url));
@@ -260,10 +263,11 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
         </div>
       )}
 
-      <div className="flex items-end gap-2 md:gap-3 p-3 md:p-4">
-        {/* Left Actions */}
+      {/* Input Area - Responsive padding and spacing */}
+      <div className="flex items-end gap-2 sm:gap-2.5 md:gap-3 p-3 md:p-4">
+        {/* Attach Button */}
         <button 
-          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition flex-shrink-0"
+          className="p-2 md:p-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-all duration-200 flex-shrink-0 hover:scale-110 active:scale-95"
           title="Attach photos or videos"
           onClick={() => fileInputRef.current?.click()}
         >
@@ -278,19 +282,22 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
           style={{ display: 'none' }}
         />
         
-        {/* Emoji Button - BUG FIX: Better positioning relative container */}
+        {/* Emoji Button - Better positioning */}
         <div className="relative">
           <button
-            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition flex-shrink-0"
+            className={`p-2 md:p-2.5 rounded-lg transition-all duration-200 flex-shrink-0 hover:scale-110 active:scale-95 ${showEmojiPicker ? 'bg-neutral-100 dark:bg-neutral-800' : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
             title="Add emoji"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           >
             <Smile size={20} className="text-text-secondary" />
           </button>
           
-          {/* Emoji Picker - BUG FIX: Better positioning and z-index */}
+          {/* Emoji Picker - Smooth transitions */}
           {showEmojiPicker && (
-            <div ref={pickerRef} className="absolute bottom-full left-0 z-50 mb-2">
+            <div 
+              ref={pickerRef} 
+              className="absolute bottom-full left-0 z-50 mb-2 animate-in fade-in zoom-in-95 duration-200 origin-bottom"
+            >
               <EmojiPicker
                 onEmojiSelect={handleEmojiSelect}
                 onClose={() => setShowEmojiPicker(false)}
@@ -299,22 +306,26 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
           )}
         </div>
 
-        {/* Textarea - BUG FIX: Better overflow handling */}
+        {/* Textarea - Optimized for all sizes */}
         <textarea
           ref={textareaRef}
-          className="flex-1 resize-none px-4 py-2 md:py-3 text-sm md:text-base bg-neutral-50 dark:bg-neutral-800 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-surface-primary"
-          placeholder="Type a message... (Shift+Enter for new line)"
+          className="flex-1 resize-none px-3 md:px-4 py-2 md:py-3 text-sm md:text-base bg-neutral-100 dark:bg-neutral-800 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-surface-primary transition-all duration-200"
+          placeholder="Message... (Shift+Enter for new line)"
           value={message}
           onChange={handleTyping}
           onKeyPress={handleKeyPress}
           rows={1}
           disabled={isLoading || isUploading}
-          style={{ minHeight: '40px', maxHeight: '120px' }}
+          style={{ minHeight: '38px', maxHeight: '100px' }}
         />
 
-        {/* Send Button */}
+        {/* Send Button - Smooth interactions */}
         <button
-          className="p-2 md:p-2.5 bg-primary hover:bg-primary-dark disabled:bg-neutral-300 dark:disabled:bg-neutral-700 text-on-primary rounded-lg transition flex-shrink-0"
+          className={`p-2 md:p-2.5 text-white rounded-lg transition-all duration-200 flex-shrink-0 hover:scale-110 active:scale-95 ${
+            canSend 
+              ? 'bg-primary hover:bg-primary-dark hover:shadow-lg' 
+              : 'bg-neutral-300 dark:bg-neutral-700 cursor-not-allowed'
+          }`}
           onClick={handleSendMessage}
           disabled={!canSend}
           title="Send message"
