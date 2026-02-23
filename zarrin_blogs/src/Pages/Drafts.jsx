@@ -113,9 +113,9 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-surface-primary dark:bg-surface-dark">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 dark:from-indigo-700 dark:via-pink-700 dark:to-amber-700 text-white py-16 md:py-20 relative overflow-hidden">
+      <div className="bg-primary dark:bg-primary-dark text-on-primary py-16 md:py-20 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full filter blur-3xl"></div>
           <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full filter blur-3xl"></div>
@@ -132,7 +132,7 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
             </div>
             <button
               onClick={() => navigate('/blog/create')}
-              className="flex items-center gap-2 px-8 py-4 bg-white text-indigo-600 dark:text-indigo-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-100 font-bold shadow-xl transform hover:scale-105 transition-all"
+              className="flex items-center gap-2 px-8 py-4 bg-surface-primary text-primary dark:text-primary-light rounded-xl hover:bg-surface-hover dark:hover:bg-surface-hover font-bold shadow-xl transform hover:scale-105 transition-all"
             >
               <Plus size={20} />
               New Draft
@@ -162,7 +162,7 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
 
         {loading ? (
           <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 mb-4"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary/20 dark:border-primary/30 border-t-primary mb-4"></div>
             <Paragraph className="text-slate-600 dark:text-slate-400 text-lg">Loading your drafts...</Paragraph>
           </div>
         ) : drafts.length > 0 ? (
@@ -170,16 +170,16 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
             {drafts.map((draft) => (
               <div
                 key={draft._id}
-                className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 transform hover:scale-105"
+                className="group bg-surface-primary dark:bg-surface-dark rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-border-default dark:border-border-dark hover:border-primary/30 dark:hover:border-primary/40 transform hover:scale-105"
               >
                 {draft.images && draft.images.length > 0 && (
-                  <div className="h-48 overflow-hidden bg-gradient-to-br from-slate-200 dark:from-slate-700 to-slate-300 dark:to-slate-600 relative">
+                  <div className="h-48 overflow-hidden bg-surface-secondary dark:bg-surface-dark relative">
                     <img
                       src={draft.images[0]}
                       alt={draft.title}
                       className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    <div className="absolute inset-0 bg-black/20"></div>
                   </div>
                 )}
 
@@ -197,7 +197,7 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
                     {draft.short_description}
                   </Paragraph>
 
-                  <div className="text-xs text-slate-500 dark:text-slate-500 font-semibold mb-6 pb-4 border-b border-gray-200 dark:border-slate-700">
+                  <div className="text-xs text-text-secondary dark:text-text-secondary font-semibold mb-6 pb-4 border-b border-border-default dark:border-border-dark">
                     Last updated: {new Date(draft.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                   </div>
 
@@ -205,7 +205,7 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
                   <div className="flex gap-3">
                     <button
                       onClick={() => handleEditDraft(draft._id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold text-sm shadow-md transform hover:scale-105 transition-all"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary hover:bg-primary-dark text-on-primary rounded-lg font-semibold text-sm shadow-md transform hover:scale-105 transition-all"
                     >
                       <Edit2 size={16} />
                       Edit
@@ -213,7 +213,7 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
                     <button
                       onClick={() => handleDeleteDraft(draft._id)}
                       disabled={deleting === draft._id}
-                      className="px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-semibold shadow-md transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-3 bg-error hover:bg-error-dark text-on-error rounded-lg font-semibold shadow-md transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -223,7 +223,7 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-gradient-to-br from-indigo-50 dark:from-slate-800 via-pink-50 dark:via-slate-800 to-amber-50 dark:to-slate-800 rounded-3xl border-2 border-dashed border-gray-300 dark:border-slate-600 relative overflow-hidden">
+          <div className="text-center py-24 bg-surface-secondary dark:bg-surface-dark rounded-3xl border-2 border-dashed border-border-default dark:border-border-dark relative overflow-hidden">
             <div className="absolute inset-0 opacity-5">
               <FileText size={200} className="absolute inset-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-900" />
             </div>
@@ -237,7 +237,7 @@ const Drafts = ({ isAuthenticated, currentUser }) => {
               </Paragraph>
               <button
                 onClick={() => navigate('/blog/create')}
-                className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white rounded-xl font-bold shadow-lg transform hover:scale-105 transition-all inline-block"
+                className="px-8 py-3 bg-primary hover:bg-primary-dark text-on-primary rounded-xl font-bold shadow-lg transform hover:scale-105 transition-all inline-block"
               >
                 ✍️ Create New Blog
               </button>

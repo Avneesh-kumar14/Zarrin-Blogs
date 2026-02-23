@@ -243,28 +243,28 @@ const Notifications = () => {
   const typeConfig = {
     like: {
       icon: Heart,
-      color: 'text-red-500',
-      bgColor: 'bg-red-100 dark:bg-red-900/20'
+      color: 'text-error',
+      bgColor: 'bg-error-bg dark:bg-error-bg'
     },
     comment: {
       icon: MessageCircle,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-100 dark:bg-blue-900/20'
+      color: 'text-info',
+      bgColor: 'bg-info-bg dark:bg-info-bg'
     },
     follow: {
       icon: UserPlus,
-      color: 'text-purple-500',
-      bgColor: 'bg-purple-100 dark:bg-purple-900/20'
+      color: 'text-secondary',
+      bgColor: 'bg-secondary-bg dark:bg-secondary-bg'
     },
     bookmark: {
       icon: Bookmark,
-      color: 'text-orange-500',
-      bgColor: 'bg-orange-100 dark:bg-orange-900/20'
+      color: 'text-warning',
+      bgColor: 'bg-warning-bg dark:bg-warning-bg'
     },
     trending: {
       icon: TrendingUp,
-      color: 'text-green-500',
-      bgColor: 'bg-green-100 dark:bg-green-900/20'
+      color: 'text-success',
+      bgColor: 'bg-success-bg dark:bg-success-bg'
     }
   };
 
@@ -276,8 +276,8 @@ const Notifications = () => {
       <div 
         className={`flex gap-4 p-4 rounded-xl border transition-all ${
           notification.isRead 
-            ? 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:shadow-md' 
-            : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800'
+            ? 'bg-surface-primary dark:bg-surface-dark border-border-default hover:shadow-md' 
+            : 'bg-info-bg dark:bg-info-bg border-info/30'
         }`}
       >
         {/* Icon */}
@@ -290,11 +290,11 @@ const Notifications = () => {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex-1 cursor-pointer" onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-text-primary">
                 {notification.sender && (
                   <>
                     <span className="font-bold">{notification.sender.name}</span>
-                    <span className="text-gray-600 dark:text-gray-400"> {notification.title}</span>
+                    <span className="text-text-secondary"> {notification.title}</span>
                   </>
                 )}
                 {!notification.sender && <span>{notification.title}</span>}
@@ -305,14 +305,14 @@ const Notifications = () => {
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {!notification.isRead && (
-                <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5" />
+                <div className="w-2 h-2 rounded-full bg-info mt-1.5" />
               )}
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDeleteNotification(notification._id);
                 }}
-                className="text-gray-400 hover:text-red-500 transition-colors"
+                className="text-text-muted hover:text-error transition-colors"
                 title="Delete notification"
               >
                 ×
@@ -320,13 +320,13 @@ const Notifications = () => {
             </div>
           </div>
 
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 cursor-pointer hover:underline"
+          <p className="text-sm text-text-secondary mb-2 cursor-pointer hover:underline"
             onClick={() => !notification.isRead && handleMarkAsRead(notification._id)}>
             {notification.message}
           </p>
 
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-text-muted">
               {new Date(notification.createdAt).toLocaleDateString()}
             </p>
             {notification.type === 'follow' && notification.sender && (
@@ -335,7 +335,7 @@ const Notifications = () => {
                   e.stopPropagation();
                   handleFollowBack(notification._id, notification.sender._id);
                 }}
-                className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E91E63] text-white rounded-lg transition-all">
+                className="px-3 py-1 text-xs font-medium bg-primary hover:bg-primary-dark text-on-primary rounded-lg transition-all">
                 Follow Back
               </button>
             )}
@@ -346,17 +346,17 @@ const Notifications = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 py-8">
+    <div className="min-h-screen bg-surface-primary dark:bg-surface-dark py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-1 h-10 bg-gradient-to-b from-[#6366F1] to-[#EC4899] rounded-full" />
+              <div className="w-1 h-10 bg-primary rounded-full" />
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+                <h1 className="text-4xl font-bold text-text-primary">Notifications</h1>
                 {unreadCount > 0 && (
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                  <p className="text-text-secondary text-sm mt-1">
                     You have {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
                   </p>
                 )}
@@ -366,7 +366,7 @@ const Notifications = () => {
             <button
               onClick={handleMarkAllRead}
               disabled={unreadCount === 0 || loading}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E91E63] text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-on-primary rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check className="w-4 h-4" />
               {loading ? 'Loading...' : 'Mark all read'}
@@ -376,28 +376,28 @@ const Notifications = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="p-4 rounded-xl bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-900/10 border border-red-200 dark:border-red-800">
-            <Heart className="w-6 h-6 text-red-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">{stats.likes}</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 text-center">Total Likes</div>
+          <div className="p-4 rounded-xl bg-error/10 dark:bg-error/10 border border-error/20 dark:border-error/30">
+            <Heart className="w-6 h-6 text-error mx-auto mb-2" />
+            <div className="text-2xl font-bold text-text-primary text-center">{stats.likes}</div>
+            <div className="text-xs text-text-secondary text-center">Total Likes</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border border-blue-200 dark:border-blue-800">
-            <MessageCircle className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">{stats.comments}</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 text-center">Comments</div>
+          <div className="p-4 rounded-xl bg-info/10 dark:bg-info/10 border border-info/20 dark:border-info/30">
+            <MessageCircle className="w-6 h-6 text-info mx-auto mb-2" />
+            <div className="text-2xl font-bold text-text-primary text-center">{stats.comments}</div>
+            <div className="text-xs text-text-secondary text-center">Comments</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/10 border border-purple-200 dark:border-purple-800">
-            <UserPlus className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">{stats.followers}</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 text-center">New Followers</div>
+          <div className="p-4 rounded-xl bg-secondary/10 dark:bg-secondary/10 border border-secondary/20 dark:border-secondary/30">
+            <UserPlus className="w-6 h-6 text-secondary mx-auto mb-2" />
+            <div className="text-2xl font-bold text-text-primary text-center">{stats.followers}</div>
+            <div className="text-xs text-text-secondary text-center">New Followers</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-900/10 border border-orange-200 dark:border-orange-800">
-            <Bookmark className="w-6 h-6 text-orange-500 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white text-center">{stats.bookmarks}</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 text-center">Bookmarks</div>
+          <div className="p-4 rounded-xl bg-warning/10 dark:bg-warning/10 border border-warning/20 dark:border-warning/30">
+            <Bookmark className="w-6 h-6 text-warning mx-auto mb-2" />
+            <div className="text-2xl font-bold text-text-primary text-center">{stats.bookmarks}</div>
+            <div className="text-xs text-text-secondary text-center">Bookmarks</div>
           </div>
         </div>
 
@@ -416,13 +416,13 @@ const Notifications = () => {
               onClick={() => setFilter(tab)}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 filter === tab
-                  ? 'bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white'
-                  : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
+                  ? 'bg-primary hover:bg-primary-dark text-on-primary'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-text-secondary hover:bg-neutral-200 dark:hover:bg-neutral-700'
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
               {tab === 'all' && unreadCount > 0 && (
-                <span className="ml-2  w-5 h-5 rounded-full bg-white text-blue-600 text-xs font-bold flex items-center justify-center">
+                <span className="ml-2  w-5 h-5 rounded-full bg-white text-info text-xs font-bold flex items-center justify-center">
                   {unreadCount}
                 </span>
               )}
@@ -433,19 +433,19 @@ const Notifications = () => {
         {/* Notifications List */}
         <div className="space-y-3">
           {loading ? (
-            <div className="p-12 text-center rounded-xl bg-gray-50 dark:bg-slate-800">
-              <div className="inline-block w-8 h-8 border-4 border-gray-300 border-t-[#6366F1] rounded-full animate-spin"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading notifications...</p>
+            <div className="p-12 text-center rounded-xl bg-neutral-50 dark:bg-neutral-800">
+              <div className="inline-block w-8 h-8 border-4 border-border-default border-t-primary rounded-full animate-spin"></div>
+              <p className="mt-4 text-text-secondary">Loading notifications...</p>
             </div>
           ) : notifications.length > 0 ? (
             notifications.map((notification) => (
               <NotificationItem key={notification._id} notification={notification} />
             ))
           ) : (
-            <div className="p-12 text-center rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
-              <Bell className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-slate-600" />
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">All caught up!</h3>
-              <p className="text-gray-600 dark:text-gray-400">
+            <div className="p-12 text-center rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-border-default">
+              <Bell className="w-16 h-16 mx-auto mb-4 text-neutral-300 dark:text-neutral-600" />
+              <h3 className="text-xl font-bold text-text-primary mb-2">All caught up!</h3>
+              <p className="text-text-secondary">
                 {filter === 'unread' ? 'You have no unread notifications' : 'No notifications to show'}
               </p>
             </div>

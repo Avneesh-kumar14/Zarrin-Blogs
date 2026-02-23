@@ -321,7 +321,7 @@ const Settings = () => {
         activeTab === tab
           ? isDanger 
             ? 'bg-red-500 text-white'
-            : 'bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white'
+            : 'bg-primary hover:bg-primary-dark text-on-primary'
           : isDanger
             ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
@@ -366,7 +366,7 @@ const Settings = () => {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profile Picture</h3>
               <div className="flex items-start gap-6">
                 <div className="flex-shrink-0">
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-r from-[#6366F1] to-[#EC4899] flex items-center justify-center text-white text-3xl font-bold overflow-hidden border-4 border-white dark:border-slate-700 shadow-lg">
+                  <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-on-primary text-3xl font-bold overflow-hidden border-4 border-white dark:border-slate-700 shadow-lg">
                     {previewAvatar ? (
                       <img src={previewAvatar} alt="Preview" className="w-full h-full object-cover" />
                     ) : formData.avatar ? (
@@ -392,7 +392,7 @@ const Settings = () => {
                     <button
                       onClick={handleAvatarUpload}
                       disabled={avatarLoading}
-                      className="mt-3 px-4 py-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                      className="mt-3 px-4 py-2 bg-primary hover:bg-primary-dark text-on-primary rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
                     >
                       {avatarLoading ? 'Uploading...' : 'Save Photo'}
                     </button>
@@ -469,7 +469,7 @@ const Settings = () => {
               <button
                 onClick={handleSaveProfile}
                 disabled={loading}
-                className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                className="px-6 py-2 bg-primary hover:bg-primary-dark text-on-primary rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {loading ? 'Saving...' : 'Save Profile'}
               </button>
@@ -543,7 +543,7 @@ const Settings = () => {
               <button
                 onClick={handleChangePassword}
                 disabled={loading}
-                className="px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                className="px-6 py-2 bg-primary hover:bg-primary-dark text-on-primary rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {loading ? 'Updating...' : 'Update Password'}
               </button>
@@ -598,7 +598,7 @@ const Settings = () => {
               <button
                 onClick={handleSaveWritingPreferences}
                 disabled={loading}
-                className="mt-4 px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                className="mt-4 px-6 py-2 bg-primary hover:bg-primary-dark text-on-primary rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {loading ? 'Saving...' : 'Save Preferences'}
               </button>
@@ -635,7 +635,7 @@ const Settings = () => {
               <button
                 onClick={handleSavePrivacy}
                 disabled={loading}
-                className="mt-4 px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                className="mt-4 px-6 py-2 bg-primary hover:bg-primary-dark text-on-primary rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {loading ? 'Saving...' : 'Save Privacy Settings'}
               </button>
@@ -716,7 +716,7 @@ const Settings = () => {
               <button
                 onClick={handleSaveNotifications}
                 disabled={loading}
-                className="mt-4 px-6 py-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
+                className="mt-4 px-6 py-2 bg-primary hover:bg-primary-dark text-on-primary rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {loading ? 'Saving...' : 'Save Notification Settings'}
               </button>

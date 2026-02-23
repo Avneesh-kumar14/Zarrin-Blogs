@@ -58,7 +58,7 @@ const OurBlogs = () => {
   };
 
   return (
-    <div className="px-4 md:px-16 py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="px-4 md:px-16 py-16 bg-surface-primary dark:bg-surface-dark">
       <div className="max-w-7xl mx-auto">
         
 

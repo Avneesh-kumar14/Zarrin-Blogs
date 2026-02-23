@@ -92,12 +92,12 @@ const CreateConversationModal = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-96 flex flex-col">
+      <div className="bg-surface-primary dark:bg-surface-dark rounded-lg shadow-xl w-full max-w-md max-h-96 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 md:p-5 border-b border-gray-200">
-          <h2 className="text-lg md:text-xl font-bold text-gray-900">New Conversation</h2>
-          <button className="p-1 hover:bg-gray-100 rounded-lg transition" onClick={onClose}>
-            <X size={24} className="text-gray-600" />
+        <div className="flex items-center justify-between p-4 md:p-5 border-b border-border-default">
+          <h2 className="text-lg md:text-xl font-bold text-text-primary">New Conversation</h2>
+          <button className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition" onClick={onClose}>
+            <X size={24} className="text-text-secondary" />
           </button>
         </div>
 
@@ -142,7 +142,7 @@ const CreateConversationModal = ({ onClose }) => {
               placeholder="Group name (e.g., 'Project Team')"
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+              className="w-full px-4 py-2 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm md:text-base bg-surface-primary dark:bg-surface-dark text-text-primary"
             />
           )}
 
@@ -166,8 +166,8 @@ const CreateConversationModal = ({ onClose }) => {
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="w-6 h-6 border-3 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                <span className="ml-2 text-gray-600 text-sm">Loading users...</span>
+                <div className="w-6 h-6 border-3 border-border-light border-t-primary rounded-full animate-spin"></div>
+                <span className="ml-2 text-text-secondary text-sm">Loading users...</span>
               </div>
             ) : users.length === 0 ? (
               <p className="text-center text-gray-500 py-8 text-sm">No users available</p>
@@ -177,7 +177,7 @@ const CreateConversationModal = ({ onClose }) => {
               filteredUsers.map(user => (
                 <label
                   key={user._id}
-                  className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition"
+                  className="flex items-center gap-3 p-3 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg cursor-pointer transition"
                 >
                   <input
                     type="checkbox"
@@ -187,8 +187,8 @@ const CreateConversationModal = ({ onClose }) => {
                     className="w-4 h-4 rounded cursor-pointer"
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900 text-sm truncate">{user.name}</div>
-                    <div className="text-xs text-gray-600 truncate">{user.email}</div>
+                    <div className="font-medium text-text-primary text-sm truncate">{user.name}</div>
+                    <div className="text-xs text-text-secondary truncate">{user.email}</div>
                   </div>
                 </label>
               ))
@@ -197,9 +197,9 @@ const CreateConversationModal = ({ onClose }) => {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 p-4 md:p-5 border-t border-gray-200 bg-gray-50">
+        <div className="flex gap-2 p-4 md:p-5 border-t border-border-default bg-neutral-50 dark:bg-neutral-900">
           <button
-            className="flex-1 px-4 py-2 text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm md:text-base"
+            className="flex-1 px-4 py-2 text-text-primary font-medium border border-border-default rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition text-sm md:text-base"
             onClick={onClose}
           >
             Cancel

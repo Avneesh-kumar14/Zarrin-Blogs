@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Flame, Eye, Heart } from 'lucide-react';
+import { Flame, TrendingUp, Eye, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const TrendingBlogs = () => {
@@ -46,10 +46,10 @@ const TrendingBlogs = () => {
       {/* Header */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
-          <div className="p-2 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg">
-            <Flame size={28} className="text-white" />
+          <div className="p-2 bg-warning rounded-lg">
+            <TrendingUp size={24} className="text-on-primary" />
           </div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+          <h2 className="text-4xl font-bold text-warning">
             Trending Now 🔥
           </h2>
         </div>
@@ -68,7 +68,7 @@ const TrendingBlogs = () => {
               onClick={() => navigate(`/blog/${blog._id}/preview`)}
             >
               {/* Trending Badge */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-bold z-10 shadow-lg transform group-hover:scale-110 transition-transform">
+              <div className="absolute top-4 right-4 bg-warning text-on-primary px-4 py-2 rounded-full text-sm font-bold z-10 shadow-lg transform group-hover:scale-110 transition-transform">
                 #{index + 1}
               </div>
 
@@ -80,7 +80,7 @@ const TrendingBlogs = () => {
                     alt={blog.title}
                     className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                  <div className="absolute inset-0 bg-black/30"></div>
                 </div>
               )}
 
@@ -96,7 +96,7 @@ const TrendingBlogs = () => {
 
                 {/* Author */}
                 <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                  <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-sm shadow-md">
                     {blog.author?.name?.[0]?.toUpperCase() || 'A'}
                   </div>
                   <div>
@@ -122,7 +122,7 @@ const TrendingBlogs = () => {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-gradient-to-br from-gray-50 dark:from-gray-800 to-gray-100 dark:to-gray-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+        <div className="text-center py-16 bg-surface-primary dark:bg-surface-dark rounded-2xl border-2 border-dashed border-border-light dark:border-border-dark">
           <Flame size={48} className="mx-auto text-gray-400 dark:text-gray-600 mb-3" />
           <p className="text-gray-600 dark:text-gray-400 text-lg">
             No trending blogs yet. Be the first to create one!

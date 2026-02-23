@@ -68,10 +68,10 @@ const Pagination = ({
     <div className="flex flex-col gap-4 items-center justify-center py-8 px-4">
       {/* Results Info */}
       {totalItems > 0 && (
-        <div className="text-sm text-gray-600 dark:text-gray-400">
-          Showing <span className="font-semibold text-gray-900 dark:text-white">{startItem}</span> to{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">{endItem}</span> of{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">{totalItems}</span> results
+        <div className="text-sm text-text-secondary">
+          Showing <span className="font-semibold text-text-primary">{startItem}</span> to{' '}
+          <span className="font-semibold text-text-primary">{endItem}</span> of{' '}
+          <span className="font-semibold text-text-primary">{totalItems}</span> results
         </div>
       )}
 
@@ -81,7 +81,7 @@ const Pagination = ({
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1 || isLoading}
-          className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg border border-border-default hover:bg-surface-hover dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous page"
           title="Previous page"
         >
@@ -102,8 +102,8 @@ const Pagination = ({
                     px-3 py-2 rounded-lg transition-all font-medium
                     ${
                       page === currentPage
-                        ? 'bg-blue-600 text-white shadow-lg'
-                        : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-primary text-on-primary shadow-lg'
+                        : 'border border-border-default text-text-primary dark:text-text-secondary hover:bg-surface-hover dark:hover:bg-neutral-700'
                     }
                     disabled:opacity-50 disabled:cursor-not-allowed
                   `}
@@ -121,7 +121,7 @@ const Pagination = ({
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages || isLoading}
-          className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg border border-border-default hover:bg-surface-hover dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           aria-label="Next page"
           title="Next page"
         >
@@ -131,7 +131,7 @@ const Pagination = ({
 
       {/* Go to Page Input */}
       <form onSubmit={handleGoToPage} className="flex gap-2 items-center">
-        <label htmlFor="goto-page" className="text-sm text-gray-600 dark:text-gray-400">
+        <label htmlFor="goto-page" className="text-sm text-text-secondary">
           Go to page:
         </label>
         <input
@@ -141,21 +141,21 @@ const Pagination = ({
           max={totalPages}
           value={inputPage}
           onChange={(e) => setInputPage(e.target.value)}
-          className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          className="w-16 px-2 py-1 border border-border-default rounded bg-surface-primary dark:bg-neutral-800 text-text-primary dark:text-text-inverse"
         />
         <button
           type="submit"
           disabled={isLoading}
-          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+          className="px-3 py-1 bg-primary text-on-primary rounded hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
         >
           Go
         </button>
       </form>
 
       {/* Page Info */}
-      <div className="text-sm text-gray-600 dark:text-gray-400">
-        Page <span className="font-semibold text-gray-900 dark:text-white">{currentPage}</span> of{' '}
-        <span className="font-semibold text-gray-900 dark:text-white">{totalPages}</span>
+      <div className="text-sm text-text-secondary">
+        Page <span className="font-semibold text-text-primary">{currentPage}</span> of{' '}
+        <span className="font-semibold text-text-primary">{totalPages}</span>
       </div>
     </div>
   );

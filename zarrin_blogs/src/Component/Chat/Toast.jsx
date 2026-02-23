@@ -25,10 +25,10 @@ const Toast = ({ message, type = 'info', duration = 4000, onClose }) => {
   };
 
   const bgColors = {
-    error: 'bg-red-100 border-red-300 text-red-900',
-    success: 'bg-green-100 border-green-300 text-green-900',
-    info: 'bg-blue-100 border-blue-300 text-blue-900',
-    warning: 'bg-yellow-100 border-yellow-300 text-yellow-900'
+    error: 'bg-error-bg border-error/30 dark:border-error/40 text-error dark:text-error-light',
+    success: 'bg-success-bg border-success/30 dark:border-success/40 text-success dark:text-success-light',
+    info: 'bg-info-bg border-info/30 dark:border-info/40 text-info dark:text-info-light',
+    warning: 'bg-warning-bg border-warning/30 dark:border-warning/40 text-warning dark:text-warning-light'
   };
 
   return (

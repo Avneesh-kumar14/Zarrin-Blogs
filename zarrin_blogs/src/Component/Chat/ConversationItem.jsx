@@ -33,23 +33,23 @@ const ConversationItem = ({ conversation }) => {
       className={`flex gap-3 p-3 md:p-4 mx-2 md:mx-3 rounded-lg cursor-pointer transition ${
         isSelected 
           ? 'bg-blue-100 border-l-4 border-blue-500' 
-          : 'hover:bg-gray-100'
+          : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
       }`}
       onClick={() => selectConversation(conversation)}
     >
-      <div className="relative w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white font-semibold flex items-center justify-center flex-shrink-0 text-sm md:text-base">
+      <div className="relative w-12 h-12 md:w-14 md:h-14 rounded-full bg-secondary text-on-secondary font-semibold flex items-center justify-center flex-shrink-0 text-sm md:text-base">
         {getAvatar()}
         {hasOnlineUsers && <span className="absolute bottom-0 right-0 w-3 h-3 md:w-3.5 md:h-3.5 bg-green-500 rounded-full border-2 border-white"></span>}
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <div className="flex justify-between items-start gap-2">
-          <h3 className="font-semibold text-gray-900 text-sm md:text-base truncate">{displayName}</h3>
-          <span className="text-xs md:text-sm text-gray-500 flex-shrink-0 whitespace-nowrap">
+          <h3 className="font-semibold text-text-primary text-sm md:text-base truncate">{displayName}</h3>
+          <span className="text-xs md:text-sm text-text-secondary flex-shrink-0 whitespace-nowrap">
             {new Date(conversation.lastMessageTime).toLocaleDateString()}
           </span>
         </div>
-        <p className="text-xs md:text-sm text-gray-600 truncate">{lastMessagePreview}</p>
+        <p className="text-xs md:text-sm text-text-secondary truncate">{lastMessagePreview}</p>
       </div>
     </div>
   );

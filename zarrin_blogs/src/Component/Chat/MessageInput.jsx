@@ -216,16 +216,16 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
   const canSend = (message.trim() || selectedFiles.length > 0) && !isLoading && !isUploading;
 
   return (
-    <div className="w-full border-t border-gray-200 bg-white">
+    <div className="w-full border-t border-border-default bg-surface-primary dark:bg-surface-dark">
       {/* File previews - BUG FIX: Better responsive grid */}
       {previewUrls.length > 0 && (
-        <div className="p-3 md:p-4 border-b border-gray-100">
+        <div className="p-3 md:p-4 border-b border-border-light">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
             {previewUrls.map((url, idx) => {
               const file = selectedFiles[idx];
               const isVideo = file?.type?.startsWith('video/');
               return (
-                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100">
+                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800">
                   {isVideo ? (
                     <video 
                       src={url} 
@@ -247,7 +247,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
           </div>
           {selectedFiles.length > 0 && (
             <button
-              className="mt-2 text-xs md:text-sm px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded transition"
+              className="mt-2 text-xs md:text-sm px-3 py-1.5 bg-error-bg text-error hover:bg-error-bg rounded transition"
               onClick={() => {
                 setSelectedFiles([]);
                 previewUrls.forEach(url => URL.revokeObjectURL(url));
@@ -263,11 +263,11 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
       <div className="flex items-end gap-2 md:gap-3 p-3 md:p-4">
         {/* Left Actions */}
         <button 
-          className="p-2 hover:bg-gray-100 rounded-lg transition flex-shrink-0"
+          className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition flex-shrink-0"
           title="Attach photos or videos"
           onClick={() => fileInputRef.current?.click()}
         >
-          <ImageIcon size={20} className="text-gray-600" />
+          <ImageIcon size={20} className="text-text-secondary" />
         </button>
         <input
           ref={fileInputRef}
@@ -281,11 +281,11 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
         {/* Emoji Button - BUG FIX: Better positioning relative container */}
         <div className="relative">
           <button
-            className="p-2 hover:bg-gray-100 rounded-lg transition flex-shrink-0"
+            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition flex-shrink-0"
             title="Add emoji"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           >
-            <Smile size={20} className="text-gray-600" />
+            <Smile size={20} className="text-text-secondary" />
           </button>
           
           {/* Emoji Picker - BUG FIX: Better positioning and z-index */}
@@ -302,7 +302,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
         {/* Textarea - BUG FIX: Better overflow handling */}
         <textarea
           ref={textareaRef}
-          className="flex-1 resize-none px-4 py-2 md:py-3 text-sm md:text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+          className="flex-1 resize-none px-4 py-2 md:py-3 text-sm md:text-base bg-neutral-50 dark:bg-neutral-800 border border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-surface-primary"
           placeholder="Type a message... (Shift+Enter for new line)"
           value={message}
           onChange={handleTyping}
@@ -314,7 +314,7 @@ const MessageInput = ({ onSendMessage, isLoading, selectedConversation, onError 
 
         {/* Send Button */}
         <button
-          className="p-2 md:p-2.5 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white rounded-lg transition flex-shrink-0"
+          className="p-2 md:p-2.5 bg-primary hover:bg-primary-dark disabled:bg-neutral-300 dark:disabled:bg-neutral-700 text-on-primary rounded-lg transition flex-shrink-0"
           onClick={handleSendMessage}
           disabled={!canSend}
           title="Send message"

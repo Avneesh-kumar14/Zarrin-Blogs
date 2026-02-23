@@ -17,14 +17,14 @@ import Login from './Component/Common/Loginpage.jsx';
 import ForgotPassword from './Component/Common/ForgotPassword.jsx';
 import ResetPassword from './Component/Common/ResetPassword.jsx';
 import OTPVerify from './Component/Common/OTPVerify.jsx';
-import Dashboard from './Component/Main Component/Dashboard.jsx';
+import DashboardAnalytics from './Pages/DashboardAnalytics.jsx';
+import DashboardCategories from './Pages/DashboardCategories.jsx';
 import Blog from './Pages/Blog.jsx';
 import Contact from './Pages/Contact.jsx';
 import About from './Pages/About.jsx';
 import AuthenticatedLayout from './Component/AuthenticatedLayout.jsx';
 import Posts from './Component/Main Component/Posts.jsx';
 import MyBlogs from './Component/Main Component/MyBlogs.jsx';
-import Categories from './Component/Main Component/Categories.jsx';
 import Search from './Pages/Search.jsx';
 import Bookmarks from './Pages/Bookmarks.jsx';
 import UserProfile from './Pages/UserProfile.jsx';
@@ -79,10 +79,10 @@ function AppWrapper() {
         <Route path='/admin' element={<AdminDashboard isAuthenticated={!!localStorage.getItem('token')} currentUser={safeJsonParse(localStorage.getItem('user'))} />} />
         <Route path="/*" element={<Error />} />
         <Route path='/dashboard' element={<AuthenticatedLayout />}>
-          <Route path='/dashboard/analytics' element={<Dashboard />} />
+          <Route path='/dashboard/analytics' element={<DashboardAnalytics />} />
           <Route path='/dashboard/posts' element={<Posts />} />
           <Route path='/dashboard/myblogs' element={<MyBlogs />} />
-          <Route path='/dashboard/categories' element={<Categories />} />
+          <Route path='/dashboard/categories' element={<DashboardCategories />} />
           <Route path='drafts' element={<Drafts />} />
           <Route path='profile' element={<UserProfile currentUser={safeJsonParse(localStorage.getItem('user'))} isAuthenticated={!!localStorage.getItem('token')} ownProfile={true} />} />
         </Route>

@@ -24,7 +24,7 @@ const CallNotification = () => {
 
   return (
     <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-top-2">
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-2xl p-4 md:p-6 text-white min-w-64 md:min-w-80">
+      <div className="bg-info rounded-xl shadow-2xl p-4 md:p-6 text-on-info min-w-64 md:min-w-80">
         {/* Caller Info */}
         <div className="flex items-center gap-3 md:gap-4 mb-4">
           {/* Caller Avatar with pulse animation */}

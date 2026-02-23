@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, ArrowRight } from 'lucide-react';
+import { TrendingUp, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Heading from '../Common/Heading';
 import Paragraph from '../Common/Paragraph';
@@ -44,10 +44,10 @@ const RelatedBlogs = ({ blogId }) => {
     <div className="mt-20 pt-12 border-t-2 border-gray-200">
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg">
-            <Link size={24} className="text-white" />
+          <div className="p-2 bg-primary rounded-lg">
+            <TrendingUp size={24} className="text-on-primary" />
           </div>
-          <Heading type="h3" className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+          <Heading type="h3" className="text-3xl font-bold text-primary">
             Related Blogs
           </Heading>
         </div>
@@ -59,7 +59,7 @@ const RelatedBlogs = ({ blogId }) => {
           <div
             key={blog._id}
             onClick={() => navigate(`/blog/${blog._id}/preview`)}
-            className="group bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-blue-300 transform hover:scale-105"
+            className="group bg-surface-primary dark:bg-surface-dark rounded-xl p-5 hover:shadow-xl transition-all duration-300 cursor-pointer border border-border-light dark:border-border-dark hover:border-primary/30 transform hover:scale-105"
           >
             {/* Image */}
             {blog.images && blog.images.length > 0 && (
@@ -69,7 +69,7 @@ const RelatedBlogs = ({ blogId }) => {
                   alt={blog.title}
                   className="w-full h-full object-cover group-hover:scale-120 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-black/20"></div>
               </div>
             )}
 

@@ -32,22 +32,27 @@ const SideBar = ({ isOpen, setIsOpen }) => {
       {/* Sidebar */}
       <aside
         className={`fixed lg:static top-16 left-0 z-30 h-[calc(100vh-64px)] w-64
-        bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800
-        transform transition-transform duration-300
+        bg-surface-primary dark:bg-surface-dark border-r border-border-light dark:border-border-dark
+        transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         <div className="flex flex-col h-full px-4 py-6">
 
-          {/* Title */}
-          <Headings
-            type="h4"
-            className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-6"
-          >
-            Dashboard
-          </Headings>
+          {/* Title with Icon */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-primary rounded-lg">
+              <LayoutDashboard size={20} className="text-on-primary" />
+            </div>
+            <Headings
+              type="h4"
+              className="text-sm font-bold text-primary uppercase tracking-wide"
+            >
+              Dashboard
+            </Headings>
+          </div>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-1">
+          <nav className="flex-1 space-y-2">
             {menuItems.map(({ label, route, icon: Icon }) => {
               const isActive = location.pathname.includes(route);
 
@@ -56,27 +61,28 @@ const SideBar = ({ isOpen, setIsOpen }) => {
                   key={route}
                   to={`/dashboard/${route}`}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 group
                     ${
                       isActive
-                        ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        ? "bg-primary text-on-primary shadow-md"
+                        : "text-text-primary dark:text-text-secondary hover:bg-primary/10 dark:hover:bg-primary/20"
                     }`}
                 >
-                  <Icon size={18} />
+                  <Icon size={18} className={isActive ? "" : "group-hover:text-primary"} />
                   {label}
+                  {isActive && <div className="ml-auto w-1 h-6 bg-on-primary rounded-full"></div>}
                 </Link>
               );
             })}
           </nav>
 
           {/* Logout */}
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
+          <div className="pt-4 border-t border-border-light dark:border-border-dark">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-3 py-2 rounded-lg
-              text-sm font-medium text-red-600 dark:text-red-400
-              hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+              className="flex items-center gap-3 w-full px-4 py-3 rounded-xl
+              text-sm font-semibold text-error hover:bg-error/10 dark:hover:bg-error/20
+              transition-all duration-200"
             >
               <LogOut size={18} />
               Logout
@@ -88,7 +94,7 @@ const SideBar = ({ isOpen, setIsOpen }) => {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 lg:hidden z-20 top-16"
+          className="fixed inset-0 bg-black/40 lg:hidden z-20 top-16 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         />
       )}

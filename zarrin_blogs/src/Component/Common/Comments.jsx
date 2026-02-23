@@ -180,9 +180,9 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
 
       {/* Comment Form */}
       {isAuthenticated ? (
-        <form onSubmit={handleSubmitComment} className="mb-8 pb-8 border-b border-gray-200">
+        <form onSubmit={handleSubmitComment} className="mb-8 pb-8 border-b border-border-default dark:border-border-dark">
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-text-primary dark:text-text-inverse mb-2">
               Your Comment
             </label>
             <textarea
@@ -194,7 +194,7 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
               placeholder="Share your thoughts on this blog..."
               maxLength="1000"
               rows="4"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-4 py-3 border border-border-default dark:border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-surface-primary dark:bg-surface-dark text-text-primary dark:text-text-inverse resize-none"
             />
             <div className="flex justify-between items-center mt-2">
               <span className="text-xs text-gray-500">
@@ -207,13 +207,13 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
             type="submit"
             disabled={submitting || charCount < 1 || charCount > 1000}
             variant="primary"
-            className="w-full md:w-auto px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full md:w-auto px-6 py-2 bg-primary text-on-primary font-semibold rounded-lg hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             text={submitting ? 'Posting...' : 'Post Comment'}
           />
         </form>
       ) : (
-        <div className="mb-8 pb-8 border-b border-gray-200 bg-blue-50 rounded-lg p-4">
-          <Paragraph className="text-blue-900 text-center">
+        <div className="mb-8 pb-8 border-b border-border-default dark:border-border-dark bg-info-bg dark:bg-info-bg rounded-lg p-4">
+          <Paragraph className="text-info dark:text-info-light text-center">
             Please log in to post a comment
           </Paragraph>
         </div>
@@ -223,13 +223,13 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
       {loading ? (
         <div className="text-center py-8">
           <div className="inline-block">
-            <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-200 border-t-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-4 border-border-default border-t-primary"></div>
           </div>
         </div>
       ) : comments.length > 0 ? (
         <div className="space-y-4">
           {comments.map((comment) => (
-            <div key={comment._id} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+            <div key={comment._id} className="bg-surface-secondary dark:bg-surface-dark rounded-lg p-4 hover:bg-surface-hover dark:hover:bg-surface-hover transition-colors border border-border-light dark:border-border-dark">
               {editingId === comment._id ? (
                 // Edit Mode
                 <div>
@@ -238,7 +238,7 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
                     onChange={(e) => setEditingText(e.target.value)}
                     maxLength="1000"
                     rows="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none mb-3"
+                    className="w-full px-3 py-2 border border-border-default dark:border-border-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-surface-primary dark:bg-surface-dark text-text-primary dark:text-text-inverse resize-none mb-3"
                   />
                   <div className="flex gap-2">
                     <Button

@@ -73,8 +73,8 @@ const BlogSection = () => {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-orange-200 dark:border-orange-900 border-t-orange-600"></div>
-            <p className="text-gray-600 dark:text-gray-400 mt-3">Loading blogs...</p>
+            <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-warning-bg dark:border-warning-dark border-t-warning"></div>
+            <p className="text-text-secondary mt-3">Loading blogs...</p>
           </div>
         ) : popularBlogs.length > 0 ? (
           <div className='grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-6 px-6'>
@@ -97,7 +97,7 @@ const BlogSection = () => {
           </div>
         ) : (
           <div className="text-center py-12 px-6">
-            <Paragraph className="text-gray-600 dark:text-gray-400">
+            <Paragraph className="text-text-secondary">
               No blogs available yet. Check back soon!
             </Paragraph>
           </div>

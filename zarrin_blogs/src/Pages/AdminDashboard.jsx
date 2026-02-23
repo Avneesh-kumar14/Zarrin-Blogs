@@ -58,7 +58,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, API_URL]);
 
   // Check if user is admin
   useEffect(() => {
@@ -115,10 +115,10 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-cyan-50 to-teal-50">
+      <div className="flex items-center justify-center min-h-screen bg-surface-primary dark:bg-surface-dark">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <Paragraph className="text-gray-600">Loading Admin Dashboard...</Paragraph>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <Paragraph className="text-text-secondary">Loading Admin Dashboard...</Paragraph>
         </div>
       </div>
     );
@@ -126,18 +126,18 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
 
   if (!dashboard) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-teal-50">
+      <div className="min-h-screen bg-surface-primary dark:bg-surface-dark">
         <Alert message="Failed to load dashboard" type="error" />
       </div>
     );
   }
 
-  const COLORS = ['#06B6D4', '#14B8A6', '#0891B2', '#0E7490', '#06B6D4'];
+  const COLORS = ['var(--color-primary)', 'var(--color-secondary)', 'var(--color-accent)', 'var(--color-success)', 'var(--color-primary)'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-surface-primary dark:bg-surface-dark">
       {/* Header */}
-      <div className="bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-700 dark:from-cyan-700 dark:via-teal-700 dark:to-cyan-800 text-white py-8 md:py-12">
+      <div className="bg-primary dark:bg-primary-dark text-on-primary py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-4">
             <button onClick={() => navigate('/')} className="hover:bg-white/20 p-2 rounded">
@@ -178,7 +178,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-3 font-semibold capitalize transition ${
                 activeTab === tab
-                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  ? 'text-primary border-b-2 border-primary'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -267,7 +267,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
                     <XAxis dataKey="title" width={80} />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="views" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="views" fill="var(--color-info)" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -430,7 +430,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
                     <XAxis dataKey="_id" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={2} />
+                    <Line type="monotone" dataKey="count" stroke="var(--color-info)" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -444,7 +444,7 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
                     <XAxis dataKey="_id" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="count" stroke="#10b981" strokeWidth={2} />
+                    <Line type="monotone" dataKey="count" stroke="var(--color-success)" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

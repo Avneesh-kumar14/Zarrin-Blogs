@@ -14,12 +14,12 @@ const Button = ({
   icon: Icon = null,
 }) => {
   const variants = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md',
-    secondary: 'bg-slate-600 hover:bg-slate-700 text-white shadow-sm hover:shadow-md',
-    success: 'bg-green-600 hover:bg-green-700 text-white shadow-sm hover:shadow-md',
-    error: 'bg-red-600 hover:bg-red-700 text-white shadow-sm hover:shadow-md',
-    outline: 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
-    ghost: 'bg-transparent text-slate-700 hover:bg-slate-100',
+    primary: 'bg-primary hover:bg-primary-dark text-on-primary shadow-sm hover:shadow-md',
+    secondary: 'bg-secondary hover:bg-secondary-dark text-on-secondary shadow-sm hover:shadow-md',
+    success: 'bg-success hover:bg-success-dark text-on-success shadow-sm hover:shadow-md',
+    error: 'bg-error hover:bg-error-dark text-on-error shadow-sm hover:shadow-md',
+    outline: 'bg-transparent border-2 border-primary text-primary hover:bg-surface-tertiary dark:hover:bg-neutral-700',
+    ghost: 'bg-transparent text-text-primary dark:text-text-primary hover:bg-surface-secondary dark:hover:bg-neutral-800',
   };
 
   const sizes = {
@@ -33,7 +33,7 @@ const Button = ({
     inline-flex items-center justify-center space-x-2 font-semibold rounded-md
     transition-all duration-200
     disabled:opacity-50 disabled:cursor-not-allowed
-    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-primary-light
     ${fullWidth ? 'w-full' : ''}
     ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
   `;

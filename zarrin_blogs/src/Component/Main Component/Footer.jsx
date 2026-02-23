@@ -43,13 +43,13 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:bg-slate-950 text-slate-300 border-t border-slate-800">
+    <footer className="relative bg-neutral-900 dark:bg-neutral-950 text-neutral-300 border-t border-border-default">
       {/* Newsletter */}
       <div className="relative max-w-7xl mx-auto px-6 pt-24">
-        <div className="bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] hover:shadow-2xl transition-all rounded-2xl p-10 grid md:grid-cols-2 gap-8 items-center shadow-xl">
+        <div className="bg-primary hover:shadow-2xl transition-all rounded-2xl p-10 grid md:grid-cols-2 gap-8 items-center shadow-xl">
           <div className="text-white">
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles size={18} className="text-amber-300" />
+              <Sparkles size={18} className="text-warning" />
               <span className="text-sm bg-white/20 px-3 py-1 rounded-full text-xs font-semibold">
                 Weekly Digest
               </span>
@@ -72,12 +72,12 @@ const Footer = () => {
       h-12
       rounded-md
       px-4
-      bg-white
-      text-slate-900
+      bg-surface-primary
+      text-text-primary
       outline-none
       focus:ring-2
-      focus:ring-purple-400
-      placeholder-slate-400
+      focus:ring-primary
+      placeholder-text-secondary
     "
   />
 
@@ -88,9 +88,9 @@ const Footer = () => {
       sm:w-auto
       px-6
       rounded-md
-      bg-white
-      text-purple-700
-      hover:bg-purple-50
+      bg-surface-primary
+      text-primary
+      hover:bg-neutral-100
       transition
       font-semibold
       whitespace-nowrap
@@ -100,7 +100,7 @@ const Footer = () => {
   </button>
 </div>
 
-            <p className="text-xs text-white/70 mt-3">
+            <p className="text-white/70 mt-3">
               No spam. Unsubscribe anytime.
             </p>
           </div>
@@ -112,19 +112,13 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {stats.map((s, idx) => {
             const Icon = s.icon;
-            const gradients = [
-              "from-[#6366F1] to-[#8B5CF6]",
-              "from-[#EC4899] to-[#F472B6]",
-              "from-[#06B6D4] to-[#6366F1]",
-              "from-[#FB923C] to-[#FBBF24]"
-            ];
             return (
               <div key={s.label}>
-                <div className={`w-16 h-16 mx-auto rounded-xl bg-gradient-to-br ${gradients[idx]} flex items-center justify-center mb-4 shadow-lg hover:scale-110 transition-transform`}>
+                <div className={`w-16 h-16 mx-auto rounded-xl bg-${['primary', 'secondary', 'accent', 'warning'][idx]} flex items-center justify-center mb-4 shadow-lg hover:scale-110 transition-transform`}>
                   <Icon className="text-white" size={24} />
                 </div>
                 <div className="text-3xl font-bold text-white">{s.value}</div>
-                <div className="text-sm text-slate-400">{s.label}</div>
+                <div className="text-sm text-text-secondary">{s.label}</div>
               </div>
             );
           })}
@@ -143,7 +137,7 @@ const Footer = () => {
               </Headings>
             </div>
 
-            <Paragraph className="text-sm text-zinc-400">
+            <Paragraph className="text-sm text-neutral-400">
               A calm corner of the internet for meaningful writing and deep
               thinking.
             </Paragraph>
@@ -154,7 +148,7 @@ const Footer = () => {
                   <button
                     key={i}
                     onClick={() => {}}
-                    className="w-9 h-9 rounded-lg bg-zinc-800 hover:bg-cyan-600 flex items-center justify-center transition"
+                    className="w-9 h-9 rounded-lg bg-neutral-800 hover:bg-accent flex items-center justify-center transition"
                     aria-label={`Social media link ${i + 1}`}
                   >
                     <Icon size={14} />
@@ -172,7 +166,7 @@ const Footer = () => {
             <ul className="space-y-3 text-sm">
               {["Home", "Blog", "Categories", "Bookmarks"].map((l) => (
                 <li key={l}>
-                  <NavLink to="/" className="hover:text-white transition">
+                  <NavLink to="/" className="text-neutral-300 hover:text-white transition">
                     {l}
                   </NavLink>
                 </li>
@@ -218,7 +212,7 @@ const Footer = () => {
           {topics.map((t) => (
             <span
               key={t}
-              className="px-4 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 text-sm text-white hover:scale-105 transition cursor-pointer"
+              className="px-4 py-1 rounded-full bg-primary text-sm text-on-primary hover:scale-105 transition cursor-pointer"
             >
               {t}
             </span>
@@ -235,7 +229,7 @@ const Footer = () => {
       {/* Back to top */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-gradient-to-r from-cyan-600 to-teal-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition z-50"
+        className="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-110 transition z-50"
       >
         <ArrowUp size={18} />
       </button>

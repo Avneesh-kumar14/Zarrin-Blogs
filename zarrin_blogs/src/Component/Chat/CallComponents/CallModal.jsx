@@ -107,7 +107,7 @@ const CallModal = ({ conversation }) => {
           </div>
         ) : (
           /* Audio Call Display - Centered */
-          <div className="bg-gradient-to-br from-purple-500 to-purple-700 flex-1 flex items-center justify-center">
+          <div className="bg-accent flex-1 flex items-center justify-center">
             <div className="text-center">
               <div className="text-6xl md:text-8xl mb-4 animate-bounce">👤</div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{activeCall.otherName || 'User'}</h2>

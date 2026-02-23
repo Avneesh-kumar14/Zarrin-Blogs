@@ -93,17 +93,17 @@ const Categories = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 px-6 py-14">
+    <div className="min-h-screen bg-surface-primary dark:bg-surface-dark px-6 py-14">
       <div className="max-w-6xl mx-auto space-y-10">
 
         {/* Header */}
         <div className="flex items-center gap-5">
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#6366F1] to-[#EC4899] shadow-lg">
+          <div className="p-4 rounded-2xl bg-primary shadow-lg">
             <Folder size={32} className="text-white" />
           </div>
 
           <div>
-            <Heading type="h1" className="bg-gradient-to-r from-[#6366F1] to-[#EC4899] bg-clip-text text-transparent text-4xl md:text-5xl font-bold">
+            <Heading type="h1" className="text-primary text-4xl md:text-5xl font-bold">
               Categories
             </Heading>
             <Paragraph className="text-slate-600 dark:text-slate-400 text-lg">
@@ -116,7 +116,7 @@ const Categories = () => {
         <div className="flex justify-end">
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E23DA5] text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg"
+            className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-on-primary font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg"
           >
             <Plus size={20} /> New Category
           </button>
@@ -160,7 +160,7 @@ const Categories = () => {
               </div>
               <button
                 onClick={addCategory}
-                className="px-6 py-3 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                className="px-6 py-3 bg-primary text-on-primary font-semibold rounded-lg hover:shadow-lg transition-all"
               >
                 Add
               </button>
@@ -188,22 +188,16 @@ const Categories = () => {
         {!loading && categories.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((category, idx) => {
-              const gradients = [
-                "from-[#6366F1] to-[#8B5CF6]",
-                "from-[#EC4899] to-[#F472B6]",
-                "from-[#06B6D4] to-[#6366F1]",
-                "from-[#FB923C] to-[#FBBF24]"
-              ];
               return (
                 <div
                   key={category._id}
                   className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-200 dark:border-slate-700 p-6 transition-all transform hover:scale-105 group"
                 >
-                  <div className={`h-1 bg-gradient-to-r ${gradients[idx % 4]} rounded-full mb-4`}></div>
+                  <div className={`h-1 bg-${['primary', 'secondary', 'accent', 'warning'][idx % 4]} rounded-full mb-4`}></div>
                   
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <h3 className={`text-xl font-bold bg-gradient-to-r ${gradients[idx % 4]} bg-clip-text text-transparent mb-2`}>
+                      <h3 className={`text-xl font-bold text-${['primary', 'secondary', 'accent', 'warning'][idx % 4]} mb-2`}>
                         {category.name}
                       </h3>
                       <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -240,7 +234,7 @@ const Categories = () => {
             </Paragraph>
             <button
               onClick={() => setShowCreateForm(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary font-semibold rounded-lg hover:shadow-lg transition-all"
             >
               <Plus size={20} /> Create Category
             </button>

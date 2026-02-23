@@ -74,27 +74,27 @@ const EmojiPicker = ({ onEmojiSelect, onClose }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-xl w-80 overflow-hidden z-50">
+    <div className="bg-surface-primary dark:bg-surface-dark border border-border-default rounded-lg shadow-xl w-80 overflow-hidden z-50">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-gray-100">
-        <h3 className="text-sm font-semibold text-gray-900">Emojis</h3>
+      <div className="flex items-center justify-between p-3 border-b border-border-light">
+        <h3 className="text-sm font-semibold text-text-primary">Emojis</h3>
         <button
           onClick={onClose}
-          className="p-1 hover:bg-gray-100 rounded transition"
+          className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition"
           title="Close"
         >
-          <X size={16} className="text-gray-600" />
+          <X size={16} className="text-text-secondary" />
         </button>
       </div>
 
       {/* Search */}
-      <div className="p-3 border-b border-gray-100">
+      <div className="p-3 border-b border-border-light">
         <input
           type="text"
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+          className="w-full px-3 py-2 text-sm bg-neutral-100 dark:bg-neutral-800 border border-border-default rounded focus:outline-none focus:ring-2 focus:ring-primary focus:bg-surface-primary"
           autoFocus
         />
       </div>
@@ -106,21 +106,21 @@ const EmojiPicker = ({ onEmojiSelect, onClose }) => {
             <button
               key={idx}
               onClick={() => handleEmojiClick(emoji)}
-              className="text-xl p-1 hover:bg-gray-100 rounded transition text-center"
+              className="text-xl p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition text-center"
               title={emoji}
             >
               {emoji}
             </button>
           ))
         ) : (
-          <div className="col-span-6 text-center py-4 text-gray-500 text-sm">
+          <div className="col-span-6 text-center py-4 text-text-secondary text-sm">
             No emojis found
           </div>
         )}
       </div>
 
       {/* Category Tabs */}
-      <div className="flex gap-1 p-2 border-t border-gray-100 bg-gray-50 overflow-x-auto">
+      <div className="flex gap-1 p-2 border-t border-border-light bg-neutral-50 dark:bg-neutral-900 overflow-x-auto">
         {Object.entries(EMOJI_CATEGORIES).map(([key, category]) => (
           <button
             key={key}

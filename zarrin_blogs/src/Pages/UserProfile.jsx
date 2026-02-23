@@ -143,18 +143,18 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-surface-primary dark:bg-surface-dark flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-300 to-pink-300 dark:from-purple-600 dark:to-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-br from-cyan-300 to-indigo-300 dark:from-cyan-600 dark:to-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 dark:bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-secondary/20 dark:bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
         </div>
         <div className="text-center relative z-10">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-[#6366F1] to-[#EC4899] p-[3px]">
-            <div className="w-full h-full bg-white dark:bg-slate-950 rounded-full flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 dark:border-slate-700 border-t-[#6366F1]"></div>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary p-[3px]">
+            <div className="w-full h-full bg-surface-primary dark:bg-surface-dark-alt rounded-full flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-border-light dark:border-border-dark border-t-primary"></div>
             </div>
           </div>
-          <p className="bg-gradient-to-r from-[#6366F1] to-[#EC4899] bg-clip-text text-transparent font-semibold">Loading profile...</p>
+          <p className="text-primary font-semibold">Loading profile...</p>
         </div>
       </div>
     );
@@ -162,18 +162,18 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="min-h-screen bg-surface-primary dark:bg-surface-dark flex items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-300 to-pink-300 dark:from-purple-600 dark:to-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 dark:bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
         </div>
-        <div className="text-center bg-white dark:bg-slate-900 p-12 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 relative z-10">
-          <div className="p-4 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl inline-block mb-4">
+        <div className="text-center bg-surface-primary dark:bg-surface-dark p-12 rounded-2xl shadow-2xl border border-border-light dark:border-border-dark relative z-10">
+          <div className="p-4 bg-error dark:bg-error-dark rounded-xl inline-block mb-4">
             <FileText size={48} className="text-white" />
           </div>
-          <p className="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent mb-6 text-lg font-semibold">User not found</p>
+          <p className="text-error dark:text-error-dark mb-6 text-lg font-semibold">User not found</p>
           <button 
             onClick={() => navigate('/dashboard')} 
-            className="px-6 py-3 bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E23DA5] text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg"
+            className="px-6 py-3 bg-primary hover:bg-primary-dark text-on-primary font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg"
           >
             Go Back to Dashboard
           </button>
@@ -185,16 +185,16 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
   const isOwnProfile = !userId || loggedInUser?._id === user._id;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 relative overflow-hidden">
+    <div className="min-h-screen bg-surface-primary dark:bg-surface-dark relative overflow-hidden">
       {/* Animated Background Blobs */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-300 to-pink-300 dark:from-purple-600 dark:to-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-br from-cyan-300 to-indigo-300 dark:from-cyan-600 dark:to-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-gradient-to-br from-orange-300 to-amber-300 dark:from-orange-600 dark:to-amber-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 dark:bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-secondary/20 dark:bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-secondary/20 dark:bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] dark:from-[#4F46E5] dark:via-[#DB2777] dark:to-[#7C3AED] text-white py-20 sm:py-32">
+      <div className="relative overflow-hidden bg-primary dark:bg-primary-dark text-on-primary py-20 sm:py-32">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -230,17 +230,17 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20 pb-12">
         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 dark:border-slate-800 backdrop-blur">
           {/* Gradient Top Border */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#6366F1] via-[#EC4899] to-[#8B5CF6] rounded-t-3xl"></div>
+          <div className="absolute top-0 left-0 right-0 h-1 bg-primary rounded-t-3xl"></div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Avatar Section */}
             <div className="col-span-1 flex flex-col items-center">
               <div className="relative mb-6">
-                <div className="w-40 h-40 rounded-2xl bg-gradient-to-br from-[#6366F1] via-[#EC4899] to-[#8B5CF6] flex items-center justify-center shadow-2xl ring-4 ring-white dark:ring-slate-800 overflow-hidden transform hover:scale-110 transition-transform">
+                <div className="w-40 h-40 rounded-2xl bg-primary flex items-center justify-center shadow-2xl ring-4 ring-white dark:ring-neutral-800 overflow-hidden transform hover:scale-110 transition-transform">
                   {user.avatar ? (
                     <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                   ) : (
-                    <User size={80} className="text-white" />
+                    <User size={80} className="text-on-primary" />
                   )}
                 </div>
                 <div className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white dark:border-slate-800 shadow-lg pulse"></div>
@@ -251,8 +251,8 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
                   onClick={handleFollowToggle} 
                   className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
                     isFollowing
-                      ? 'bg-gradient-to-r from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-700 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-600'
-                      : 'bg-gradient-to-r from-[#6366F1] to-[#EC4899] hover:from-[#5558E3] hover:to-[#E23DA5] text-white shadow-lg'
+                      ? 'bg-surface-secondary dark:bg-surface-dark text-text-primary dark:text-text-primary border border-border-default dark:border-border-dark'
+                      : 'bg-primary hover:bg-primary-dark text-on-primary shadow-lg'
                   }`}
                 >
                   {isFollowing ? (
@@ -271,7 +271,7 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
             {/* Profile Info */}
             <div className="col-span-1 md:col-span-3">
               <div className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent mb-2">
+                <h1 className="text-4xl md:text-5xl font-bold text-text-primary dark:text-white mb-2">
                   {user.name}
                 </h1>
                 <div className="flex flex-col gap-3 mb-4">
@@ -280,14 +280,14 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
                     <span className="text-lg">{user.email}</span>
                   </div>
                   {user.dateOfBirth && (
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center gap-2 text-text-secondary dark:text-text-secondary">
                       <Calendar size={18} />
                       <span className="text-lg">Age: {calculateAge(user.dateOfBirth)} years old</span>
                     </div>
                   )}
                 </div>
                 {user.bio && (
-                  <p className="text-lg text-gray-700 dark:text-gray-300 italic max-w-2xl leading-relaxed">
+                  <p className="text-lg text-text-primary dark:text-text-primary italic max-w-2xl leading-relaxed">
                     "{user.bio}"
                   </p>
                 )}
@@ -296,7 +296,7 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
               {/* Stats Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {/* Articles Card */}
-                <div className="bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] dark:from-[#4F46E5] dark:to-[#7C3AED] rounded-2xl p-6 border border-[#6366F1]/20 shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+                <div className="bg-primary dark:bg-primary-dark rounded-2xl p-6 border border-primary/20 shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-white/80 font-semibold text-sm">Articles</span>
                     <BookOpen size={20} className="text-white" />
@@ -309,13 +309,13 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
                 {/* Followers Card */}
                 <button 
                   onClick={() => navigate(`/followers/${user._id || user.id}`)}
-                  className="bg-gradient-to-br from-[#EC4899] to-[#F472B6] dark:from-[#DB2777] dark:to-[#EC4899] rounded-2xl p-6 border border-[#EC4899]/20 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 group"
+                  className="bg-error text-on-primary rounded-2xl p-6 border border-error/20 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 group"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white/80 font-semibold text-sm group-hover:text-white transition-colors">Followers</span>
-                    <User size={20} className="text-white" />
+                    <span className="text-on-primary/80 font-semibold text-sm group-hover:text-on-primary transition-colors">Followers</span>
+                    <User size={20} className="text-on-primary" />
                   </div>
-                  <p className="text-4xl font-bold text-white">
+                  <p className="text-4xl font-bold text-on-primary">
                     {user.followers?.length || 0}
                   </p>
                 </button>
@@ -323,13 +323,13 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
                 {/* Following Card */}
                 <button 
                   onClick={() => navigate(`/following/${user._id || user.id}`)}
-                  className="bg-gradient-to-br from-[#06B6D4] to-[#6366F1] dark:from-[#0891B2] dark:to-[#4F46E5] rounded-2xl p-6 border border-[#06B6D4]/20 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 group"
+                  className="bg-secondary text-on-primary rounded-2xl p-6 border border-secondary/20 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 group"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white/80 font-semibold text-sm group-hover:text-white transition-colors">Following</span>
-                    <User size={20} className="text-white" />
+                    <span className="text-on-primary/80 font-semibold text-sm group-hover:text-on-primary transition-colors">Following</span>
+                    <User size={20} className="text-on-primary" />
                   </div>
-                  <p className="text-4xl font-bold text-white">
+                  <p className="text-4xl font-bold text-on-primary">
                     {user.following?.length || 0}
                   </p>
                 </button>
@@ -343,10 +343,10 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-br from-[#FB923C] to-[#FBBF24] rounded-xl">
-              <FileText size={24} className="text-white" />
+            <div className="p-3 bg-warning rounded-xl">
+              <FileText size={24} className="text-on-primary" />
             </div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent">
+            <h2 className="text-4xl font-bold text-text-primary dark:text-text-inverse">
               Published Articles
             </h2>
           </div>
@@ -358,30 +358,26 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
         {userBlogs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {userBlogs.map((blog, idx) => {
-              const gradients = [
-                'from-[#6366F1] to-[#8B5CF6]',
-                'from-[#EC4899] to-[#F472B6]',
-                'from-[#06B6D4] to-[#6366F1]',
-                'from-[#FB923C] to-[#FBBF24]'
-              ];
+              const colors = ['bg-primary', 'bg-error', 'bg-secondary', 'bg-warning'];
+              const textColors = ['text-primary', 'text-error', 'text-secondary', 'text-warning'];
               return (
                 <article
                   key={blog._id}
                   onClick={() => navigate(`/blog/${blog._id}/preview`)}
                   className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 border border-gray-100 dark:border-slate-800 cursor-pointer backdrop-blur"
                 >
-                  {/* Gradient Top Border */}
-                  <div className={`h-1 bg-gradient-to-r ${gradients[idx % 4]}`}></div>
+                  {/* Solid Color Top Border */}
+                  <div className={`h-1 ${colors[idx % 4]}`}></div>
 
                   {/* Image Container */}
                   {blog.images && blog.images.length > 0 && (
-                    <div className="relative overflow-hidden h-52 bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800">
+                    <div className="relative overflow-hidden h-52 bg-neutral-200 dark:bg-neutral-700">
                       <img
                         src={blog.images[0]}
                         alt={blog.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                   )}
 
@@ -400,7 +396,7 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent line-clamp-2 group-hover:opacity-80 transition-opacity">
+                    <h3 className="text-xl font-bold text-text-primary dark:text-text-inverse line-clamp-2 group-hover:opacity-80 transition-opacity">
                       {blog.title}
                     </h3>
 
@@ -411,7 +407,7 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
 
                     {/* Read More */}
                     <div className="pt-4 border-t border-gray-200 dark:border-slate-800">
-                      <button className={`font-semibold text-sm flex items-center gap-1 transition-all group-hover:gap-2 bg-gradient-to-r ${gradients[idx % 4]} bg-clip-text text-transparent`}>
+                      <button className={`font-semibold text-sm flex items-center gap-1 transition-all group-hover:gap-2 ${textColors[idx % 4]} dark:opacity-90 hover:opacity-100`}>
                         Read More
                         <span className="group-hover:translate-x-1 transition-transform">→</span>
                       </button>
@@ -422,11 +418,11 @@ const UserProfile = ({ currentUser, isAuthenticated, ownProfile = false }) => {
             })}
           </div>
         ) : (
-          <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-slate-700 p-16 text-center">
-            <div className="inline-block p-4 bg-gradient-to-br from-[#6366F1] to-[#EC4899] rounded-2xl mb-6">
-              <FileText size={64} className="text-white" />
+          <div className="bg-surface-primary dark:bg-surface-dark rounded-2xl border-2 border-dashed border-border-light dark:border-border-dark p-16 text-center">
+            <div className="inline-block p-4 bg-primary rounded-2xl mb-6">
+              <FileText size={64} className="text-on-primary" />
             </div>
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text text-transparent mb-3">
+            <h3 className="text-2xl font-bold text-text-primary dark:text-text-inverse mb-3">
               No articles published yet
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-lg">

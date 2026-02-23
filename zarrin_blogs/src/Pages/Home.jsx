@@ -69,8 +69,8 @@ const FollowButton = ({ writerId, writerName }) => {
       disabled={isLoading}
       className={`w-full px-4 py-2 font-semibold rounded-lg transition-all ${
         isFollowing
-          ? 'bg-gray-200 dark:bg-slate-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-slate-600'
-          : 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558E3] hover:to-[#7C4EE8] text-white'
+          ? 'bg-neutral-200 dark:bg-neutral-700 text-text-primary dark:text-text-primary hover:bg-neutral-300 dark:hover:bg-neutral-600'
+          : 'bg-primary hover:bg-primary-dark text-on-primary'
       } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       {isLoading ? 'Loading...' : isFollowing ? 'Following' : 'Follow'}
@@ -164,18 +164,18 @@ const Home = () => {
 
   // Category data for section
   const categories = [
-    { name: "Technology", icon: "💻", count: "2.3K articles", color: "from-[#6366F1] to-[#8B5CF6]" },
-    { name: "Design", icon: "🎨", count: "1.8K articles", color: "from-[#EC4899] to-[#F472B6]" },
-    { name: "Business", icon: "📈", count: "1.5K articles", color: "from-[#FB923C] to-[#FBBF24]" },
-    { name: "Lifestyle", icon: "✨", count: "1.2K articles", color: "from-[#06B6D4] to-[#10B981]" }
+    { name: "Technology", icon: "💻", count: "2.3K articles", bgClass: "bg-primary" },
+    { name: "Design", icon: "🎨", count: "1.8K articles", bgClass: "bg-secondary" },
+    { name: "Business", icon: "📈", count: "1.5K articles", bgClass: "bg-accent" },
+    { name: "Lifestyle", icon: "✨", count: "1.2K articles", bgClass: "bg-success" }
   ];
 
   // Platform stats
   const platformStats = [
-    { icon: BookOpen, value: "50K+", label: "Articles Published", color: "from-[#6366F1] to-[#8B5CF6]" },
-    { icon: Users, value: "1M+", label: "Active Readers", color: "from-[#EC4899] to-[#F472B6]" },
-    { icon: TrendingUp, value: "10K+", label: "Writers", color: "from-[#FB923C] to-[#FBBF24]" },
-    { icon: Award, value: "4.9/5", label: "User Rating", color: "from-[#06B6D4] to-[#10B981]" }
+    { icon: BookOpen, value: "50K+", label: "Articles Published", bgClass: "bg-primary", textClass: "text-primary" },
+    { icon: Users, value: "1M+", label: "Active Readers", bgClass: "bg-secondary", textClass: "text-secondary" },
+    { icon: TrendingUp, value: "10K+", label: "Writers", bgClass: "bg-accent", textClass: "text-accent" },
+    { icon: Award, value: "4.9/5", label: "User Rating", bgClass: "bg-success", textClass: "text-success" }
   ];
 
   // Features
@@ -210,13 +210,13 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background dark:bg-slate-950">
-      {/* Hero Section with Animated Background */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#EC4899] pt-20 pb-20">
-        {/* Animated Aurora Background */}
+      {/* Hero Section with Solid Background */}
+      <section className="relative overflow-hidden bg-primary pt-20 pb-20">
+        {/* Solid Color Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-[#6366F1]/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#EC4899]/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#8B5CF6]/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-primary-light/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/10 rounded-full blur-3xl"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
@@ -224,23 +224,23 @@ const Home = () => {
             {/* Left Content */}
             <div className="text-center lg:text-left space-y-8">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 hover:bg-white/20 transition-all w-fit mx-auto lg:mx-0">
-                <Sparkles size={16} className="text-amber-300" />
-                <span className="text-sm font-semibold text-white">#1 Platform for Modern Writers</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-on-primary/10 backdrop-blur-md rounded-full border border-on-primary/20 hover:bg-on-primary/20 transition-all w-fit mx-auto lg:mx-0">
+                <Sparkles size={16} className="text-on-primary" />
+                <span className="text-sm font-semibold text-on-primary">#1 Platform for Modern Writers</span>
               </div>
 
               {/* Main Heading */}
               <div className="space-y-4">
-                <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+                <h1 className="text-5xl md:text-7xl font-bold text-on-primary leading-tight">
                   Share Your{' '}
-                  <span className="block mt-2 bg-gradient-to-r from-white via-pink-200 to-amber-200 bg-clip-text text-transparent">
+                  <span className="block mt-2 text-on-primary">
                     Ideas with the World
                   </span>
                 </h1>
               </div>
 
               {/* Description */}
-              <p className="text-xl text-white/90 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              <p className="text-xl text-on-primary/90 leading-relaxed max-w-xl mx-auto lg:mx-0">
                 Join 50,000+ writers sharing stories, building audiences, and earning from their content on the most beautiful blogging platform.
               </p>
 
@@ -248,14 +248,14 @@ const Home = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
                 <a
                   href="/blog/create"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-white to-pink-100 hover:from-pink-50 hover:to-white text-purple-700 font-bold rounded-lg transition-all hover:shadow-2xl hover:shadow-white/25 group"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-surface-primary hover:bg-surface-secondary text-primary font-bold rounded-lg transition-all hover:shadow-2xl hover:shadow-primary/25 group"
                 >
                   Start Writing Free
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </a>
                 <a
                   href="/blog"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white hover:bg-white/10 text-white font-bold rounded-lg transition-all backdrop-blur-sm group"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-on-primary hover:bg-on-primary/10 text-on-primary font-bold rounded-lg transition-all backdrop-blur-sm group"
                 >
                   <Play className="w-5 h-5" />
                   Explore Articles
@@ -265,16 +265,16 @@ const Home = () => {
               {/* Trust Badges */}
               <div className="flex items-center justify-center lg:justify-start gap-6 text-sm pt-4 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-300" />
-                  <span className="text-white/90">Free forever</span>
+                  <CheckCircle className="w-5 h-5 text-success" />
+                  <span className="text-on-primary/90">Free forever</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-300" />
-                  <span className="text-white/90">No credit card</span>
+                  <CheckCircle className="w-5 h-5 text-success" />
+                  <span className="text-on-primary/90">No credit card</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-300" />
-                  <span className="text-white/90">Cancel anytime</span>
+                  <CheckCircle className="w-5 h-5 text-success" />
+                  <span className="text-on-primary/90">Cancel anytime</span>
                 </div>
               </div>
             </div>
@@ -282,8 +282,8 @@ const Home = () => {
             {/* Right Content - Featured Article Card */}
             {featuredBlog && (
               <div className="relative hidden lg:block">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#6366F1]/20 to-[#EC4899]/20 rounded-3xl blur-3xl"></div>
-                <div className="relative group overflow-hidden border-0 shadow-2xl rounded-3xl cursor-pointer bg-white dark:bg-slate-800 hover:shadow-3xl transition-all interactive-card">
+                <div className="absolute inset-0 bg-primary/20 rounded-3xl blur-3xl"></div>
+                <div className="relative group overflow-hidden border-0 shadow-2xl rounded-3xl cursor-pointer bg-surface-primary dark:bg-surface-dark hover:shadow-3xl transition-all interactive-card">
                   {/* Image */}
                   <div className="relative h-80 overflow-hidden">
                     <img
@@ -291,10 +291,10 @@ const Home = () => {
                       alt={featuredBlog.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                    <div className="absolute inset-0 bg-black/60"></div>
 
                     {/* Badge */}
-                    <div className="absolute top-4 left-4 px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white text-xs font-bold rounded-full">
+                    <div className="absolute top-4 left-4 px-3 py-1 bg-primary text-on-primary text-xs font-bold rounded-full">
                       {featuredBlog.category?.[0]?.name || 'Featured'}
                     </div>
                   </div>
@@ -302,24 +302,24 @@ const Home = () => {
                   {/* Content */}
                   <div className="p-6 space-y-4">
                     {/* Title */}
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white line-clamp-2">
+                    <h3 className="text-2xl font-bold text-text-primary dark:text-text-inverse line-clamp-2">
                       {featuredBlog.title}
                     </h3>
 
                     {/* Meta */}
-                    <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center justify-between text-sm text-text-secondary dark:text-text-secondary">
                       <span>{new Date(featuredBlog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                       <span>{featuredBlog.readingTime || '5'} min read</span>
                     </div>
 
                     {/* Author */}
-                    <div className="flex items-center gap-3 pt-2 border-t border-gray-200 dark:border-slate-700">
-                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    <div className="flex items-center gap-3 pt-2 border-t border-border-light dark:border-border-dark">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-on-primary font-bold text-sm">
                         {featuredBlog.author?.name?.charAt(0) || 'A'}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{featuredBlog.author?.name || 'Author'}</p>
-                        <p className="text-xs text-gray-500">Featured Article</p>
+                        <p className="font-semibold text-text-primary dark:text-text-inverse text-sm">{featuredBlog.author?.name || 'Author'}</p>
+                        <p className="text-xs text-text-secondary">Featured Article</p>
                       </div>
                     </div>
                   </div>
@@ -331,20 +331,20 @@ const Home = () => {
       </section>
 
       {/* Platform Stats */}
-      <section className="py-16 border-y border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm">
+      <section className="py-16 border-y border-border-light dark:border-border-dark bg-surface-primary/50 dark:bg-surface-dark/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {platformStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
                 <div key={index} className="text-center group">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${stat.color} mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-8 h-8 text-white" />
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${stat.bgClass} mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-8 h-8 text-on-primary" />
                   </div>
-                  <div className={`text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
+                  <div className={`text-4xl font-bold ${stat.textClass} mb-2`}>
                     {stat.value}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
+                  <div className="text-sm text-text-secondary dark:text-text-secondary">{stat.label}</div>
                 </div>
               );
             })}
@@ -353,17 +353,17 @@ const Home = () => {
       </section>
 
       {/* Trending Articles */}
-      <section className="py-20 bg-white dark:bg-slate-950">
+      <section className="py-20 bg-surface-primary dark:bg-surface-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <TrendingUp className="w-8 h-8 text-[#6366F1]" />
-                <h2 className="text-4xl font-bold text-gray-900 dark:text-white">Trending Now</h2>
+                <TrendingUp className="w-8 h-8 text-primary" />
+                <h2 className="text-4xl font-bold text-text-primary dark:text-text-inverse">Trending Now</h2>
               </div>
-              <p className="text-lg text-gray-600 dark:text-gray-400">Most popular articles this week</p>
+              <p className="text-lg text-text-secondary dark:text-text-secondary">Most popular articles this week</p>
             </div>
-            <a href="/blog" className="hidden md:flex gap-2 items-center px-6 py-3 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition-all text-gray-900 dark:text-white font-semibold">
+            <a href="/blog" className="hidden md:flex gap-2 items-center px-6 py-3 border border-border-light dark:border-border-dark hover:bg-surface-primary dark:hover:bg-surface-dark rounded-lg transition-all text-text-primary dark:text-text-inverse font-semibold">
               View All
               <ArrowRight className="w-4 h-4" />
             </a>
@@ -372,14 +372,14 @@ const Home = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {trendingBlogs.length > 0 ? (
               trendingBlogs.map((blog, index) => {
-                const gradients = [
-                  "from-[#6366F1] to-[#8B5CF6]",
-                  "from-[#EC4899] to-[#F472B6]",
-                  "from-[#06B6D4] to-[#6366F1]"
+                const colors = [
+                  "from-primary to-primary-dark",
+                  "from-secondary to-secondary-dark",
+                  "from-accent to-primary"
                 ];
                 return (
-                  <a key={blog._id} href={`/blog/${blog._id}/preview`} className={`group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl bg-white dark:bg-slate-800`}>
-                    <div className={`h-1 bg-gradient-to-r ${gradients[index % 3]}`}></div>
+                  <a key={blog._id} href={`/blog/${blog._id}/preview`} className={`group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl bg-surface-primary dark:bg-surface-dark`}>
+                    <div className={`h-1 bg-${colors[index % 3]}`}></div>
                     
                     <div className="relative h-48 overflow-hidden">
                       <img
@@ -387,32 +387,32 @@ const Home = () => {
                         alt={blog.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                      <div className={`absolute top-4 left-4 px-3 py-1 bg-gradient-to-r ${gradients[index % 3]} text-white text-xs font-bold rounded-full`}>
+                      <div className="absolute inset-0 bg-black/60"></div>
+                      <div className={`absolute top-4 left-4 px-3 py-1 bg-${colors[index % 3]} text-on-primary text-xs font-bold rounded-full`}>
                         {blog.category?.[0]?.name || 'Featured'}
                       </div>
                     </div>
 
                     <div className="p-6 space-y-4">
-                      <h3 className="text-xl font-bold line-clamp-2 group-hover:text-[#6366F1] transition-colors text-gray-900 dark:text-white">
+                      <h3 className="text-xl font-bold line-clamp-2 group-hover:text-primary transition-colors text-text-primary dark:text-text-inverse">
                         {blog.title}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      <p className="text-sm text-text-secondary dark:text-text-secondary line-clamp-2">
                         {blog.description || 'Discover an insightful story...'}
                       </p>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700">
+                      <div className="flex items-center justify-between pt-4 border-t border-border-light dark:border-border-dark">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-on-primary text-xs font-bold">
                             {blog.author?.name?.charAt(0) || 'A'}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">{blog.author?.name || 'Author'}</p>
-                            <p className="text-xs text-gray-500">{blog.readingTime || '5'} min</p>
+                            <p className="text-sm font-medium text-text-primary dark:text-text-inverse">{blog.author?.name || 'Author'}</p>
+                            <p className="text-xs text-text-secondary">{blog.readingTime || '5'} min</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                          <TrendingUp className="w-4 h-4 text-[#6366F1]" />
+                        <div className="flex items-center gap-1 text-sm text-text-secondary dark:text-text-secondary">
+                          <TrendingUp className="w-4 h-4 text-primary" />
                           <span>Trending</span>
                         </div>
                       </div>
@@ -421,7 +421,7 @@ const Home = () => {
                 );
               })
             ) : (
-              <div className="col-span-3 p-12 text-center text-gray-500">
+              <div className="col-span-3 p-12 text-center text-text-secondary">
                 No trending articles yet
               </div>
             )}
@@ -430,11 +430,11 @@ const Home = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20 bg-gray-50 dark:bg-slate-900">
+      <section className="py-20 bg-surface-light dark:bg-surface-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Explore by Category</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold text-text-primary dark:text-text-inverse mb-4">Explore by Category</h2>
+            <p className="text-lg text-text-secondary dark:text-text-secondary max-w-2xl mx-auto">
               Discover amazing content across different topics
             </p>
           </div>
@@ -443,7 +443,7 @@ const Home = () => {
             {categories.map((category, index) => (
               <a key={category.name} href="/blog" className={`group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all interactive-card cursor-pointer rounded-2xl relative h-40`}>
                 <div className="relative h-full overflow-hidden">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-90 group-hover:opacity-100 transition-opacity`}></div>
+                  <div className={`absolute inset-0 ${category.bgClass} opacity-90 group-hover:opacity-100 transition-opacity`}></div>
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
                     <div className="text-5xl mb-3">{category.icon}</div>
                     <h3 className="text-2xl font-bold mb-1">{category.name}</h3>
@@ -457,20 +457,20 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white dark:bg-slate-950">
+      <section className="py-20 bg-surface-primary dark:bg-surface-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1]/10 rounded-full border border-[#6366F1]/20 mb-4">
-              <Zap className="w-4 h-4 text-[#6366F1]" />
-              <span className="text-sm text-[#6366F1] font-semibold">Powerful Features</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 mb-4">
+              <Zap className="w-4 h-4 text-primary" />
+              <span className="text-sm text-primary font-semibold">Powerful Features</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-text-primary dark:text-text-inverse mb-4">
               Everything You Need to{' '}
-              <span className="block mt-2 bg-gradient-to-r from-[#6366F1] to-[#EC4899] bg-clip-text text-transparent">
+              <span className="block mt-2 text-primary">
                 Succeed as a Writer
               </span>
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-lg text-text-secondary dark:text-text-secondary max-w-2xl mx-auto">
               Professional tools and features designed to help you create, grow, and monetize your content
             </p>
           </div>
@@ -478,19 +478,19 @@ const Home = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
-              const gradients = [
-                "from-[#6366F1] to-[#8B5CF6]",
-                "from-[#EC4899] to-[#F472B6]",
-                "from-[#06B6D4] to-[#6366F1]",
-                "from-[#FB923C] to-[#F472B6]"
+              const colorClasses = [
+                "bg-primary",
+                "bg-secondary",
+                "bg-accent",
+                "bg-warning"
               ];
               return (
-                <div key={index} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card p-6 rounded-2xl bg-white dark:bg-slate-800 group">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradients[index]} flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform`}>
+                <div key={index} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card p-6 rounded-2xl bg-surface-primary dark:bg-surface-dark group">
+                  <div className={`w-14 h-14 rounded-2xl ${colorClasses[index]} flex items-center justify-center text-on-primary mb-4 group-hover:scale-110 transition-transform`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{feature.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+                  <h3 className="text-xl font-bold mb-2 text-text-primary dark:text-text-inverse">{feature.title}</h3>
+                  <p className="text-text-secondary dark:text-text-secondary">{feature.description}</p>
                 </div>
               );
             })}
@@ -499,17 +499,17 @@ const Home = () => {
       </section>
 
       {/* Featured Writers */}
-      <section className="py-20 bg-gray-50 dark:bg-slate-900">
+      <section className="py-20 bg-surface-light dark:bg-surface-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-12">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <Award className="w-8 h-8 text-[#6366F1]" />
-                <h2 className="text-4xl font-bold text-gray-900 dark:text-white">Featured Writers</h2>
+                <Award className="w-8 h-8 text-primary" />
+                <h2 className="text-4xl font-bold text-text-primary dark:text-text-inverse">Featured Writers</h2>
               </div>
-              <p className="text-lg text-gray-600 dark:text-gray-400">Join our community of talented creators</p>
+              <p className="text-lg text-text-secondary dark:text-text-secondary">Join our community of talented creators</p>
             </div>
-            <a href="/following" className="hidden md:flex gap-2 items-center px-6 py-3 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition-all text-gray-900 dark:text-white font-semibold">
+            <a href="/following" className="hidden md:flex gap-2 items-center px-6 py-3 border border-border-light dark:border-border-dark hover:bg-surface-primary dark:hover:bg-surface-dark rounded-lg transition-all text-text-primary dark:text-text-inverse font-semibold">
               View All Writers
               <ArrowRight className="w-4 h-4" />
             </a>
@@ -518,11 +518,11 @@ const Home = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {topWriters.length > 0 ? (
               topWriters.map((writer, index) => (
-                <div key={writer._id} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card overflow-hidden rounded-2xl bg-white dark:bg-slate-800 cursor-pointer group" onClick={() => navigate(`/profile/${writer._id}`)}>
-                  <div className="h-24 bg-gradient-to-br from-[#6366F1] via-[#EC4899] to-[#8B5CF6]"></div>
+                <div key={writer._id} className="border-0 shadow-lg hover:shadow-xl transition-all interactive-card overflow-hidden rounded-2xl bg-surface-primary dark:bg-surface-dark cursor-pointer group" onClick={() => navigate(`/profile/${writer._id}`)}>
+                  <div className="h-24 bg-primary"></div>
                   <div className="p-6 -mt-12 relative">
                     <div className="relative inline-block mb-4">
-                      <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-white dark:border-slate-800 shadow-xl">
+                      <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-on-primary text-2xl font-bold border-4 border-surface-primary dark:border-surface-dark shadow-xl">
                         {writer.avatar ? (
                           <img src={writer.avatar} alt={writer.name} className="w-full h-full rounded-full object-cover" />
                         ) : (
@@ -530,26 +530,26 @@ const Home = () => {
                         )}
                       </div>
                       {writer.verified && (
-                        <div className="absolute bottom-0 right-0 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-800">
-                          <CheckCircle className="w-4 h-4 text-white fill-white" />
+                        <div className="absolute bottom-0 right-0 w-7 h-7 bg-info rounded-full flex items-center justify-center border-4 border-surface-primary dark:border-surface-dark">
+                          <CheckCircle className="w-4 h-4 text-on-info fill-on-info" />
                         </div>
                       )}
                     </div>
 
-                    <h3 className="text-xl font-bold mb-1 text-gray-900 dark:text-white">{writer.name}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{writer.username}</p>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#EC4899] text-white text-xs font-semibold rounded-full mb-4">
+                    <h3 className="text-xl font-bold mb-1 text-text-primary dark:text-text-inverse">{writer.name}</h3>
+                    <p className="text-sm text-text-secondary dark:text-text-secondary mb-3">{writer.username}</p>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-on-primary text-xs font-semibold rounded-full mb-4">
                       {writer.specialty}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-4 text-center">
-                      <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-3">
-                        <p className="text-xl font-bold text-gray-900 dark:text-white">{writer.followers}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Followers</p>
+                      <div className="bg-surface-light dark:bg-surface-secondary rounded-lg p-3">
+                        <p className="text-xl font-bold text-text-primary dark:text-text-inverse">{writer.followers}</p>
+                        <p className="text-xs text-text-secondary dark:text-text-secondary">Followers</p>
                       </div>
-                      <div className="bg-gray-100 dark:bg-slate-700 rounded-lg p-3">
-                        <p className="text-xl font-bold text-gray-900 dark:text-white">{writer.articles}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Articles</p>
+                      <div className="bg-surface-light dark:bg-surface-secondary rounded-lg p-3">
+                        <p className="text-xl font-bold text-text-primary dark:text-text-inverse">{writer.articles}</p>
+                        <p className="text-xs text-text-secondary dark:text-text-secondary">Articles</p>
                       </div>
                     </div>
 
@@ -558,7 +558,7 @@ const Home = () => {
                 </div>
               ))
             ) : (
-              <div className="col-span-3 p-12 text-center text-gray-500">
+              <div className="col-span-3 p-12 text-center text-text-secondary">
                 No writers found yet
               </div>
             )}
@@ -566,41 +566,41 @@ const Home = () => {
         </div>
       </section>
       {/* Testimonials */}
-      <section className="py-20 bg-gray-50 dark:bg-slate-900">
+      <section className="py-20 bg-surface-light dark:bg-surface-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#6366F1]/10 rounded-full border border-[#6366F1]/20 mb-4">
-              <Star className="w-4 h-4 text-[#6366F1] fill-[#6366F1]" />
-              <span className="text-sm text-[#6366F1] font-semibold">Loved by Writers</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 mb-4">
+              <Star className="w-4 h-4 text-primary fill-primary" />
+              <span className="text-sm text-primary font-semibold">Loved by Writers</span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">What Our Community Says</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold text-text-primary dark:text-text-inverse mb-4">What Our Community Says</h2>
+            <p className="text-lg text-text-secondary dark:text-text-secondary max-w-2xl mx-auto">
               Join thousands of happy writers who've found their home on Zarrin
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="border-0 shadow-lg hover:shadow-xl transition-all p-6 rounded-2xl bg-white dark:bg-slate-800">
+              <div key={index} className="border-0 shadow-lg hover:shadow-xl transition-all p-6 rounded-2xl bg-surface-primary dark:bg-surface-dark">
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
+                    <Star key={i} className="w-5 h-5 text-warning fill-warning" />
                   ))}
                 </div>
 
-                <Quote className="w-10 h-10 text-[#6366F1]/20 mb-4" />
+                <Quote className="w-10 h-10 text-primary/20 mb-4" />
 
-                <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+                <p className="text-text-primary dark:text-text-inverse mb-6 leading-relaxed">
                   "{testimonial.quote}"
                 </p>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary font-bold">
                     {testimonial.author[0]}
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">{testimonial.author}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{testimonial.role}</p>
+                    <p className="font-semibold text-text-primary dark:text-text-inverse">{testimonial.author}</p>
+                    <p className="text-sm text-text-secondary dark:text-text-secondary">{testimonial.role}</p>
                   </div>
                 </div>
               </div>
@@ -609,25 +609,25 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-[#6366F1] via-[#8B5CF6] to-[#EC4899]">
+      {/* CTA Section - Solid Background */}
+      <section className="py-20 relative overflow-hidden bg-primary">
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-on-primary/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-on-primary/10 rounded-full blur-3xl"></div>
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 rounded-full border border-white/20 mb-6">
-            <Sparkles className="w-4 h-4 text-white" />
-            <span className="text-sm font-semibold text-white">Start Your Journey Today</span>
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-on-primary/10 rounded-full border border-on-primary/20 mb-6">
+            <Sparkles className="w-4 h-4 text-on-primary" />
+            <span className="text-sm font-semibold text-on-primary">Start Your Journey Today</span>
           </div>
 
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-6xl font-bold text-on-primary mb-6">
             Ready to Share{' '}
             <span className="block mt-2">Your Story?</span>
           </h2>
 
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-on-primary/90 mb-8 max-w-2xl mx-auto leading-relaxed">
             Join our community of passionate writers and start building your audience today.{' '}
             It's free, easy, and takes less than a minute.
           </p>
@@ -635,20 +635,20 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/blog/create"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-pink-50 text-purple-700 font-bold rounded-lg transition-all hover:shadow-2xl hover:shadow-white/25 group"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-surface-primary hover:bg-surface-secondary text-primary font-bold rounded-lg transition-all hover:shadow-2xl hover:shadow-on-primary/25 group"
             >
               Get Started Free
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
               href="/blog"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white hover:bg-white/10 text-white font-bold rounded-lg transition-all"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-on-primary hover:bg-on-primary/10 text-on-primary font-bold rounded-lg transition-all"
             >
               Explore Articles
             </a>
           </div>
 
-          <p className="text-sm text-white/80 mt-6">
+          <p className="text-sm text-on-primary/80 mt-6">
             No credit card required • Free forever • 50,000+ active writers
           </p>
         </div>

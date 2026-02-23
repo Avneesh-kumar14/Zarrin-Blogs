@@ -21,28 +21,28 @@ const ConversationList = ({ conversations, loading, error }) => {
   }, [conversations, searchQuery]);
 
   return (
-    <div className="flex flex-col h-full w-full bg-white">
+    <div className="flex flex-col h-full w-full bg-surface-primary dark:bg-surface-dark">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 md:p-5 border-b border-gray-200">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Messages</h1>
+      <div className="flex justify-between items-center p-4 md:p-5 border-b border-border-default">
+        <h1 className="text-2xl md:text-3xl font-bold text-text-primary">Messages</h1>
         <button 
-          className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+          className="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
           onClick={() => setShowCreateModal(true)}
           title="New Conversation"
         >
-          <Plus size={20} className="text-gray-700" />
+          <Plus size={20} className="text-text-secondary" />
         </button>
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center gap-3 p-3 md:p-4 mx-2 md:mx-3 bg-gray-100 rounded-full">
-        <Search size={18} className="text-gray-600" />
+      <div className="flex items-center gap-3 p-3 md:p-4 mx-2 md:mx-3 bg-neutral-100 dark:bg-neutral-800 rounded-full">
+        <Search size={18} className="text-text-secondary" />
         <input
           type="text"
           placeholder="Search conversations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-transparent outline-none flex-1 text-sm md:text-base text-gray-900 placeholder-gray-500"
+          className="bg-transparent outline-none flex-1 text-sm md:text-base text-text-primary placeholder-text-secondary"
         />
       </div>
 
@@ -55,13 +55,13 @@ const ConversationList = ({ conversations, loading, error }) => {
         )}
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center p-10 text-gray-500">
-            <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-3"></div>
+          <div className="flex flex-col items-center justify-center p-10 text-text-secondary">
+            <div className="w-12 h-12 border-4 border-border-light border-t-primary rounded-full animate-spin mb-3"></div>
             <p className="text-sm md:text-base">Loading conversations...</p>
           </div>
         ) : filteredConversations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-10 text-gray-500 text-center">
-            <p className="font-medium text-gray-900 text-sm md:text-base">No conversations yet</p>
+          <div className="flex flex-col items-center justify-center p-10 text-text-secondary text-center">
+            <p className="font-medium text-text-primary text-sm md:text-base">No conversations yet</p>
             <small className="text-xs md:text-sm">Start a new conversation to begin messaging</small>
           </div>
         ) : (

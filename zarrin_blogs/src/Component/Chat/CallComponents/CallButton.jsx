@@ -63,8 +63,8 @@ const CallButton = ({
       <button
         className={`flex items-center justify-center p-2 md:p-2.5 rounded-lg transition transform ${
           isDisabled
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 active:scale-95'
+            ? 'bg-disabled-bg text-disabled-text cursor-not-allowed'
+            : 'bg-info-bg hover:bg-info-light text-info hover:text-info-dark active:scale-95'
         }`}
         onClick={() => !isDisabled && setShowMenu(!showMenu)}
         disabled={isDisabled}
@@ -76,32 +76,32 @@ const CallButton = ({
 
       {/* Dropdown Menu - BUG FIX: Better positioning and responsiveness */}
       {showMenu && !isDisabled && (
-        <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-40 min-w-max overflow-hidden animate-in fade-in slide-in-from-top-1">
+        <div className="absolute top-full right-0 mt-2 bg-surface-primary dark:bg-surface-dark border border-border-default dark:border-border-dark rounded-lg shadow-lg z-40 min-w-max overflow-hidden animate-in fade-in slide-in-from-top-1">
           {/* Audio Call Option */}
           <button
-            className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition border-b border-gray-100 last:border-b-0"
+            className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 text-left text-text-primary dark:text-text-inverse hover:bg-info-bg dark:hover:bg-info-bg hover:text-info dark:hover:text-info-light transition border-b border-border-light dark:border-border-default last:border-b-0"
             onClick={handleAudioCall}
             disabled={isInitiating}
             title="Start audio call"
           >
-            <Mic size={18} className="text-green-500 flex-shrink-0" />
+            <Mic size={18} className="text-success flex-shrink-0" />
             <span className="text-sm md:text-base font-medium">Audio Call</span>
             {isInitiating && (
-              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin ml-auto"></div>
+              <div className="w-4 h-4 border-2 border-info border-t-transparent rounded-full animate-spin ml-auto"></div>
             )}
           </button>
 
           {/* Video Call Option */}
           <button
-            className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition"
+            className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 text-left text-text-primary dark:text-text-inverse hover:bg-info-bg dark:hover:bg-info-bg hover:text-info dark:hover:text-info-light transition"
             onClick={handleVideoCall}
             disabled={isInitiating}
             title="Start video call"
           >
-            <Video size={18} className="text-red-500 flex-shrink-0" />
+            <Video size={18} className="text-error flex-shrink-0" />
             <span className="text-sm md:text-base font-medium">Video Call</span>
             {isInitiating && (
-              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin ml-auto"></div>
+              <div className="w-4 h-4 border-2 border-info border-t-transparent rounded-full animate-spin ml-auto"></div>
             )}
           </button>
         </div>

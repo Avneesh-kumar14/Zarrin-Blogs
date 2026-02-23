@@ -44,11 +44,11 @@ const ChatHeader = ({ conversation }) => {
   const status = getTypingStatus() || getContactStatus();
 
   return (
-    <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-200 bg-white gap-4">
+    <div className="flex items-center justify-between p-3 md:p-4 border-b border-border-default bg-surface-primary dark:bg-surface-dark gap-4">
       {/* Left Side - Avatar and Info */}
       <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
         <div className="relative">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white font-semibold flex items-center justify-center flex-shrink-0 text-sm md:text-base overflow-hidden">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary text-on-secondary font-semibold flex items-center justify-center flex-shrink-0 text-sm md:text-base overflow-hidden">
             {conversation.groupAvatar ? (
               <img src={conversation.groupAvatar} alt="Group" className="w-full h-full object-cover" />
             ) : (
@@ -61,8 +61,8 @@ const ChatHeader = ({ conversation }) => {
         </div>
         
         <div className="flex-1 min-w-0">
-          <h2 className="text-sm md:text-lg font-semibold text-gray-900 truncate">{displayName}</h2>
-          <p className={`text-xs md:text-sm ${typingUsers.size > 0 ? 'text-purple-600 font-medium' : 'text-gray-500'}`}>
+          <h2 className="text-sm md:text-lg font-semibold text-text-primary truncate">{displayName}</h2>
+          <p className={`text-xs md:text-sm ${typingUsers.size > 0 ? 'text-primary font-medium' : 'text-text-secondary'}`}>
             {status}
           </p>
         </div>
@@ -76,12 +76,12 @@ const ChatHeader = ({ conversation }) => {
           recipientName={isGroup ? null : conversation.participants[0]?.name}
           disabled={isGroup}
         />
-        <button className="p-2 hover:bg-gray-100 rounded-lg transition" title="Conversation info">
-          <Info size={18} className="text-gray-700" />
+        <button className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition" title="Conversation info">
+          <Info size={18} className="text-text-secondary" />
         </button>
         {isGroup && (
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition" title="Group settings">
-            <Settings size={18} className="text-gray-700" />
+          <button className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition" title="Group settings">
+            <Settings size={18} className="text-text-secondary" />
           </button>
         )}
       </div>

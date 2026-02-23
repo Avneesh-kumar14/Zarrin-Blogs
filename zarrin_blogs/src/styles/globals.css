@@ -1,0 +1,508 @@
+/* Color Design System - CSS Variables */
+/* Refined Minimalist Palette — Blogging & Social Media Platform */
+/* Aesthetic Direction: Editorial Warmth — Ink, Cream, Slate, Warm Stone */
+
+:root {
+  /* ==================== PRIMARY COLORS ==================== */
+  /* Cobalt blue — modern, professional, trustworthy */
+  --color-primary: #2B64D4;           /* Cobalt */
+  --color-primary-light: #5089E3;     /* Cobalt Light */
+  --color-primary-dark: #1A3F8A;      /* Cobalt Dark */
+  --color-primary-hover: #3A72D8;     /* Cobalt Hover */
+  --color-on-primary: #FFFFFF;        /* White text on primary */
+
+  /* ==================== SECONDARY COLORS ==================== */
+  /* Jade green — natural, calming, fresh */
+  --color-secondary: #1E8A56;         /* Jade */
+  --color-secondary-light: #3FA06F;   /* Jade Light */
+  --color-secondary-dark: #156B44;    /* Jade Dark */
+  --color-secondary-hover: #2A9A63;   /* Jade Hover */
+  --color-on-secondary: #FFFFFF;      /* White text on secondary */
+
+  /* ==================== ACCENT COLORS ==================== */
+  /* Violet purple — creative, vibrant, distinctive */
+  --color-accent: #7040CC;            /* Violet */
+  --color-accent-light: #8E66E0;      /* Violet Light */
+  --color-accent-dark: #4A2680;       /* Violet Dark */
+  --color-accent-hover: #7F54D4;      /* Violet Hover */
+  --color-on-accent: #FFFFFF;         /* White text on accent */
+
+  /* ==================== SEMANTIC STATUS COLORS ==================== */
+
+  /* Success - Muted Green */
+  --color-success: #5A8C6E;           /* Forest Green */
+  --color-success-light: #7DAF91;     /* Forest Green Light */
+  --color-success-dark: #3E6B51;      /* Forest Green Dark */
+  --color-success-hover: #4A7B5E;     /* Forest Green Hover */
+  --color-on-success: #FAF8F5;        /* Cream White text on success */
+  --color-success-bg: #E8F2EC;        /* Soft green background */
+
+  /* Error/Danger - Crimson Red */
+  --color-error: #CC2E2E;             /* Crimson */
+  --color-error-light: #E85454;       /* Crimson Light */
+  --color-error-dark: #8B1F1F;        /* Crimson Dark */
+  --color-error-hover: #D63C3C;       /* Crimson Hover */
+  --color-on-error: #FFFFFF;          /* White text on error */
+  --color-error-bg: #FEE8E8;          /* Soft red background */
+
+  /* Warning - Warm Amber */
+  --color-warning: #C49A3C;           /* Warm Gold */
+  --color-warning-light: #D8B46A;     /* Warm Gold Light */
+  --color-warning-dark: #A07C28;      /* Warm Gold Dark */
+  --color-warning-hover: #B08A30;     /* Warm Gold Hover */
+  --color-on-warning: #FAF8F5;        /* Cream White text on warning */
+  --color-warning-bg: #F7F0DC;        /* Soft amber background */
+
+  /* Info - Muted Steel Blue */
+  --color-info: #4A7FA5;              /* Steel Blue */
+  --color-info-light: #6E9ABF;        /* Steel Blue Light */
+  --color-info-dark: #2E618A;         /* Steel Blue Dark */
+  --color-info-hover: #3A6E94;        /* Steel Blue Hover */
+  --color-on-info: #FAF8F5;           /* Cream White text on info */
+  --color-info-bg: #E4EEF5;           /* Soft blue background */
+
+  /* ==================== NEUTRAL COLORS ==================== */
+  /* Warm cream-to-charcoal scale — soft, editorial, never cold */
+
+  --color-neutral-50: #FAF8F5;        /* Warm Cream White */
+  --color-neutral-100: #F2EFE9;       /* Warm Off-White */
+  --color-neutral-200: #E6E1D9;       /* Warm Light Gray */
+  --color-neutral-300: #CEC8BE;       /* Warm Gray */
+  --color-neutral-400: #ADA89F;       /* Warm Mid Gray */
+  --color-neutral-500: #8A847C;       /* Warm Slate */
+  --color-neutral-600: #6B6560;       /* Warm Dark Slate */
+  --color-neutral-700: #4A4540;       /* Warm Charcoal */
+  --color-neutral-800: #2E2B28;       /* Deep Charcoal */
+  --color-neutral-900: #1A1816;       /* Near Black */
+
+  /* ==================== SURFACE COLORS ==================== */
+  --color-surface-primary: #FFFFFF;           /* White — main background */
+  --color-surface-secondary: #F5F5F5;         /* Light gray off-white */
+  --color-surface-tertiary: #EEEEEE;          /* Warm light gray card background */
+  --color-surface-hover: #F9F9F9;             /* Hover state */
+  --color-surface-active: #E8E8E8;            /* Active state */
+
+  /* ==================== TEXT COLORS ==================== */
+  --color-text-primary: #111110;              /* Near Black — crisp reading */
+  --color-text-secondary: #4A4A48;            /* Mid Gray — supporting text */
+  --color-text-tertiary: #7A7A77;             /* Light Gray — tertiary */
+  --color-text-inverse: #FFFFFF;              /* White on dark backgrounds */
+  --color-text-muted: #B0B0AD;                /* Light Gray — muted/placeholder */
+
+  /* ==================== BORDER COLORS ==================== */
+  --color-border-light: #EEEEEE;              /* Very soft border */
+  --color-border-default: #E0E0E0;            /* Default border */
+  --color-border-dark: #CCCCCC;               /* Stronger border */
+  --color-border-accent: #1E8A56;             /* Jade accent border */
+
+  /* ==================== SHADOW COLORS ==================== */
+  --color-shadow: rgba(17, 17, 16, 0.07);    /* Subtle shadow */
+  --color-shadow-dark: rgba(17, 17, 16, 0.18); /* Elevated shadow */
+
+  /* ==================== INTERACTIVE STATES ==================== */
+  --color-disabled-bg: #F5F5F5;               /* Disabled background */
+  --color-disabled-text: #B0B0AD;             /* Disabled text */
+  --color-focus-ring: #2B64D4;                /* Cobalt focus ring */
+
+  /* ==================== GRADIENT TOKENS ==================== */
+  --gradient-primary: linear-gradient(135deg, #2B64D4, #1A3F8A);
+  --gradient-secondary: linear-gradient(135deg, #1E8A56, #156B44);
+  --gradient-accent: linear-gradient(135deg, #7040CC, #4A2680);
+  --gradient-success: linear-gradient(135deg, #1E8A56, #156B44);
+  --gradient-error: linear-gradient(135deg, #CC2E2E, #8B1F1F);
+  --gradient-warning: linear-gradient(135deg, #D8B46A, #A07C28);
+
+  /* ==================== EDITORIAL SPECIALS ==================== */
+  /* Unique tokens for the blogging/social platform feel */
+  --gradient-hero: linear-gradient(160deg, #FFFFFF 0%, #F5F5F5 50%, #EEEEEE 100%);
+  --gradient-card-warm: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+  --gradient-ink-cream: linear-gradient(135deg, #2B64D4, #5089E3);
+
+  /* Card styles */
+  --card-shadow: 0 2px 8px rgba(26, 24, 22, 0.06), 0 1px 3px rgba(26, 24, 22, 0.04);
+  --card-shadow-hover: 0 8px 24px rgba(26, 24, 22, 0.10), 0 3px 8px rgba(26, 24, 22, 0.06);
+  --card-shadow-elevated: 0 16px 40px rgba(26, 24, 22, 0.13), 0 6px 16px rgba(26, 24, 22, 0.07);
+  --card-border-radius: 12px;
+  --card-border-radius-lg: 18px;
+  --card-border-radius-sm: 8px;
+}
+
+/* ==================== DARK MODE COLORS ==================== */
+.dark {
+  /* PRIMARY COLORS - Dark Mode */
+  --color-primary: #5089E3;           /* Cobalt Light for dark */
+  --color-primary-light: #7BA8F0;     /* Lighter Cobalt */
+  --color-primary-dark: #2B64D4;      /* Cobalt */
+  --color-primary-hover: #3A72D8;     /* Cobalt Hover */
+  --color-on-primary: #FFFFFF;        /* White text on primary */
+
+  /* SECONDARY COLORS - Dark Mode */
+  --color-secondary: #3FA06F;         /* Jade Light */
+  --color-secondary-light: #5EB087;   /* Lighter Jade */
+  --color-secondary-dark: #1E8A56;    /* Jade */
+  --color-secondary-hover: #2A9A63;   /* Jade hover */
+  --color-on-secondary: #FFFFFF;      /* White text */
+
+  /* ACCENT COLORS - Dark Mode */
+  --color-accent: #8E66E0;            /* Violet Light */
+  --color-accent-light: #A885EF;      /* Very light violet */
+  --color-accent-dark: #7040CC;       /* Violet */
+  --color-accent-hover: #7F54D4;      /* Violet Hover */
+  --color-on-accent: #FFFFFF;         /* White text */
+
+  /* STATUS COLORS - Dark Mode */
+
+  /* Success */
+  --color-success: #7DAF91;           /* Forest Green Light */
+  --color-success-light: #9DC5AF;     /* Very light forest green */
+  --color-success-dark: #5A8C6E;      /* Forest Green */
+  --color-success-hover: #6DA082;     /* Forest Green hover */
+  --color-on-success: #1A1816;
+  --color-success-bg: #1A2D22;        /* Dark green background */
+
+  /* Error */
+  --color-error: #E85454;             /* Crimson Light */
+  --color-error-light: #F07272;       /* Very light crimson */
+  --color-error-dark: #CC2E2E;        /* Crimson */
+  --color-error-hover: #D63C3C;       /* Hover */
+  --color-on-error: #FFFFFF;
+  --color-error-bg: #3D1818;          /* Dark red background */
+
+  /* Warning */
+  --color-warning: #D8B46A;           /* Warm Gold Light */
+  --color-warning-light: #E8CC98;     /* Very light warm gold */
+  --color-warning-dark: #C49A3C;      /* Warm Gold */
+  --color-warning-hover: #CEA955;     /* Gold Hover */
+  --color-on-warning: #1A1816;
+  --color-warning-bg: #2D2410;        /* Dark amber background */
+
+  /* Info */
+  --color-info: #6E9ABF;              /* Steel Blue Light */
+  --color-info-light: #94B4CF;        /* Very light steel blue */
+  --color-info-dark: #4A7FA5;         /* Steel Blue */
+  --color-info-hover: #5E8DAF;        /* Steel Blue hover */
+  --color-on-info: #1A1816;
+  --color-info-bg: #101E2D;           /* Dark blue background */
+
+  /* NEUTRAL COLORS - Dark Mode */
+  --color-neutral-50: #111110;        /* Near Black */
+  --color-neutral-100: #2A2A28;       /* Deep Charcoal */
+  --color-neutral-200: #3D3D3A;       /* Charcoal */
+  --color-neutral-300: #4A4A48;       /* Dark Slate */
+  --color-neutral-400: #6A6A67;       /* Dark Slate */
+  --color-neutral-500: #8A8A87;       /* Slate */
+  --color-neutral-600: #A8A8A5;       /* Mid Gray */
+  --color-neutral-700: #C8C8C5;       /* Gray */
+  --color-neutral-800: #E0E0E0;       /* Light Gray */
+  --color-neutral-900: #FFFFFF;       /* White */
+
+  /* SURFACE COLORS - Dark Mode */
+  --color-surface-primary: #1A1A1A;           /* Dark — main bg */
+  --color-surface-secondary: #252525;         /* Darker */
+  --color-surface-tertiary: #0F0F0F;          /* Darkest near-black */
+  --color-surface-hover: #2F2F2F;             /* Dark hover */
+  --color-surface-active: #3D3D3D;            /* Dark active */
+
+  /* TEXT COLORS - Dark Mode */
+  --color-text-primary: #EEEEEE;              /* Light Gray */
+  --color-text-secondary: #B0B0AD;            /* Light Gray */
+  --color-text-tertiary: #7A7A77;             /* Mid Gray */
+  --color-text-inverse: #111110;              /* Near Black on light bg */
+  --color-text-muted: #4A4A48;                /* Dark Slate - muted */
+
+  /* BORDER COLORS - Dark Mode */
+  --color-border-light: #3D3D3D;              /* Subtle dark border */
+  --color-border-default: #4A4A4A;            /* Default dark border */
+  --color-border-dark: #5A5A5A;               /* Stronger dark border */
+  --color-border-accent: #3FA06F;             /* Jade accent border */
+
+  /* SHADOW COLORS - Dark Mode */
+  --color-shadow: rgba(0, 0, 0, 0.35);        /* Dark shadow */
+  --color-shadow-dark: rgba(0, 0, 0, 0.55);   /* Deep dark shadow */
+
+  /* INTERACTIVE STATES - Dark Mode */
+  --color-disabled-bg: #3D3D3D;               /* Disabled background */
+  --color-disabled-text: #7A7A77;             /* Disabled text */
+  --color-focus-ring: #5089E3;                /* Cobalt light focus ring */
+
+  /* GRADIENT TOKENS - Dark Mode */
+  --gradient-primary: linear-gradient(135deg, #5089E3, #2B64D4);
+  --gradient-secondary: linear-gradient(135deg, #3FA06F, #1E8A56);
+  --gradient-accent: linear-gradient(135deg, #8E66E0, #7040CC);
+  --gradient-success: linear-gradient(135deg, #3FA06F, #1E8A56);
+  --gradient-error: linear-gradient(135deg, #E85454, #CC2E2E);
+  --gradient-warning: linear-gradient(135deg, #D8B46A, #A07C28);
+
+  /* EDITORIAL SPECIALS - Dark Mode */
+  --gradient-hero: linear-gradient(160deg, #1A1A1A 0%, #252525 50%, #0F0F0F 100%);
+  --gradient-card-warm: linear-gradient(135deg, #1A1A1A, #2F2F2F);
+  --gradient-ink-cream: linear-gradient(135deg, #2B64D4, #5089E3);
+
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.18);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.22);
+  --card-shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+
+/* ==================== UTILITY ANIMATIONS ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes blob {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ==================== ANIMATION UTILITIES ==================== */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out;
+}
+
+.animate-spin-custom {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse-custom {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-3000 {
+  animation-delay: 3s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.animation-delay-5000 {
+  animation-delay: 5s;
+}
+
+/* ==================== SCROLL BEHAVIOR ==================== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ==================== SELECTION COLORS ==================== */
+::selection {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+::-moz-selection {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+/* ==================== SCROLLBAR STYLING ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 8px;
+  border: 2px solid var(--color-surface-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-dark);
+}
+
+/* Dark mode scrollbar */
+.dark::-webkit-scrollbar-track {
+  background: var(--color-surface-secondary);
+}
+
+.dark::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+}
+
+.dark::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-light);
+}
+
+/* ==================== CARD COMPONENT UTILITIES ==================== */
+/* Ready-to-use classes for blog/social cards */
+
+.card {
+  background: var(--color-surface-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--color-border-default);
+  transform: translateY(-2px);
+}
+
+.card-elevated {
+  background: var(--color-surface-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--card-border-radius-lg);
+  box-shadow: var(--card-shadow-elevated);
+}
+
+.card-flat {
+  background: var(--color-surface-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--card-border-radius-sm);
+  box-shadow: none;
+  transition: background 0.2s ease;
+}
+
+.card-flat:hover {
+  background: var(--color-surface-tertiary);
+}
+
+/* Post/Article card — editorial strip accent */
+.card-post {
+  background: var(--color-surface-primary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  border-left: 3px solid var(--color-secondary);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card-post:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Profile / Author card */
+.card-author {
+  background: var(--gradient-card-warm);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--card-border-radius-lg);
+  box-shadow: var(--card-shadow);
+}
+
+/* Tag / category pill */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--color-surface-tertiary);
+  border: 1px solid var(--color-border-default);
+  border-radius: 20px;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.tag:hover {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-color: var(--color-primary);
+}
+
+.tag-accent {
+  background: color-mix(in srgb, var(--color-secondary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-secondary) 30%, transparent);
+  color: var(--color-secondary);
+}
+
+/* Divider */
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border-light);
+  margin: 1.5rem 0;
+}
+
+.divider-accent {
+  border-top: 2px solid var(--color-secondary);
+  width: 48px;
+  margin: 1.5rem 0;
+}

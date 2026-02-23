@@ -116,7 +116,7 @@ const OTPVerify = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-8 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-surface-primary dark:bg-surface-dark px-4 py-8 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10 dark:opacity-5 pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500 dark:bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
@@ -126,8 +126,8 @@ const OTPVerify = () => {
       <div className="relative z-10 w-full max-w-md">
         {/* Card Container */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
-          {/* Gradient Header */}
-          <div className="h-32 bg-gradient-to-br from-green-600 dark:from-green-700 via-blue-500 dark:via-blue-600 to-blue-600 dark:to-blue-700 flex items-center justify-center relative overflow-hidden">
+          {/* Solid Header */}
+          <div className="h-32 bg-success dark:bg-success-dark flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full mix-blend-multiply filter blur-xl"></div>
             </div>
@@ -141,7 +141,7 @@ const OTPVerify = () => {
           <div className="p-8 space-y-6">
             {/* Welcome Text */}
             <div className="text-center space-y-2">
-              <Headings type="h2" className="text-3xl font-bold bg-gradient-to-r from-green-600 dark:from-green-400 to-blue-600 dark:to-blue-400 bg-clip-text text-transparent">
+              <Headings type="h2" className="text-3xl font-bold text-on-success">
                 Verify Email
               </Headings>
               <Paragraph className="text-gray-600 dark:text-gray-300">

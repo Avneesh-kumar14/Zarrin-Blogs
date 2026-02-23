@@ -178,26 +178,26 @@ const Search = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-surface-primary dark:bg-surface-dark">
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-20 sm:py-32">
+      <div className="relative overflow-hidden bg-primary dark:bg-primary-dark text-white py-20 sm:py-32">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-4">
-              <SearchIcon size={14} className="text-blue-400" />
+              <SearchIcon size={14} className="text-primary-light" />
               <span className="text-xs font-semibold">Discover Content</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-              Find Your Next <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Great Read</span>
+              Find Your Next <span className="text-primary font-bold">Great Read</span>
             </h1>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
               Search through thousands of amazing blogs and discover talented creators
             </p>
           </div>
@@ -208,7 +208,7 @@ const Search = () => {
               onClick={() => setSearchType('blogs')}
               className={`px-6 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 ${
                 searchType === 'blogs'
-                  ? 'bg-white text-slate-900 shadow-2xl'
+                  ? 'bg-surface-primary text-text-primary shadow-2xl'
                   : 'bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20'
               }`}
             >
@@ -218,7 +218,7 @@ const Search = () => {
               onClick={() => setSearchType('users')}
               className={`px-6 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 flex items-center gap-2 ${
                 searchType === 'users'
-                  ? 'bg-white text-slate-900 shadow-2xl'
+                  ? 'bg-surface-primary text-text-primary shadow-2xl'
                   : 'bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20'
               }`}
             >
@@ -231,24 +231,24 @@ const Search = () => {
           <form onSubmit={handleSearch} className="max-w-3xl mx-auto">
             <div className="flex gap-3">
               <div className="flex-1 relative">
-                <SearchIcon className="absolute left-4 top-4 text-gray-400 pointer-events-none" size={20} />
+                  <SearchIcon className="absolute left-4 top-4 text-text-muted pointer-events-none" size={20} />
                 <input
                   ref={searchInputRef}
                   type="text"
                   placeholder={searchType === 'users' ? 'Search creators by name...' : 'Search blogs, topics, keywords...'}
                   value={query}
                   onChange={handleQueryChange}
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/95 dark:bg-slate-800/95 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-2xl backdrop-blur-sm"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-surface-primary/95 dark:bg-surface-dark/95 text-text-primary placeholder-text-muted shadow-2xl backdrop-blur-sm"
                 />
                 
                 {/* Live User Suggestions Dropdown */}
                 {showSuggestions && searchType === 'users' && liveUserSuggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-gray-200 dark:border-slate-700 z-50 max-h-96 overflow-y-auto backdrop-blur-sm">
+                  <div className="absolute top-full left-0 right-0 mt-3 bg-surface-primary dark:bg-surface-dark rounded-xl shadow-2xl border border-border-default z-50 max-h-96 overflow-y-auto backdrop-blur-sm">
                     {liveUserSuggestions.map((user) => (
                       <div
                         key={user._id}
                         onClick={() => handleSuggestionClick(user)}
-                        className="flex items-center gap-3 p-4 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer border-b border-gray-100 dark:border-slate-700 last:border-b-0 transition-colors group"
+                        className="flex items-center gap-3 p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer border-b border-border-default last:border-b-0 transition-colors group"
                       >
                         {/* Avatar */}
                         <div className="flex-shrink-0">
@@ -256,10 +256,10 @@ const Search = () => {
                             <img
                               src={user.avatar}
                               alt={user.name}
-                              className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-200"
+                              className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
                               <Users size={20} className="text-white" />
                             </div>
                           )}
@@ -267,11 +267,11 @@ const Search = () => {
 
                         {/* User Info */}
                         <div className="flex-1 min-w-0">
-                          <Heading type="h4" className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                          <Heading type="h4" className="text-sm font-bold text-text-primary truncate group-hover:text-primary">
                             {user.name}
                           </Heading>
                           {user.bio && (
-                            <Paragraph className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            <Paragraph className="text-xs text-text-muted truncate">
                               {user.bio}
                             </Paragraph>
                           )}
@@ -279,10 +279,10 @@ const Search = () => {
 
                         {/* Stats */}
                         <div className="flex-shrink-0 text-right space-y-1">
-                          <Paragraph className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                          <Paragraph className="text-xs font-bold text-primary">
                             {user.totalBlogs || 0}
                           </Paragraph>
-                          <Paragraph className="text-xs text-gray-500 dark:text-gray-400">
+                          <Paragraph className="text-xs text-text-muted">
                             posts
                           </Paragraph>
                         </div>
@@ -293,7 +293,7 @@ const Search = () => {
               </div>
               <button
                 type="submit"
-                className="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="px-8 py-3.5 bg-primary hover:bg-primary-dark text-on-primary font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 Search
               </button>
@@ -317,12 +317,12 @@ const Search = () => {
 
         {/* Filters for Blogs */}
         {searchType === 'blogs' && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 mb-12 border border-gray-100 dark:border-slate-700">
+          <div className="bg-surface-primary dark:bg-surface-dark rounded-2xl shadow-lg p-8 mb-12 border border-border-default">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <Filter size={20} className="text-blue-600 dark:text-blue-400" />
+              <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-lg">
+                <Filter size={20} className="text-primary" />
               </div>
-              <Heading type="h3" className="text-xl font-bold text-gray-900 dark:text-white">
+              <Heading type="h3" className="text-xl font-bold text-text-primary">
                 Refine Your Search
               </Heading>
             </div>
@@ -330,13 +330,13 @@ const Search = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Category Filter */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">
+                <label className="block text-sm font-bold text-text-secondary mb-3 uppercase tracking-wide">
                   Category
                 </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white font-semibold"
+                  className="w-full px-4 py-3 border-2 border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-surface-primary dark:bg-surface-dark text-text-primary font-semibold"
                 >
                   <option value="all">All Categories</option>
                   {categories.map((cat) => (
@@ -349,13 +349,13 @@ const Search = () => {
 
               {/* Sort Filter */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">
+                <label className="block text-sm font-bold text-text-secondary mb-3 uppercase tracking-wide">
                   Sort By
                 </label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white font-semibold"
+                  className="w-full px-4 py-3 border-2 border-border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-surface-primary dark:bg-surface-dark text-text-primary font-semibold"
                 >
                   <option value="newest">Newest First</option>
                   <option value="oldest">Oldest First</option>
@@ -369,8 +369,8 @@ const Search = () => {
         {/* Results */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 dark:border-slate-700 border-t-blue-600 mb-4"></div>
-            <Paragraph className="text-gray-600 dark:text-gray-400 text-lg">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-border-default border-t-primary mb-4"></div>
+            <Paragraph className="text-text-secondary text-lg">
               Searching {searchType === 'users' ? 'creators' : 'blogs'}...
             </Paragraph>
           </div>
@@ -390,10 +390,10 @@ const Search = () => {
                 {userResults.map((user) => (
                   <div
                     key={user._id}
-                    className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-slate-700 transform hover:scale-105 hover:-translate-y-2"
+                    className="group bg-surface-primary dark:bg-surface-dark rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-border-default transform hover:scale-105 hover:-translate-y-2"
                   >
                     {/* Avatar Section with Gradient Background */}
-                    <div className="relative h-40 bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 overflow-hidden flex items-center justify-center">
+                    <div className="relative h-40 bg-accent dark:bg-accent-dark overflow-hidden flex items-center justify-center">
                       {user.avatar ? (
                         <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                       ) : (
@@ -402,43 +402,43 @@ const Search = () => {
                         </div>
                       )}
                       {/* Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
 
                     {/* Content */}
                     <div className="p-6 text-center space-y-4">
                       <div>
-                        <Heading type="h3" className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <Heading type="h3" className="text-2xl font-bold text-text-primary mb-2 group-hover:text-primary transition-colors">
                           {user.name}
                         </Heading>
                         {user.bio && (
-                          <Paragraph className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 italic">
+                          <Paragraph className="text-text-secondary text-sm line-clamp-2 italic">
                             "{user.bio}"
                           </Paragraph>
                         )}
                       </div>
 
                       {/* Stats */}
-                      <div className="flex gap-4 justify-center py-4 border-y border-gray-200 dark:border-slate-700">
+                      <div className="flex gap-4 justify-center py-4 border-y border-border-default">
                         <div>
-                          <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                          <p className="text-2xl font-bold text-primary">
                             {user.totalBlogs || 0}
                           </p>
-                          <Paragraph className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Articles</Paragraph>
+                          <Paragraph className="text-xs text-text-muted font-semibold">Articles</Paragraph>
                         </div>
-                        <div className="border-l border-gray-300 dark:border-slate-600"></div>
+                        <div className="border-l border-border-default"></div>
                         <div>
-                          <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                          <p className="text-2xl font-bold text-secondary">
                             {user.followers?.length || 0}
                           </p>
-                          <Paragraph className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Followers</Paragraph>
+                          <Paragraph className="text-xs text-text-muted font-semibold">Followers</Paragraph>
                         </div>
                       </div>
 
                       {/* Action Button */}
                       <button
                         onClick={() => navigate(`/profile/${user._id}`)}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-on-primary rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
                       >
                         <Users size={16} />
                         View Profile
@@ -449,22 +449,22 @@ const Search = () => {
               </div>
             </div>
           ) : query ? (
-            <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-slate-600 p-16 text-center">
-              <Users size={64} className="mx-auto text-gray-300 dark:text-slate-600 mb-6" />
-              <Heading type="h3" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                No creators found
-              </Heading>
-              <Paragraph className="text-gray-600 dark:text-gray-400 text-lg">
+          <div className="bg-surface-secondary dark:bg-surface-dark rounded-2xl border-2 border-dashed border-border-default p-16 text-center">
+            <Users size={64} className="mx-auto text-neutral-300 dark:text-neutral-600 mb-6" />
+            <Heading type="h3" className="text-2xl font-bold text-text-primary mb-3">
+              No creators found
+            </Heading>
+            <Paragraph className="text-text-secondary text-lg">
                 Try searching with different keywords
               </Paragraph>
             </div>
           ) : (
-            <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-slate-600 p-16 text-center">
-              <Users size={64} className="mx-auto text-gray-300 dark:text-slate-600 mb-6" />
-              <Heading type="h3" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+            <div className="bg-surface-secondary dark:bg-surface-dark rounded-2xl border-2 border-dashed border-border-default p-16 text-center">
+              <Users size={64} className="mx-auto text-neutral-300 dark:text-neutral-600 mb-6" />
+              <Heading type="h3" className="text-2xl font-bold text-text-primary mb-3">
                 Start discovering creators
               </Heading>
-              <Paragraph className="text-gray-600 dark:text-gray-400 text-lg">
+              <Paragraph className="text-text-secondary text-lg">
                 Search for creators by their name to follow amazing work
               </Paragraph>
             </div>
@@ -473,8 +473,8 @@ const Search = () => {
           // Blog Results
           <div>
             <div className="flex items-center gap-3 mb-8">
-              <div className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                <Paragraph className="text-sm font-bold text-blue-700 dark:text-blue-400">
+              <div className="px-4 py-2 bg-primary/10 dark:bg-primary/20 rounded-full">
+                <Paragraph className="text-sm font-bold text-primary">
                   {results.length} blog{results.length !== 1 ? 's' : ''} found
                 </Paragraph>
               </div>
@@ -484,18 +484,18 @@ const Search = () => {
               {results.map((blog) => (
                 <div
                   key={blog._id}
-                  className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-slate-700 transform hover:scale-105 hover:-translate-y-2 cursor-pointer"
+                  className="group bg-surface-primary dark:bg-surface-dark rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-border-default transform hover:scale-105 hover:-translate-y-2 cursor-pointer"
                   onClick={() => navigate(`/blog/${blog._id}/preview`)}
                 >
                   {/* Image */}
                   {blog.images && blog.images[0] && (
-                    <div className="h-52 overflow-hidden bg-gray-200 dark:bg-slate-700 relative">
+                    <div className="h-52 overflow-hidden bg-neutral-200 dark:bg-neutral-700 relative">
                       <img
                         src={blog.images[0]}
                         alt={blog.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                   )}
 
@@ -503,28 +503,28 @@ const Search = () => {
                   <div className="p-6 space-y-4">
                     {/* Category Badge */}
                     {blog.category && blog.category[0] && (
-                      <span className="inline-block px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-lg">
+                      <span className="inline-block px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary text-xs font-bold rounded-lg">
                         {blog.category[0].name || 'Story'}
                       </span>
                     )}
 
                     {/* Title */}
-                    <Heading type="h4" className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <Heading type="h4" className="text-lg font-bold text-text-primary line-clamp-2 group-hover:text-primary transition-colors">
                       {blog.title}
                     </Heading>
 
                     {/* Description */}
-                    <Paragraph className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 leading-relaxed">
+                    <Paragraph className="text-text-secondary text-sm line-clamp-2 leading-relaxed">
                       {blog.short_description}
                     </Paragraph>
 
                     {/* Meta Info */}
-                    <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+                    <div className="pt-4 border-t border-border-default">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-600 dark:text-gray-400 font-semibold">
+                        <span className="text-text-secondary font-semibold">
                           {blog.author?.name || 'Anonymous'}
                         </span>
-                        <span className="text-gray-500 dark:text-gray-500">
+                        <span className="text-text-muted">
                           {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </span>
                       </div>
@@ -535,22 +535,22 @@ const Search = () => {
             </div>
           </div>
         ) : query ? (
-          <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-slate-600 p-16 text-center">
-            <SearchIcon size={64} className="mx-auto text-gray-300 dark:text-slate-600 mb-6" />
-            <Heading type="h3" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <div className="bg-surface-secondary dark:bg-surface-dark rounded-2xl border-2 border-dashed border-border-default p-16 text-center">
+            <SearchIcon size={64} className="mx-auto text-neutral-300 dark:text-neutral-600 mb-6" />
+            <Heading type="h3" className="text-2xl font-bold text-text-primary mb-3">
               No blogs found
             </Heading>
-            <Paragraph className="text-gray-600 dark:text-gray-400 text-lg">
+            <Paragraph className="text-text-secondary text-lg">
               Try adjusting your filters or searching different keywords
             </Paragraph>
           </div>
         ) : (
-          <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-slate-600 p-16 text-center">
-            <SearchIcon size={64} className="mx-auto text-gray-300 dark:text-slate-600 mb-6" />
-            <Heading type="h3" className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+          <div className="bg-surface-secondary dark:bg-surface-dark rounded-2xl border-2 border-dashed border-border-default p-16 text-center">
+            <SearchIcon size={64} className="mx-auto text-neutral-300 dark:text-neutral-600 mb-6" />
+            <Heading type="h3" className="text-2xl font-bold text-text-primary mb-3">
               Start your discovery
             </Heading>
-            <Paragraph className="text-gray-600 dark:text-gray-400 text-lg">
+            <Paragraph className="text-text-secondary text-lg">
               Use the search bar above to find amazing blogs and creators
             </Paragraph>
           </div>

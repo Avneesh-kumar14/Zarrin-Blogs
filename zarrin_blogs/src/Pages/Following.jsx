@@ -149,7 +149,7 @@ const Following = () => {
           <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">Invalid or missing user ID</p>
           <button 
             onClick={() => navigate('/')} 
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105"
+            className="px-6 py-3 bg-primary hover:bg-primary-dark text-on-primary font-semibold rounded-lg transition-all transform hover:scale-105"
           >
             Go Back to Home
           </button>
@@ -161,7 +161,7 @@ const Following = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-pink-900 to-slate-900 text-white py-20 sm:py-32">
+      <div className="relative overflow-hidden bg-primary dark:bg-primary-dark text-white py-20 sm:py-32">
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -178,7 +178,7 @@ const Following = () => {
             Go Back
           </button>
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl shadow-lg">
+            <div className="p-3 bg-secondary dark:bg-secondary-dark rounded-xl shadow-lg">
               <Star size={32} className="text-white" />
             </div>
             <div>
@@ -227,7 +227,7 @@ const Following = () => {
                   className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-slate-700 transform hover:scale-105 hover:-translate-y-2"
                 >
                   {/* Avatar Section with Gradient Background */}
-                  <div className="relative h-40 bg-gradient-to-br from-purple-400 via-pink-400 to-red-400 overflow-hidden flex items-center justify-center">
+                  <div className="relative h-40 bg-accent dark:bg-accent-dark overflow-hidden flex items-center justify-center">
                     {followedUser.avatar ? (
                       <img src={followedUser.avatar} alt={followedUser.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     ) : (
@@ -235,7 +235,7 @@ const Following = () => {
                         <Users size={56} className="text-white" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
 
                   {/* Content */}
@@ -260,7 +260,7 @@ const Following = () => {
                     {/* Stats */}
                     <div className="flex gap-4 justify-center py-4 border-y border-gray-200 dark:border-slate-700">
                       <div>
-                        <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+                        <p className="text-2xl font-bold text-primary">
                           {followedUser.totalBlogs || 0}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold flex items-center justify-center gap-1 mt-1">
@@ -270,7 +270,7 @@ const Following = () => {
                       </div>
                       <div className="border-l border-gray-300 dark:border-slate-600"></div>
                       <div>
-                        <p className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-pink-700 bg-clip-text text-transparent">
+                        <p className="text-2xl font-bold text-secondary">
                           {followedUser.followers?.length || 0}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold flex items-center justify-center gap-1 mt-1">
@@ -280,7 +280,7 @@ const Following = () => {
                       </div>
                       <div className="border-l border-gray-300 dark:border-slate-600"></div>
                       <div>
-                        <p className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
+                        <p className="text-2xl font-bold text-accent">
                           {followedUser.following?.length || 0}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold flex items-center justify-center gap-1 mt-1">
@@ -294,7 +294,7 @@ const Following = () => {
                     <div className="flex gap-3 pt-2">
                       <button
                         onClick={() => navigate(`/profile/${followedUser._id}`)}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transform hover:scale-105 transition-all"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary hover:bg-primary-dark text-on-primary rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transform hover:scale-105 transition-all"
                       >
                         <FileText size={16} />
                         View
@@ -305,7 +305,7 @@ const Following = () => {
                           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm shadow-md transform hover:scale-105 transition-all ${
                             followingMap[followedUser._id]
                               ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600'
-                              : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+                              : 'bg-success hover:bg-success-dark text-on-success'
                           }`}
                         >
                           {followingMap[followedUser._id] ? (
@@ -328,7 +328,7 @@ const Following = () => {
             </div>
           </>
         ) : (
-          <div className="bg-gradient-to-br from-slate-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl border-2 border-dashed border-gray-300 dark:border-slate-600 p-16 text-center">
+          <div className="bg-surface-primary dark:bg-surface-dark rounded-2xl border-2 border-dashed border-gray-300 dark:border-slate-600 p-16 text-center">
             <Users size={64} className="mx-auto text-gray-300 dark:text-slate-600 mb-6" />
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
               Not following anyone yet

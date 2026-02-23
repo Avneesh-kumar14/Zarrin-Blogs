@@ -70,21 +70,24 @@ const ContactPage = () => {
   const info = [
     {
       icon: MapPin,
-      title: 'Office',
+      title: 'Office Location',
       detail: 'GomtiNagar, Lucknow, India',
-      gradient: 'from-indigo-600 to-purple-600'
+      description: 'Visit our office for meetups and collaborations',
+      bgClass: 'bg-primary'
     },
     {
       icon: Mail,
-      title: 'Email',
+      title: 'Email Us',
       detail: 'rajneeshavneesh@gmail.com',
-      gradient: 'from-pink-600 to-rose-600'
+      description: 'We respond within 24 hours',
+      bgClass: 'bg-secondary'
     },
     {
       icon: Phone,
-      title: 'Phone',
-      detail: '6388860757',
-      gradient: 'from-amber-600 to-orange-600'
+      title: 'Call Us',
+      detail: '+91 6388860757',
+      description: 'Available Monday to Friday, 9 AM - 6 PM IST',
+      bgClass: 'bg-accent'
     },
   ];
 
@@ -116,7 +119,7 @@ const ContactPage = () => {
   ];
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16 overflow-hidden">
+    <section className="relative min-h-screen bg-surface-primary dark:bg-surface-dark py-16 overflow-hidden">
       {/* Animated Background Blobs */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-300 dark:bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob"></div>
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 dark:opacity-5 animate-blob animation-delay-2000"></div>
@@ -125,7 +128,7 @@ const ContactPage = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16 animate-slide-up">
-          <Heading type="h2" className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 dark:from-indigo-400 dark:via-pink-400 dark:to-amber-400 bg-clip-text text-transparent">
+          <Heading type="h2" className="text-4xl md:text-5xl font-bold mb-4 text-primary">
             We'd Love to Hear From You
           </Heading>
           <Paragraph className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
@@ -156,17 +159,20 @@ const ContactPage = () => {
                 key={index}
                 className="group relative bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-100 dark:border-gray-700"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                <div className="absolute inset-0 bg-primary/10 dark:bg-primary/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
-                <div className={`relative w-14 h-14 mx-auto mb-6 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`relative w-14 h-14 mx-auto mb-6 ${item.bgClass} rounded-xl flex items-center justify-center text-on-primary shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                   <IconComponent size={24} />
                 </div>
                 
                 <Heading type="h4" className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">
                   {item.title}
                 </Heading>
-                <Paragraph className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                <Paragraph className="text-sm text-gray-600 dark:text-gray-400 text-center font-semibold mb-2">
                   {item.detail}
+                </Paragraph>
+                <Paragraph className="text-xs text-gray-500 dark:text-gray-500 text-center">
+                  {item.description}
                 </Paragraph>
               </div>
             );
@@ -176,8 +182,8 @@ const ContactPage = () => {
         {/* Contact Form */}
         <div className="max-w-3xl mx-auto">
           <div className="relative group">
-            {/* Gradient Border Effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+            {/* Border Effect */}
+            <div className="absolute inset-0 bg-primary rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
             
             <div className="relative bg-white dark:bg-gray-800 p-8 md:p-12 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
               <form onSubmit={handleSubmit} className="space-y-6">
