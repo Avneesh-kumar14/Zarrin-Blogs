@@ -1,105 +1,222 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard,
-  FileText,
-  Tags,
-  PenLine,
-  User,
-  LogOut
+  LayoutDashboard, FileText, Tags, PenLine, User, LogOut, Sparkles
 } from "lucide-react";
-import Headings from "../Common/Heading";
 
 const SideBar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
 
   const menuItems = [
-    { label: "Dashboard", route: "analytics", icon: LayoutDashboard },
-    { label: "My Blogs", route: "myblogs", icon: FileText },
-    { label: "Categories", route: "categories", icon: Tags },
-    { label: "My Drafts", route: "drafts", icon: PenLine },
-    { label: "My Profile", route: "profile", icon: User }
+    { label: "Dashboard",  route: "analytics",  icon: LayoutDashboard, accent: 'var(--color-primary)',   accentBg: 'rgba(43,100,212,0.09)',  accentBorder: 'rgba(43,100,212,0.2)'  },
+    { label: "My Blogs",   route: "myblogs",    icon: FileText,        accent: 'var(--color-secondary)', accentBg: 'rgba(30,138,86,0.09)',   accentBorder: 'rgba(30,138,86,0.2)'   },
+    { label: "Categories", route: "categories", icon: Tags,            accent: 'var(--color-accent)',    accentBg: 'rgba(112,64,204,0.09)',  accentBorder: 'rgba(112,64,204,0.2)'  },
+    { label: "My Drafts",  route: "drafts",     icon: PenLine,         accent: 'var(--color-warning)',   accentBg: 'rgba(196,154,60,0.09)',  accentBorder: 'rgba(196,154,60,0.2)'  },
+    { label: "My Profile", route: "profile",    icon: User,            accent: 'var(--color-info)',      accentBg: 'rgba(74,127,165,0.09)',  accentBorder: 'rgba(74,127,165,0.2)'  },
   ];
 
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = "/";
-  };
+  const handleLogout = () => { localStorage.clear(); window.location.href = "/"; };
 
   return (
     <>
-      {/* Sidebar */}
-      <aside
-        className={`fixed lg:static top-16 left-0 z-30 h-[calc(100vh-64px)] w-64
-        bg-surface-primary dark:bg-surface-dark border-r border-border-light dark:border-border-dark
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+      <aside style={{
+        ...S.aside,
+        transform: isOpen || typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'translateX(0)' : 'translateX(-100%)',
+      }}
+        className="zn-sidebar"
       >
-        <div className="flex flex-col h-full px-4 py-6">
+        <div style={S.inner}>
 
-          {/* Title with Icon */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-primary rounded-lg">
-              <LayoutDashboard size={20} className="text-on-primary" />
+          {/* Brand */}
+          <div style={S.brand}>
+            <div style={S.brandIcon}>
+              <Sparkles size={16} color="#fff" />
             </div>
-            <Headings
-              type="h4"
-              className="text-sm font-bold text-primary uppercase tracking-wide"
-            >
-              Dashboard
-            </Headings>
+            <div>
+              <p style={S.brandTitle}>Zarrin</p>
+              <p style={S.brandSub}>Creator Dashboard</p>
+            </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 space-y-2">
-            {menuItems.map(({ label, route, icon: Icon }) => {
-              const isActive = location.pathname.includes(route);
+          {/* Divider */}
+          <div style={S.divider} />
 
+          {/* Nav label */}
+          <p style={S.navGroup}>Navigation</p>
+
+          {/* Nav items */}
+          <nav style={S.nav}>
+            {menuItems.map(({ label, route, icon: Icon, accent, accentBg, accentBorder }) => {
+              const isActive = location.pathname.includes(route);
               return (
                 <Link
                   key={route}
                   to={`/dashboard/${route}`}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 group
-                    ${
-                      isActive
-                        ? "bg-primary text-on-primary shadow-md"
-                        : "text-text-primary dark:text-text-secondary hover:bg-primary/10 dark:hover:bg-primary/20"
-                    }`}
+                  style={{
+                    ...S.navItem,
+                    background: isActive ? accentBg : 'transparent',
+                    border: isActive ? `1px solid ${accentBorder}` : '1px solid transparent',
+                    color: isActive ? accent : 'var(--color-text-secondary)',
+                  }}
+                  onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = 'var(--color-neutral-100)'; e.currentTarget.style.color = 'var(--color-text-primary)'; } }}
+                  onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)'; } }}
                 >
-                  <Icon size={18} className={isActive ? "" : "group-hover:text-primary"} />
-                  {label}
-                  {isActive && <div className="ml-auto w-1 h-6 bg-on-primary rounded-full"></div>}
+                  <div style={{
+                    ...S.navIconWrap,
+                    background: isActive ? accent : 'var(--color-neutral-100)',
+                    color: isActive ? '#fff' : 'var(--color-text-secondary)',
+                  }}>
+                    <Icon size={15} />
+                  </div>
+                  <span style={{ ...S.navLabel, color: isActive ? accent : 'inherit', fontWeight: isActive ? 700 : 500 }}>
+                    {label}
+                  </span>
+                  {isActive && <div style={{ ...S.activeDot, background: accent }} />}
                 </Link>
               );
             })}
           </nav>
 
+          {/* Spacer */}
+          <div style={{ flex: 1 }} />
+
+          {/* Divider */}
+          <div style={S.divider} />
+
           {/* Logout */}
-          <div className="pt-4 border-t border-border-light dark:border-border-dark">
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-xl
-              text-sm font-semibold text-error hover:bg-error/10 dark:hover:bg-error/20
-              transition-all duration-200"
-            >
-              <LogOut size={18} />
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            style={S.logoutBtn}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-error-bg)'; e.currentTarget.style.color = 'var(--color-error)'; e.currentTarget.style.borderColor = 'rgba(204,46,46,0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.borderColor = 'transparent'; }}
+          >
+            <div style={S.logoutIcon}><LogOut size={15} /></div>
+            <span style={S.navLabel}>Logout</span>
+          </button>
         </div>
       </aside>
 
-      {/* Mobile Overlay */}
+      {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/40 lg:hidden z-20 top-16 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
+          style={S.overlay}
         />
       )}
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800&family=Outfit:wght@300;400;500;600;700&display=swap');
+        *, *::before, *::after { box-sizing: border-box; }
+
+        .zn-sidebar {
+          position: fixed;
+          top: 64px;
+          left: 0;
+          z-index: 30;
+          height: calc(100vh - 64px);
+          width: 240px;
+          transform: translateX(-100%);
+          transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+        }
+        @media (min-width: 1024px) {
+          .zn-sidebar {
+            position: static !important;
+            transform: translateX(0) !important;
+            height: calc(100vh - 64px);
+          }
+        }
+        .zn-sidebar-open {
+          transform: translateX(0) !important;
+        }
+        a { text-decoration: none; }
+      `}</style>
     </>
   );
+};
+
+const S = {
+  aside: {
+    background: 'var(--color-surface-primary)',
+    borderRight: '1px solid var(--color-border-light)',
+    boxShadow: 'var(--card-shadow)',
+    fontFamily: "'Outfit', sans-serif",
+  },
+  inner: {
+    display: 'flex', flexDirection: 'column',
+    height: '100%', padding: '20px 14px 20px',
+  },
+
+  /* Brand */
+  brand: {
+    display: 'flex', alignItems: 'center', gap: 11,
+    padding: '4px 6px 16px',
+  },
+  brandIcon: {
+    width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+    background: 'var(--gradient-primary)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    boxShadow: '0 4px 12px rgba(43,100,212,0.28)',
+  },
+  brandTitle: {
+    fontFamily: "'Playfair Display', serif",
+    fontSize: '1rem', fontWeight: 800,
+    color: 'var(--color-text-primary)', lineHeight: 1.1,
+  },
+  brandSub: {
+    fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
+    textTransform: 'uppercase', color: 'var(--color-text-muted)',
+  },
+
+  divider: { height: 1, background: 'var(--color-border-light)', margin: '4px 0 14px' },
+
+  navGroup: {
+    fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
+    textTransform: 'uppercase', color: 'var(--color-text-muted)',
+    padding: '0 8px', marginBottom: 8,
+  },
+  nav: { display: 'flex', flexDirection: 'column', gap: 3 },
+
+  navItem: {
+    display: 'flex', alignItems: 'center', gap: 10,
+    padding: '10px 10px', borderRadius: 12,
+    transition: 'all 0.18s', cursor: 'pointer',
+    fontFamily: "'Outfit', sans-serif",
+    textDecoration: 'none',
+  },
+  navIconWrap: {
+    width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    transition: 'all 0.18s',
+  },
+  navLabel: {
+    fontSize: 13, display: 'block', transition: 'color 0.18s',
+  },
+  activeDot: {
+    marginLeft: 'auto', width: 6, height: 6,
+    borderRadius: '50%', flexShrink: 0,
+  },
+
+  logoutBtn: {
+    display: 'flex', alignItems: 'center', gap: 10,
+    width: '100%', padding: '10px 10px', borderRadius: 12,
+    background: 'transparent', border: '1px solid transparent',
+    cursor: 'pointer', transition: 'all 0.18s',
+    color: 'var(--color-text-secondary)',
+    fontFamily: "'Outfit', sans-serif", marginTop: 4,
+  },
+  logoutIcon: {
+    width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+    background: 'var(--color-neutral-100)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  },
+
+  overlay: {
+    position: 'fixed', inset: 0, top: 64,
+    background: 'rgba(17,17,16,0.4)',
+    backdropFilter: 'blur(4px)',
+    zIndex: 20,
+  },
 };
 
 export default SideBar;
