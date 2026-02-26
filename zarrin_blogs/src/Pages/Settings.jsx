@@ -16,18 +16,50 @@ const Settings = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [deletePassword, setDeletePassword] = useState('');
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: '', newPassword: '', confirmPassword: ''
   });
 
-  const [formData, setFormData] = useState({
-    firstName: '', lastName: '', username: '', email: '', bio: '',
-    website: '', location: '', avatar: '',
-    allowComments: true, showReadingTime: true, autoSaveDrafts: true,
-    profileVisibility: true, showActivity: true,
-    emailFollowers: true, emailComments: true, emailLikes: false,
-    emailDigest: true, pushNotifications: true, pushMentions: true
+  const [formData, setFormData] = useState(() => {
+    // Initialize from localStorage if available for faster display
+    const savedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        return {
+          firstName: userData.firstName || '', lastName: userData.lastName || '',
+          username: userData.username || '', email: userData.email || '',
+          bio: userData.bio || '', website: userData.website || '',
+          location: userData.location || '', avatar: userData.avatar || '',
+          allowComments: userData.writing?.allowComments ?? true,
+          showReadingTime: userData.writing?.showReadingTime ?? true,
+          autoSaveDrafts: userData.writing?.autoSaveDrafts ?? true,
+          profileVisibility: userData.privacy?.profileVisibility ?? true,
+          showActivity: userData.privacy?.showActivity ?? true,
+          emailFollowers: userData.notifications?.emailFollowers ?? true,
+          emailComments: userData.notifications?.emailComments ?? true,
+          emailLikes: userData.notifications?.emailLikes ?? false,
+          emailDigest: userData.notifications?.emailDigest ?? true,
+          pushNotifications: userData.notifications?.pushNotifications ?? true,
+          pushMentions: userData.notifications?.pushMentions ?? true
+        };
+      } catch (err) {
+        console.error('Failed to parse user from localStorage', err);
+      }
+    }
+    return {
+      firstName: '', lastName: '', username: '', email: '', bio: '',
+      website: '', location: '', avatar: '',
+      allowComments: true, showReadingTime: true, autoSaveDrafts: true,
+      profileVisibility: true, showActivity: true,
+      emailFollowers: true, emailComments: true, emailLikes: false,
+      emailDigest: true, pushNotifications: true, pushMentions: true
+    };
   });
 
   useEffect(() => {
@@ -103,6 +135,97 @@ const Settings = () => {
       setAlert({ type: 'error', message: error.message });
     } finally { setLoading(false); }
   };
+
+  // Email verification handlers
+  const handleSendVerification = async () => {
+    if (!user?.email) {
+      setAlert({ type: 'error', message: 'Email not found' });
+      return;
+    }
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
+      const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
+      
+      console.log('📧 Sending OTP to:', user.email);
+      console.log('📍 API Endpoint:', `${API_URL}/auth/resend-otp`);
+      
+      const res = await fetch(`${API_URL}/auth/resend-otp`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email: user.email }),
+      });
+      
+      const data = await res.json();
+      console.log('📬 Response status:', res.status, 'Data:', data);
+      
+      if (!res.ok) {
+        throw new Error(data.message || `Failed to send OTP (Status: ${res.status}). Check server logs.`);
+      }
+      
+      setAlert({ type: 'success', message: '✅ Verification email sent! Check your inbox (may take 2-5 minutes).' });
+      setShowOTPInput(true);
+      setResendCooldown(60);
+      setOtp('');
+    } catch (err) {
+      console.error('❌ Email verification error:', err);
+      setAlert({ type: 'error', message: err.message || 'Failed to send verification email. Check browser console.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (!otp || otp.length !== 6) {
+      setAlert({ type: 'warning', message: 'Please enter a valid 6-digit OTP' });
+      return;
+    }
+    if (!user?.email) {
+      setAlert({ type: 'error', message: 'Email not found' });
+      return;
+    }
+    setOtpLoading(true);
+    try {
+      const API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
+      const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
+      const res = await fetch(`${API_URL}/auth/verify-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: user.email, otp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to verify OTP. Please try again.');
+      setAlert({ type: 'success', message: '✅ Email verified successfully!' });
+      setShowOTPInput(false);
+      setOtp('');
+      setResendCooldown(0);
+    } catch (err) {
+      setAlert({ type: 'error', message: err.message || 'Failed to verify OTP' });
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendOTP = () => {
+    setShowOTPInput(false);
+    setOtp('');
+    handleSendVerification();
+  };
+
+  // Cooldown timer effect
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
+  
   const handleSaveWritingPreferences = async () => {
     try {
       setLoading(true);
@@ -353,6 +476,138 @@ const Settings = () => {
 
                 <Card title="Email Address" badge="Identity">
                   <InputField label="Registered Email" icon={Mail} type="email" name="email" value={formData.email} disabled hint="Your email address is permanent and cannot be changed." />
+                </Card>
+
+                {/* Email Verification Card */}
+                <Card title="Email Verification" badge="Security">
+                  <div style={{ marginBottom: '20px' }}>
+                    {user?.isEmailVerified ? (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '15px',
+                        padding: '16px',
+                        borderRadius: '12px',
+                        backgroundColor: '#e8f5e9',
+                        color: '#1e8a56'
+                      }}>
+                        <CheckCircle size={20} />
+                        <div>
+                          <p style={{ margin: '0 0 4px 0', fontWeight: '600' }}>✅ Email Verified</p>
+                          <p style={{ margin: 0, fontSize: '0.85rem' }}>Your email address has been verified</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '15px',
+                        padding: '16px',
+                        borderRadius: '12px',
+                        backgroundColor: '#fff3e0',
+                        color: '#c49a3c'
+                      }}>
+                        <AlertTriangle size={20} />
+                        <div>
+                          <p style={{ margin: '0 0 4px 0', fontWeight: '600' }}>⚠️ Email Not Verified</p>
+                          <p style={{ margin: 0, fontSize: '0.85rem' }}>Click the button below to verify your email address</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {!showOTPInput ? (
+                    <button
+                      onClick={handleSendVerification}
+                      disabled={loading || resendCooldown > 0}
+                      style={{
+                        padding: '12px 24px',
+                        backgroundColor: resendCooldown > 0 || loading ? '#ccc' : 'var(--color-primary)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontWeight: '600',
+                        cursor: resendCooldown > 0 || loading ? 'not-allowed' : 'pointer',
+                        width: '100%'
+                      }}
+                    >
+                      {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : user?.isEmailVerified ? '✅ Re-verify Email' : '📧 Verify Email'}
+                    </button>
+                  ) : (
+                    <div>
+                      <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '8px', color: '#1976d2' }}>
+                        <p style={{ margin: 0, fontSize: '0.9rem' }}>📨 Check your email! Enter the 6-digit code below.</p>
+                      </div>
+                      <label style={S.label}>Enter Verification Code</label>
+                      <input
+                        type="text"
+                        placeholder="000000"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        maxLength="6"
+                        style={{
+                          ...S.input,
+                          textAlign: 'center',
+                          fontSize: '1.5rem',
+                          letterSpacing: '0.5rem',
+                          marginBottom: '15px'
+                        }}
+                        disabled={otpLoading}
+                      />
+                      <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                        <button
+                          onClick={handleVerifyOTP}
+                          disabled={otpLoading || otp.length !== 6}
+                          style={{
+                            flex: 1,
+                            padding: '12px',
+                            backgroundColor: otpLoading || otp.length !== 6 ? '#ccc' : 'var(--color-primary)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontWeight: '600',
+                            cursor: otpLoading || otp.length !== 6 ? 'not-allowed' : 'pointer'
+                          }}
+                        >
+                          {otpLoading ? 'Verifying...' : '✅ Verify Code'}
+                        </button>
+                        <button
+                          onClick={() => { setShowOTPInput(false); setOtp(''); }}
+                          disabled={otpLoading}
+                          style={{
+                            flex: 1,
+                            padding: '12px',
+                            backgroundColor: '#e0e0e0',
+                            color: '#333',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontWeight: '600',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <div style={{ textAlign: 'center', paddingTop: '10px', borderTop: '1px solid #e0e0e0' }}>
+                        <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9rem' }}>Didn't receive the code?</p>
+                        <button
+                          onClick={handleResendOTP}
+                          disabled={resendCooldown > 0 || otpLoading}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: resendCooldown > 0 ? '#ccc' : '#2563eb',
+                            cursor: resendCooldown > 0 ? 'not-allowed' : 'pointer',
+                            fontWeight: '600',
+                            padding: 0,
+                            fontSize: '0.9rem'
+                          }}
+                        >
+                          {resendCooldown > 0 ? `Wait ${resendCooldown}s` : 'Resend Code'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </Card>
 
                 <Card title="Change Password" badge="Security">

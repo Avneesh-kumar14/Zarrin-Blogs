@@ -110,31 +110,77 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    
+    // VALIDATION: Perform validations BEFORE setting loading
+    // This prevents state flickering and improves UX
+    
     if (!validatePassword(password)) {
-      setAlert({ type: 'warning', message: 'Password must be 8+ chars with uppercase, lowercase, and number (e.g., MyPass123)' });
-      setLoading(false);
+      setAlert({ 
+        type: 'warning', 
+        message: 'Password must be 8+ chars with uppercase, lowercase, and number (e.g., MyPass123)' 
+      });
+      // Don't set loading, validation failed early
       return;
     }
+
     if (!passwordsMatch) {
-      setAlert({ type: 'warning', message: 'Passwords do not match' });
-      setLoading(false);
+      setAlert({ 
+        type: 'warning', 
+        message: 'Passwords do not match' 
+      });
+      // Don't set loading, validation failed early
       return;
     }
+
+    // LOADING: Now start loading after all validations pass
+    setLoading(true);
+
     try {
+      // API CALL: Send signup request to backend
+      // getApiUrl() handles both localhost and production URLs
       const res = await fetch(getApiUrl('/api/auth/signup'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ name, email, password }),
+        credentials: 'include', // Include cookies for CORS requests
+        body: JSON.stringify({ 
+          name: name.trim(),
+          email: email.trim(),
+          password: password.trim()
+        }),
       });
+
+      // RESPONSE PARSING: Parse JSON response from backend
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Signup failed');
-      setAlert({ type: 'success', message: 'Account created! Check your email for OTP.' });
-      setTimeout(() => navigate('/verify-otp', { state: { email: email.toLowerCase().trim() } }), 1500);
+
+      // ERROR HANDLING: Check for HTTP errors
+      if (!res.ok) {
+        // Backend returns error messages in data.message or data.error
+        throw new Error(data.message || data.error || 'Signup failed');
+      }
+
+      // SUCCESS: User created, show success message
+      setAlert({ 
+        type: 'success', 
+        message: 'Account created! Welcome to Zarrin Blogs 🎉' 
+      });
+
+      // NAVIGATION: Redirect to home page (Instagram/Facebook style)
+      // Users can verify email later from settings if needed
+      // Use setTimeout to let user see success message before redirect
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+
     } catch (err) {
-      setAlert({ type: 'error', message: err.message });
+      // ERROR RESPONSE: Show error message to user
+      setAlert({ 
+        type: 'error', 
+        message: err.message || 'Signup failed. Please try again.' 
+      });
+      console.error('Signup error:', err);
     } finally {
+      // CLEANUP: Always reset loading state (try/catch/finally pattern)
+      // This ensures loading spinner goes away even if error occurs
       setLoading(false);
     }
   };

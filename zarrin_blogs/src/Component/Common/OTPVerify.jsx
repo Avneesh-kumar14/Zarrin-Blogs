@@ -35,82 +35,151 @@ const OTPVerify = () => {
 
   const handleOTPVerify = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
+    // VALIDATION: Perform validations BEFORE setting loading
     if (!otp || otp.length !== 6) {
-      setAlert({ type: 'warning', message: 'Please enter a valid 6-digit OTP' });
-      setLoading(false);
+      setAlert({ 
+        type: 'warning', 
+        message: 'Please enter a valid 6-digit OTP' 
+      });
+      // Don't set loading, validation failed early
       return;
     }
 
+    // LOADING: Now start loading after validation passes
+    setLoading(true);
+
     try {
+      // API CALL: Send OTP verification request to backend
       const res = await fetch(getApiUrl('/api/auth/verify-otp'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // CRITICAL: include cookies for production CORS
-        body: JSON.stringify({ email, otp: otp.trim() })
+        credentials: 'include', // ✅ CRITICAL: include cookies for production CORS
+        body: JSON.stringify({ 
+          email: email.trim(), 
+          otp: otp.trim() 
+        })
       });
 
+      // RESPONSE PARSING: Parse JSON response
       const data = await res.json();
 
+      // RATE LIMITING: Handle rate limit errors (429)
       if (res.status === 429) {
-        setAlert({ type: 'warning', message: 'Too many attempts. Please try again later.' });
-        setLoading(false);
-        return;
+        setAlert({ 
+          type: 'warning', 
+          message: 'Too many attempts. Please try again later.' 
+        });
+        // Don't reset loading here, let finally handle it
+        throw new Error('Rate limited');
       }
 
+      // ERROR HANDLING: Check for HTTP errors
       if (!res.ok) {
-        throw new Error(data.message || 'OTP verification failed');
+        throw new Error(data.message || data.error || 'OTP verification failed');
       }
 
-      // Save token and user data to localStorage
+      // RESPONSE VALIDATION: Ensure required tokens are present
+      if (!data.token) {
+        throw new Error('Server error: Missing authentication token');
+      }
+
+      // TOKEN STORAGE: Save authentication data to localStorage
       localStorage.setItem('token', data.token);
       if (data.refreshToken) {
         localStorage.setItem('refreshToken', data.refreshToken);
       }
-      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      // Normalize user object to ensure consistent id field
+      const normalizedUser = { 
+        ...data.user, 
+        id: data.user._id || data.user.id 
+      };
+      localStorage.setItem('user', JSON.stringify(normalizedUser));
 
-      setAlert({ type: 'success', message: 'Email verified! Redirecting to dashboard...' });
+      // SUCCESS: Show success message
+      setAlert({ 
+        type: 'success', 
+        message: 'Email verified! Redirecting to dashboard...' 
+      });
+
+      // NAVIGATION: Redirect to dashboard
+      // Use setTimeout to let user see success message before redirect
       setTimeout(() => {
         navigate('/dashboard/analytics');
       }, 1500);
+
     } catch (err) {
-      setAlert({ type: 'error', message: err.message });
+      // ERROR RESPONSE: Show error message to user
+      // Only show alert if not already set (e.g., rate limit alert)
+      if (!alert || alert.type !== 'warning') {
+        setAlert({ 
+          type: 'error', 
+          message: err.message || 'OTP verification failed. Please try again.' 
+        });
+      }
+      console.error('OTP verification error:', err);
+
     } finally {
+      // CLEANUP: Always reset loading state (try/catch/finally pattern)
       setLoading(false);
     }
   };
 
   const handleResendOTP = async () => {
+    // LOADING: Start loading
     setResendLoading(true);
 
     try {
+      // API CALL: Send resend OTP request to backend
       const res = await fetch(getApiUrl('/api/auth/resend-otp'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // CRITICAL: include cookies for production CORS
-        body: JSON.stringify({ email })
+        credentials: 'include', // ✅ CRITICAL: include cookies for production CORS
+        body: JSON.stringify({ email: email.trim() })
       });
 
+      // RESPONSE PARSING: Parse JSON response
       const data = await res.json();
 
+      // RATE LIMITING: Handle rate limit errors (429)
       if (res.status === 429) {
-        setAlert({ type: 'warning', message: 'Too many requests. Please try again in a few minutes.' });
-        setCountdown(300); // 5 minutes
-        setResendLoading(false);
+        setAlert({ 
+          type: 'warning', 
+          message: 'Too many requests. Please try again in a few minutes.' 
+        });
+        setCountdown(300); // 5 minutes cooldown
+        // Let finally reset resendLoading
         return;
       }
 
+      // ERROR HANDLING: Check for HTTP errors
       if (!res.ok) {
-        throw new Error(data.message || 'Failed to resend OTP');
+        throw new Error(data.message || data.error || 'Failed to resend OTP');
       }
 
-      setAlert({ type: 'success', message: 'OTP sent to your email!' });
-      setCountdown(60); // 60 seconds cooldown
+      // SUCCESS: Show success message
+      setAlert({ 
+        type: 'success', 
+        message: 'OTP sent to your email!' 
+      });
+
+      // COOLDOWN: Set 60 seconds before allowing another resend
+      setCountdown(60);
+
+      // CLEANUP: Clear the OTP input field
       setOtp('');
+
     } catch (err) {
-      setAlert({ type: 'error', message: err.message });
+      // ERROR RESPONSE: Show error message to user
+      setAlert({ 
+        type: 'error', 
+        message: err.message || 'Failed to resend OTP. Please try again.' 
+      });
+      console.error('Resend OTP error:', err);
+
     } finally {
+      // CLEANUP: Always reset loading state (try/catch/finally pattern)
       setResendLoading(false);
     }
   };

@@ -27,36 +27,8 @@ const DashboardAnalytics = () => {
         return;
       }
 
-      // Try to fetch real analytics from backend
-      // If endpoint exists, use real data; otherwise use mock data
-      try {
-        const res = await fetch(getApiUrl(`/api/analytics?range=${timeRange}`), {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        });
-
-        if (res.status === 401) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          console.error("Session expired");
-          return;
-        }
-
-        if (res.ok) {
-          const data = await res.json();
-          setStats(data || {});
-          setLoading(false);
-          return;
-        }
-      } catch (apiError) {
-        console.log("Analytics API not available, using mock data");
-      }
-
-      // Fallback to mock data if API endpoint doesn't exist
+      // Using mock data for analytics (user analytics endpoint can be added later)
+      // For now, display sample analytics data
       setStats({
         views: 12500,
         likes: 3200,

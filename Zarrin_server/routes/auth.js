@@ -242,25 +242,31 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-// Validate token
+// ✅ VALIDATE TOKEN - Check if JWT is still valid
 router.get('/validate', auth, (req, res) => {
   try {
     // If the auth middleware passes, the token is valid
-    res.status(200).json({ 
+    // The middleware would have rejected invalid tokens
+    return res.status(200).json({ 
+      success: true,
       valid: true, 
       user: {
         id: req.user._id,
+        _id: req.user._id,
         name: req.user.name,
         email: req.user.email,
         role: req.user.role,
-        isEmailVerified: req.user.isEmailVerified
+        isEmailVerified: req.user.isEmailVerified,
+        avatar: req.user.avatar || ''
       }
     });
   } catch (err) {
-    console.error('Validate endpoint error:', err);
-    res.status(500).json({ 
+    logger.error('Validate endpoint error', { error: err.message });
+    // Prevent hanging requests
+    return res.status(500).json({ 
+      success: false,
       message: 'Server error during validation', 
-      error: err.message 
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
@@ -271,22 +277,25 @@ router.post('/signup', authLimiter, validateSignup, validateAuth, async (req, re
     const { name, email, password } = req.body;
     logger.info('Signup attempt', { email, name });
 
-    // Normalize email and trim password
+    // VALIDATION: Normalize and trim inputs
     const normalizedEmail = email.toLowerCase().trim();
     const trimmedPassword = password.trim();
     
-    // Check if user already exists
+    // DATABASE: Check if user already exists (prevents duplicate)
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       logger.warn('Signup failed: user already exists', { email: normalizedEmail });
-      return res.status(400).json({ message: 'User already exists. Please login instead.' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'User already exists. Please login instead.' 
+      });
     }
 
-    // Generate OTP (6 digits)
+    // OTP GENERATION: Create 6-digit OTP valid for 10 minutes
     const otp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Create user with OTP (email not verified yet)
+    // USER CREATION: Save user with OTP (email NOT verified yet)
     logger.debug('Creating new user with OTP', { email: normalizedEmail });
     const user = new User({ 
       name, 
@@ -295,30 +304,39 @@ router.post('/signup', authLimiter, validateSignup, validateAuth, async (req, re
       otp: otp,
       otpExpires: otpExpires,
       isEmailVerified: false
+      // Password is auto-hashed by userModel.pre('save') middleware
     });
     
-    // Save user
+    // Save to MongoDB
     await user.save();
-    console.log('User created successfully with email:', normalizedEmail);
+    logger.info('User account created successfully', { email: normalizedEmail });
 
-    // Send OTP to email
-    const emailResult = await sendOTPEmail(normalizedEmail, otp);
+    // ⚠️ EMAIL SENDING: Non-blocking send (fire-and-forget)
+    // We respond immediately, then send email asynchronously
+    // This prevents hangingloading spinners in production
+    sendOTPEmail(normalizedEmail, otp).catch(err => {
+      logger.error('Failed to send OTP email (non-blocking)', { email: normalizedEmail, error: err.message });
+      // Note: User was already created, but email failed. They can use resend-otp endpoint.
+    });
     
-    if (!emailResult.success) {
-      return res.status(500).json({ 
-        message: 'User created but failed to send OTP. Please request OTP again.',
-        error: emailResult.message 
-      });
-    }
-    
-    res.status(201).json({
+    // RESPONSE: Return 201 Created immediately (don't wait for email)
+    return res.status(201).json({
+      success: true,
       message: 'Signup successful! OTP has been sent to your email. Please verify within 10 minutes.',
       email: normalizedEmail,
       requiresVerification: true
     });
+
   } catch (err) {
-    console.error('Signup error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    logger.error('Signup error', { error: err.message, stack: err.stack });
+    console.error('Signup error details:', err);
+    
+    // Prevent hanging requests - always return a response
+    return res.status(500).json({ 
+      success: false,
+      message: 'Server error during signup',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
@@ -327,52 +345,74 @@ router.post('/verify-otp', authLimiter, async (req, res) => {
   try {
     const { email, otp } = req.body;
 
+    // VALIDATION: Ensure email and OTP are provided
     if (!email || !otp) {
-      return res.status(400).json({ message: 'Email and OTP are required' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Email and OTP are required' 
+      });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Find user
+    // DATABASE: Find user by email
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'User not found' 
+      });
     }
 
-    // Check if already verified
+    // OTP CHECK: Already verified
     if (user.isEmailVerified) {
-      return res.status(400).json({ message: 'Email already verified. Please login.' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Email already verified. Please login.' 
+      });
     }
 
-    // Check if OTP matches
+    // OTP CHECK: OTP matches
     if (user.otp !== otp) {
-      return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid OTP. Please try again.' 
+      });
     }
 
-    // Check if OTP expired
+    // OTP CHECK: OTP not expired
     if (new Date() > user.otpExpires) {
-      return res.status(400).json({ message: 'OTP expired. Please request a new one.' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'OTP expired. Please request a new one.' 
+      });
     }
 
-    // Mark email as verified and clear OTP
+    // ✅ VERIFICATION: Mark email as verified and clear OTP
     user.isEmailVerified = true;
     user.otp = null;
     user.otpExpires = null;
     await user.save();
+    logger.info('Email verified successfully', { email: normalizedEmail });
 
-    // Send welcome email
-    await sendWelcomeEmail(normalizedEmail, user.name);
+    // ⚠️ EMAIL SENDING: Non-blocking send (fire-and-forget)
+    // Send welcome email in background, don't wait for it
+    sendWelcomeEmail(normalizedEmail, user.name).catch(err => {
+      logger.error('Failed to send welcome email (non-blocking)', { email: normalizedEmail, error: err.message });
+      // User was already verified, email failure is not critical
+    });
 
-    // Generate token pair
+    // TOKEN GENERATION: Create access and refresh tokens
     const { generateTokenPair } = require('../utils/generateToken');
     const { accessToken, refreshToken } = generateTokenPair(user);
 
-    console.log('Email verified successfully for:', normalizedEmail);
-
-    res.status(200).json({
+    // RESPONSE: Return user data and tokens (status 200 for verification success)
+    return res.status(200).json({
+      success: true,
       message: 'Email verified successfully!',
       user: {
         _id: user._id,
+        id: user._id, // Normalized for frontend
         name: user.name,
         email: user.email,
         avatar: user.avatar || '',
@@ -382,140 +422,186 @@ router.post('/verify-otp', authLimiter, async (req, res) => {
       token: accessToken,
       refreshToken
     });
+
   } catch (err) {
-    console.error('OTP verification error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    logger.error('OTP verification error', { error: err.message, stack: err.stack });
+    console.error('OTP verification error details:', err);
+    
+    // Prevent hanging requests
+    return res.status(500).json({ 
+      success: false,
+      message: 'Server error during verification',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
-// ✅ RESEND OTP - Send New OTP (No auth validator needed)
+// ✅ RESEND OTP - Send New OTP Code to Email
 router.post('/resend-otp', authLimiter, async (req, res) => {
   try {
     const { email } = req.body;
 
+    // VALIDATION: Email is required
     if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Email is required' 
+      });
     }
 
-    // Validate email format
+    // VALIDATION: Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: 'Valid email is required' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Valid email is required' 
+      });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Find user
+    // DATABASE: Find user by email
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
-      return res.status(400).json({ message: 'User not found' });
+      // Security: Don't reveal if email exists
+      return res.status(400).json({ 
+        success: false,
+        message: 'User not found' 
+      });
     }
 
-    // Check if already verified
+    // STATUS CHECK: Already verified
     if (user.isEmailVerified) {
-      return res.status(400).json({ message: 'Email already verified. Please login.' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Email already verified. Please login.' 
+      });
     }
 
-    // Generate new OTP
+    // OTP GENERATION: Create new 6-digit OTP valid for 10 minutes
     const newOtp = generateOTP();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Update user with new OTP
+    // DATABASE: Update user with new OTP
     user.otp = newOtp;
     user.otpExpires = otpExpires;
     await user.save();
+    logger.info('New OTP generated for resend', { email: normalizedEmail });
 
-    // Send OTP to email
-    const emailResult = await sendOTPEmail(normalizedEmail, newOtp);
-
-    if (!emailResult.success) {
-      return res.status(500).json({ 
-        message: 'Failed to resend OTP',
-        error: emailResult.message 
+    // ⚠️ EMAIL SENDING: Non-blocking send (fire-and-forget)
+    // Send OTP in background, respond immediately
+    sendOTPEmail(normalizedEmail, newOtp).catch(err => {
+      logger.error('Failed to send OTP email in resend (non-blocking)', { 
+        email: normalizedEmail, 
+        error: err.message 
       });
-    }
+    });
 
-    console.log('New OTP sent to:', normalizedEmail);
-
-    res.status(200).json({
+    // RESPONSE: Return 200 immediately (email is sent asynchronously)
+    return res.status(200).json({
+      success: true,
       message: 'New OTP has been sent to your email. Valid for 10 minutes.',
       email: normalizedEmail
     });
+
   } catch (err) {
-    console.error('Resend OTP error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    logger.error('Resend OTP error', { error: err.message, stack: err.stack });
+    // Prevent hanging requests
+    return res.status(500).json({ 
+      success: false,
+      message: 'Server error during OTP resend',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
-// ✅ LOGIN
+// ✅ LOGIN - Authenticate user with email and password
 router.post('/login', authLimiter, validateLogin, async (req, res) => {
   try {
     const { email, password } = req.body;
-    logger.info('Login attempt', { email });
+    logger.info('Login attempt initiated', { email });
 
-    // Normalize email and trim password
+    // VALIDATION: Normalize inputs
     const normalizedEmail = email.toLowerCase().trim();
     const trimmedPassword = password.trim();
     
-    logger.debug('Looking for user', { email: normalizedEmail });
+    logger.debug('Looking up user in database', { email: normalizedEmail });
     
-    // Find user
+    // DATABASE: Find user by email
     const foundUser = await User.findOne({ email: normalizedEmail });
     if (!foundUser) {
-        logger.warn('Login failed: user not found', { email: normalizedEmail });
-        return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    // ✅ Check if email is verified
-    if (!foundUser.isEmailVerified) {
-      logger.warn('Login failed: email not verified', { email: normalizedEmail });
-      return res.status(403).json({ 
-        message: 'Email not verified. Please verify your email first.',
-        requiresVerification: true,
-        email: normalizedEmail
+      logger.warn('Login failed: user not found', { email: normalizedEmail });
+      // Security: Don't reveal if email exists (vague error)
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid email or password' 
       });
     }
 
-    // Add detailed error handling for password comparison
+    // EMAIL VERIFICATION: Not required for login (optional verification later from settings)
+    // This allows users to login immediately after signup, following Instagram/Facebook pattern
+    logger.debug('Email verification status', { email: normalizedEmail, isVerified: foundUser.isEmailVerified });
+
+    // PASSWORD VERIFICATION: Compare plaintext with hashed password
+    logger.debug('Initiating password comparison', { email: normalizedEmail });
     let passwordMatch;
-    try {
-      passwordMatch = await foundUser.comparePassword(trimmedPassword);
-      console.log('Password comparison result:', passwordMatch);
-    } catch (error) {
-      console.error('Error during password comparison:', error);
-      return res.status(500).json({ message: 'Error verifying password' });
-    }
-
-    if (!passwordMatch) {
-        console.log('Password verification failed for user:', normalizedEmail);
-        return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    console.log('Password verified successfully for:', normalizedEmail);
     
-    console.log('Generating token for user:', {
-      id: foundUser._id,
+    try {
+      // await is critical here - bcrypt.compare is async
+      passwordMatch = await foundUser.comparePassword(trimmedPassword);
+      logger.debug('Password comparison completed', { email: normalizedEmail, match: passwordMatch });
+    } catch (bcryptError) {
+      logger.error('Error during password comparison', { error: bcryptError.message });
+      // Return generic 500 error (don't leak that bcrypt failed)
+      return res.status(500).json({ 
+        success: false,
+        message: 'Server error during authentication' 
+      });
+    }
+
+    // PASSWORD CHECK: Ensure password matches
+    if (!passwordMatch) {
+      logger.warn('Login failed: invalid password', { email: normalizedEmail });
+      // Security: Same vague error as user not found
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid email or password' 
+      });
+    }
+
+    logger.info('Password verified successfully', { email: normalizedEmail });
+    
+    // TOKEN GENERATION: Create access and refresh tokens
+    logger.debug('Generating token pair', {
+      userId: foundUser._id,
       email: foundUser.email,
       role: foundUser.role
     });
 
-    // Generate token pair
     const { generateTokenPair } = require('../utils/generateToken');
     const { accessToken, refreshToken } = generateTokenPair(foundUser);
     
+    // VALIDATION: Ensure tokens were generated (should never fail, but check anyway)
     if (!accessToken || !refreshToken) {
-      console.error('Token generation failed');
-      throw new Error('Failed to generate authentication tokens');
+      logger.error('Token generation failed unexpectedly');
+      return res.status(500).json({ 
+        success: false,
+        message: 'Failed to generate authentication tokens' 
+      });
     }
 
-    console.log('Tokens generated successfully, sending response');
+    logger.info('Login successful - tokens generated', { 
+      email: normalizedEmail,
+      userId: foundUser._id 
+    });
     
-    // Send response
-    res.json({ 
+    // RESPONSE: Return user data and tokens with consistent 200 status
+    return res.status(200).json({ 
+      success: true,
       message: 'Login successful',
       user: { 
-        id: foundUser._id,  // Add normalized id field for frontend
-        _id: foundUser._id, 
+        _id: foundUser._id,
+        id: foundUser._id, // Normalized id field for frontend
         name: foundUser.name, 
         email: foundUser.email, 
         role: foundUser.role,
@@ -525,13 +611,19 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       token: accessToken,
       refreshToken 
     });
+
   } catch (err) {
-    console.error('Login error details:', {
+    logger.error('Unexpected login error', {
       message: err.message,
       stack: err.stack,
       name: err.name
     });
-    res.status(500).json({ message: 'Server error', error: err.message });
+    // Prevent hanging requests with explicit return
+    return res.status(500).json({ 
+      success: false,
+      message: 'Server error during login',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 

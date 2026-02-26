@@ -70,58 +70,113 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // VALIDATION: Perform input validation BEFORE setting loading
+    // This prevents state flickering and improves UX
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      setAlert({ 
+        type: 'warning', 
+        message: 'Email and password are required' 
+      });
+      // Don't set loading, validation failed early
+      return;
+    }
+
+    if (trimmedPassword.length < 6) {
+      setAlert({ 
+        type: 'warning', 
+        message: 'Password must be at least 6 characters long' 
+      });
+      // Don't set loading, validation failed early
+      return;
+    }
+
+    // LOADING: Now start loading after all validations pass
     setLoading(true);
+
     try {
-      const trimmedEmail = email.trim();
-      const trimmedPassword = password.trim();
-      if (!trimmedEmail || !trimmedPassword) {
-        setAlert({ type: 'warning', message: 'Email and password are required' });
-        setLoading(false);
-        return;
-      }
-      if (trimmedPassword.length < 6) {
-        setAlert({ type: 'warning', message: 'Password must be at least 6 characters long' });
-        setLoading(false);
-        return;
-      }
-      const loginData = { email: trimmedEmail.toLowerCase(), password: trimmedPassword };
+      // API CALL: Send login request to backend
+      const loginData = { 
+        email: trimmedEmail.toLowerCase(), 
+        password: trimmedPassword 
+      };
+
       const res = await fetch(getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        credentials: 'include', // Include cookies for session management
         body: JSON.stringify(loginData),
       });
+
+      // RESPONSE PARSING: Parse JSON response
       let data = await res.json();
+
+      // RATE LIMITING: Handle rate limit errors (429)
       if (res.status === 429) {
         const retryAfter = data.retryAfter || 15 * 60;
         setRateLimitReset(retryAfter);
         throw new Error(`Too many login attempts. Please try again in ${Math.ceil(retryAfter / 60)} minutes.`);
       }
-      if (res.status === 403) {
-        setAlert({ type: 'warning', message: data.message || 'Email not verified. Please check your email for OTP verification.' });
-        setLoading(false);
-        setTimeout(() => navigate('/verify-otp', { state: { email: trimmedEmail } }), 2000);
-        return;
+
+      // ERROR HANDLING: Check for other HTTP errors
+      if (!res.ok) {
+        throw new Error(data.message || data.details?.[0]?.message || 'Invalid credentials');
       }
-      if (!res.ok) throw new Error(data.message || data.details?.[0]?.message || 'Invalid credentials');
-      if (!data.token || !data.user) throw new Error('Server error occurred. Please try again.');
-      const normalizedUser = { ...data.user, id: data.user._id || data.user.id };
-      localStorage.removeItem('token'); localStorage.removeItem('refreshToken'); localStorage.removeItem('user');
+
+      // RESPONSE VALIDATION: Ensure required data is present
+      if (!data.token || !data.user) {
+        throw new Error('Server error: Missing authentication data');
+      }
+
+      // TOKEN STORAGE: Store authentication tokens in localStorage
+      // Normalize user object to ensure consistent id field
+      const normalizedUser = { 
+        ...data.user, 
+        id: data.user._id || data.user.id 
+      };
+
+      // Clear old auth data
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+
+      // Store new auth data
       localStorage.setItem('token', data.token);
       if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(normalizedUser));
-      setAlert({ type: 'success', message: 'Login successful!' });
-      const validateRes = await fetch(getApiUrl('/api/auth/validate'), {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${data.token}`, 'Content-Type': 'application/json' },
-        credentials: 'include',
+
+      // SUCCESS: Show success message
+      setAlert({ 
+        type: 'success', 
+        message: 'Login successful!' 
       });
-      if (!validateRes.ok) throw new Error('Token validation failed');
-      setTimeout(() => navigate('/dashboard/analytics'), 1500);
+
+      // NAVIGATION: Redirect to dashboard
+      // ⚠️ REMOVED: Unnecessary '/api/auth/validate' call
+      // The backend already returned a valid token, no need to verify it again
+      // This saves one API call and improves login speed
+      setTimeout(() => {
+        navigate('/dashboard/analytics');
+      }, 1500);
+
     } catch (err) {
-      setAlert({ type: 'error', message: err.message || 'Login failed. Please check your credentials.' });
-      localStorage.removeItem('token'); localStorage.removeItem('user');
+      // ERROR RESPONSE: Show error message to user
+      setAlert({ 
+        type: 'error', 
+        message: err.message || 'Login failed. Please check your credentials.' 
+      });
+      console.error('Login error:', err);
+
+      // CLEANUP: Clear failed auth data
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+
     } finally {
+      // CLEANUP: Always reset loading state (try/catch/finally pattern)
+      // This ensures loading spinner goes away even if error occurs
       setLoading(false);
     }
   };
