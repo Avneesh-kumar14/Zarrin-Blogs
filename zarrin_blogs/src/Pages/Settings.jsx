@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { User, Shield, Bell, Palette, Upload, Eye, EyeOff, Trash2, Camera, Lock, Mail, MapPin, Globe, CheckCircle, AlertTriangle, X, Sparkles, Edit3, Save } from 'lucide-react';
 import Alert from '../Component/Common/Alert';
 import { useUser } from '../context/UserContext';
@@ -12,6 +12,7 @@ const Settings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [previewAvatar, setPreviewAvatar] = useState(null);
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState(null);
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -84,44 +85,136 @@ const Settings = () => {
     }
   }, [user]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
-  };
-  const handlePasswordChange = (e) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
+  }, []);
+
+  // Prevent form submission on Enter key for text inputs
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+    }
+  }, []);
+
+  const handlePasswordChange = useCallback((e) => {
     const { name, value } = e.target;
-    setPasswordData({ ...passwordData, [name]: value });
-  };
-  const handleAvatarChange = (e) => {
+    setPasswordData(prev => ({ ...prev, [name]: value }));
+  }, []);
+
+  const handleAvatarChange = useCallback((e) => {
     const file = e.target.files[0];
     if (!file) return;
+    
+    // Store both preview URL and file object
+    setSelectedAvatarFile(file);
     setPreviewAvatar(URL.createObjectURL(file));
-  };
+    console.log('✅ Avatar file selected:', file.name, file.size, file.type);
+  }, []);
+
+  const focusIn = useCallback(e => { 
+    e.target.style.borderColor = 'var(--color-primary)'; 
+    e.target.style.boxShadow = '0 0 0 3px rgba(43,100,212,0.11)'; 
+  }, []);
+
+  const focusOut = useCallback(e => { 
+    e.target.style.borderColor = 'var(--color-border-default)'; 
+    e.target.style.boxShadow = 'none'; 
+  }, []);
+
+  const focusInDanger = useCallback(e => { 
+    e.target.style.borderColor = 'var(--color-error)'; 
+    e.target.style.boxShadow = '0 0 0 3px rgba(204,46,46,0.1)'; 
+  }, []);
+
   const handleAvatarUpload = async () => {
     try {
       setAvatarLoading(true);
-      if (!previewAvatar) { setAlert({ type: 'error', message: 'Please select an image first' }); return; }
-      const fileInput = document.getElementById('avatar-input');
-      if (!fileInput || !fileInput.files[0]) { setAlert({ type: 'error', message: 'No file selected' }); return; }
-      const response = await updateAvatar(fileInput.files[0]);
+      
+      console.log('🖼️ Avatar upload started');
+      console.log('Selected File:', selectedAvatarFile);
+      
+      if (!selectedAvatarFile) {
+        throw new Error('Please select an image first');
+      }
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif'];
+      if (!validTypes.includes(selectedAvatarFile.type)) {
+        throw new Error(`Invalid file type: ${selectedAvatarFile.type}. Only JPG, PNG, GIF, WEBP, HEIC allowed.`);
+      }
+
+      // Validate file size (max 2MB)
+      if (selectedAvatarFile.size > 2 * 1024 * 1024) {
+        throw new Error('File size must be less than 2MB');
+      }
+
+      const response = await updateAvatar(selectedAvatarFile);
       const avatarUrl = response?.avatar || response?.data?.avatar || (typeof response === 'string' ? response : null);
-      if (!avatarUrl) throw new Error('Failed to get avatar URL from upload response');
+      
+      if (!avatarUrl) {
+        throw new Error('Failed to get avatar URL from server response');
+      }
+
       setFormData(prev => ({ ...prev, avatar: avatarUrl }));
       setPreviewAvatar(null);
-      fileInput.value = '';
-      setAlert({ type: 'success', message: 'Avatar updated successfully!' });
+      setSelectedAvatarFile(null);
+      
+      // Reset file input
+      const fileInput = document.getElementById('avatar-input');
+      if (fileInput) fileInput.value = '';
+      
+      setAlert({ type: 'success', message: '✅ Avatar updated successfully!' });
     } catch (error) {
+      console.error('❌ Avatar upload error:', error);
       setAlert({ type: 'error', message: error.message || 'Failed to upload avatar' });
-    } finally { setAvatarLoading(false); }
+    } finally {
+      setAvatarLoading(false);
+    }
   };
   const handleSaveProfile = async () => {
     try {
       setLoading(true);
-      await updateUserProfile({ firstName: formData.firstName, lastName: formData.lastName, bio: formData.bio, website: formData.website, location: formData.location });
+      console.log('💾 Saving profile with data:', { 
+        firstName: formData.firstName, 
+        lastName: formData.lastName, 
+        bio: formData.bio, 
+        website: formData.website, 
+        location: formData.location 
+      });
+      
+      const result = await updateUserProfile({ 
+        firstName: formData.firstName, 
+        lastName: formData.lastName, 
+        bio: formData.bio, 
+        website: formData.website, 
+        location: formData.location 
+      });
+      
+      console.log('✅ Profile saved successfully! Response:', result);
       setAlert({ type: 'success', message: 'Profile saved successfully!' });
+      
+      // Update localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const updatedUser = { 
+        ...user,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        bio: formData.bio,
+        website: formData.website,
+        location: formData.location
+      };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
     } catch (error) {
+      console.error('❌ Profile save error:', error);
       setAlert({ type: 'error', message: error.message || 'Failed to save profile' });
-    } finally { setLoading(false); }
+    } finally { 
+      setLoading(false); 
+    }
   };
   const handleChangePassword = async () => {
     try {
@@ -193,19 +286,41 @@ const Settings = () => {
     try {
       const API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://zarrin-blogs-backend.onrender.com';
       const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
-      const res = await fetch(`${API_URL}/auth/verify-email`, {
+      
+      console.log('🔍 DEBUG: Verifying OTP');
+      console.log('Email:', user.email);
+      console.log('OTP:', otp);
+      console.log('API Endpoint:', `${API_URL}/auth/verify-otp`);
+      
+      const res = await fetch(`${API_URL}/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ email: user.email, otp }),
       });
+      
+      console.log('📥 Response status:', res.status);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to verify OTP. Please try again.');
+      console.log('📦 Response data:', data);
+      
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to verify OTP. Please try again.');
+      }
+      
+      console.log('✅ OTP verified successfully!');
       setAlert({ type: 'success', message: '✅ Email verified successfully!' });
       setShowOTPInput(false);
       setOtp('');
       setResendCooldown(0);
+      
+      // Update user context with verified status
+      if (data.user) {
+        const updatedUser = { ...user, isEmailVerified: true, ...data.user };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.location.reload(); // Refresh to update user context
+      }
     } catch (err) {
+      console.error('❌ OTP verification error:', err);
       setAlert({ type: 'error', message: err.message || 'Failed to verify OTP' });
     } finally {
       setOtpLoading(false);
@@ -217,6 +332,19 @@ const Settings = () => {
     setOtp('');
     handleSendVerification();
   };
+
+  // OTP Input handlers
+  const handleOTPChange = useCallback((e) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setOtp(value);
+  }, []);
+
+  const handleOTPPaste = useCallback((e) => {
+    e.preventDefault();
+    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    const value = pastedText.replace(/\D/g, '').slice(0, 6);
+    setOtp(value);
+  }, []);
 
   // Cooldown timer effect
   useEffect(() => {
@@ -303,18 +431,18 @@ const Settings = () => {
     </div>
   );
 
-  const focusIn  = e => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(43,100,212,0.11)'; };
-  const focusOut = e => { e.target.style.borderColor = 'var(--color-border-default)'; e.target.style.boxShadow = 'none'; };
-  const focusInDanger  = e => { e.target.style.borderColor = 'var(--color-error)'; e.target.style.boxShadow = '0 0 0 3px rgba(204,46,46,0.1)'; };
-
   const InputField = ({ label, icon: Icon, type='text', name, value, onChange, disabled, placeholder, hint }) => (
     <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
       <label style={S.label}>{label}</label>
       <div style={{ position:'relative' }}>
         {Icon && <Icon size={15} style={S.inputIcon} />}
         <input
-          type={type} name={name} value={value} onChange={onChange}
-          disabled={disabled} placeholder={placeholder}
+          type={type} 
+          name={name} 
+          value={value} 
+          onChange={onChange}
+          disabled={disabled} 
+          placeholder={placeholder}
           style={{ ...S.input, paddingLeft: Icon ? 38 : 14,
             background: disabled ? 'var(--color-neutral-100)' : 'var(--color-surface-primary)',
             color: disabled ? 'var(--color-text-muted)' : 'var(--color-text-primary)',
@@ -543,7 +671,9 @@ const Settings = () => {
                         type="text"
                         placeholder="000000"
                         value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        onChange={handleOTPChange}
+                        onPaste={handleOTPPaste}
+                        onKeyDown={handleKeyDown}
                         maxLength="6"
                         style={{
                           ...S.input,
@@ -553,6 +683,7 @@ const Settings = () => {
                           marginBottom: '15px'
                         }}
                         disabled={otpLoading}
+                        autoFocus
                       />
                       <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
                         <button

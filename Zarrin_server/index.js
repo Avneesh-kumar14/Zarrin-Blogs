@@ -143,33 +143,15 @@ try {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-  // 5. File Upload Middleware (Multer)
-  const multer = require('multer');
-  const generalUpload = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-      fileSize: 5 * 1024 * 1024 // 5MB
-    },
-    fileFilter: (req, file, cb) => {
-      // Allow only image files
-      if (file.mimetype.startsWith('image/')) {
-        cb(null, true);
-      } else {
-        cb(new Error('Only image files are allowed'));
-      }
-    }
-  });
+  // Note: Multer is handled per-route in /api/upload and /api/chat, not globally
 
-  // Apply multer to general upload route (chat uploads will be handled in their route)
-  app.use('/api/upload', generalUpload.single('image'));
-
-  // 6. Parameter Pollution Prevention
+  // 5. Parameter Pollution Prevention
   app.use(preventParameterPollution);
 
-  // 7. General Rate Limiter (applies to all requests)
+  // 6. General Rate Limiter (applies to all requests)
   app.use(generalLimiter);
 
-  // 8. Write Operations Rate Limiter
+  // 7. Write Operations Rate Limiter
   app.use(writeLimiter);
 
   console.log('[STARTUP] Middleware configured');

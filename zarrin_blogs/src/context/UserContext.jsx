@@ -183,8 +183,16 @@ export const UserProvider = ({ children }) => {
         const data = await response.json();
         console.log('📦 Avatar upload response:', data);
         
-        // Get avatar URL from response (handle multiple formats)
-        const avatarUrl = data.avatar || (data.profile && data.profile.avatar) || (data.secure_url);
+        // Extract avatar URL from response - handles multiple response formats
+        let avatarUrl = null;
+        if (data.avatar) {
+          avatarUrl = data.avatar;
+        } else if (data.profile && data.profile.avatar) {
+          avatarUrl = data.profile.avatar;
+        } else if (data.secure_url) {
+          avatarUrl = data.secure_url;
+        }
+        
         console.log('🔍 Avatar URL extracted:', avatarUrl);
         
         if (!avatarUrl) {

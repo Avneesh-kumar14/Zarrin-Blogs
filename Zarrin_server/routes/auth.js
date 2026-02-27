@@ -341,7 +341,7 @@ router.post('/signup', authLimiter, validateSignup, validateAuth, async (req, re
 });
 
 // ✅ VERIFY OTP - Confirm Email
-router.post('/verify-otp', authLimiter, async (req, res) => {
+router.post('/verify-otp', authLimiter, validateVerifyEmail, async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -354,6 +354,7 @@ router.post('/verify-otp', authLimiter, async (req, res) => {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
+    const normalizedOTP = String(otp).trim(); // ✅ Convert OTP to string for comparison
 
     // DATABASE: Find user by email
     const user = await User.findOne({ email: normalizedEmail });
@@ -372,8 +373,8 @@ router.post('/verify-otp', authLimiter, async (req, res) => {
       });
     }
 
-    // OTP CHECK: OTP matches
-    if (user.otp !== otp) {
+    // OTP CHECK: OTP matches (convert both to string for comparison)
+    if (String(user.otp) !== normalizedOTP) {
       return res.status(400).json({ 
         success: false,
         message: 'Invalid OTP. Please try again.' 

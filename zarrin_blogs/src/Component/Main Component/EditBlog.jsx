@@ -83,12 +83,17 @@ const EditBlog = () => {
       const newImages = [];
       for (let file of files) {
         const formData = new FormData();
-        formData.append('image', file);
+        if (file instanceof File) {
+          formData.append('image', file, file.name);  // Include filename
+        } else {
+          formData.append('image', file);
+        }
 
         const res = await fetch(getApiUrl('/api/upload/upload'), {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
+            // DO NOT set Content-Type - browser sets boundary
           },
           credentials: 'include', // CRITICAL: include cookies for production CORS
           body: formData
@@ -158,11 +163,16 @@ const EditBlog = () => {
         title: formData.title,
         content: formData.content,
         shortDesc: formData.shortDesc,
-        images: images,
+        images: images.filter(img => img).map(img => typeof img === 'string' ? img : (img.cloudinaryUrl || img.preview)),
         category: formData.category.length > 0 ? formData.category : []
       };
 
-      console.log('Sending update payload:', updatePayload);
+      console.log('📤 Submitting blog update:');
+      console.log('   Blog ID:', id);
+      console.log('   Title:', updatePayload.title);
+      console.log('   Images count:', updatePayload.images.length);
+      console.log('   Images:', updatePayload.images);
+      console.log('   Sending update payload:', updatePayload);
       
       const res = await fetch(getApiUrl(`/api/blogs/${id}`), {
         method: 'PATCH',

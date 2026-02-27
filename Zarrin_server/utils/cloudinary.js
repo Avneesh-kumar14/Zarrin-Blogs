@@ -30,12 +30,17 @@ const uploadToCloudinary = async (fileBuffer, fileName, folder = 'zarrin_blogs')
       return reject(new Error('Cloudinary cloud name not configured'));
     }
 
+    // Handle HEIC/HEIF files - convert them during upload
+    const uploadOptions = {
+      resource_type: 'auto',
+      public_id: `${folder}/${Date.now()}-${fileName}`,
+      folder: folder,
+      quality: 'auto',
+      fetch_format: 'auto' // Auto-convert HEIC to jpg/webp if needed
+    };
+
     const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        resource_type: 'auto',
-        public_id: `${folder}/${Date.now()}-${fileName}`,
-        folder: folder
-      },
+      uploadOptions,
       (error, result) => {
         if (error) {
           console.error('[❌ CLOUDINARY] Upload error:', error);

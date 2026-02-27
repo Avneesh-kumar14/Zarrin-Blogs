@@ -345,20 +345,31 @@ router.post('/', auth, validateBlog, async (req, res) => {
   try {
     const { title, content, shortDesc, images, category } = req.body;
     
+    console.log('📝 Blog creation request received');
+    console.log('   Title:', title);
+    console.log('   Images received:', images?.length || 0, images);
+    console.log('   Category:', category);
+    
     // Ensure category is an array
     const categoryArray = Array.isArray(category) ? category.filter(c => c) : (category ? [category] : []);
+    
+    // Filter images to ensure they're valid URLs
+    const validImages = Array.isArray(images) ? images.filter(img => typeof img === 'string' && img.trim()) : [];
+    console.log('   Valid images after filtering:', validImages.length, validImages);
     
     const blog = await Blog.create({
       title,
       blog_content: content,
       short_description: shortDesc,
-      images: images || [],
+      images: validImages,
       category: categoryArray.length > 0 ? categoryArray : undefined,
       author: req.user._id,
       views: 0,
       likes: [],
       comments: []
     });
+    
+    console.log('✅ Blog created:', blog._id);
     
     // Add blog to user's blogs
     await User.findByIdAndUpdate(req.user._id, { $push: { blog: blog._id } });
@@ -385,6 +396,10 @@ router.patch('/:id', auth, validateObjectId, validateBlog, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized' });
     }
     
+    console.log('📝 Blog update request received');
+    console.log('   Blog ID:', req.params.id);
+    console.log('   Images in request:', req.body.images?.length || 0, req.body.images);
+    
     // Map content to blog_content if provided
     const updateData = { ...req.body };
     if (updateData.content) {
@@ -399,6 +414,7 @@ router.patch('/:id', auth, validateObjectId, validateBlog, async (req, res) => {
     // Handle images - ensure it's an array of strings (URLs)
     if (updateData.images) {
       updateData.images = Array.isArray(updateData.images) ? updateData.images.filter(img => typeof img === 'string' && img.trim()) : [];
+      console.log('   Valid images after filtering:', updateData.images.length, updateData.images);
     }
     
     // Handle categories - ensure it's an array of valid IDs
@@ -408,6 +424,8 @@ router.patch('/:id', auth, validateObjectId, validateBlog, async (req, res) => {
     
     Object.assign(blog, updateData);
     await blog.save();
+    
+    console.log('✅ Blog updated:', req.params.id);
     
     // Populate author and category info
     const updatedBlog = await Blog.findById(blog._id)

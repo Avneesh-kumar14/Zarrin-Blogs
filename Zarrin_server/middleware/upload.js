@@ -6,9 +6,20 @@ const storage = multer.memoryStorage();
 
 // File filter to allow only images
 const fileFilter = (req, file, cb) => {
-  // Allowed image types
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/octet-stream'];
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+  // Allowed image types (including HEIC/HEIF)
+  const allowedTypes = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'image/heic',
+    'image/heif',
+    'image/x-heic',
+    'image/x-heif',
+    'application/octet-stream' // Fallback for some HEIC uploads
+  ];
+  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif'];
   
   // Check MIME type or file extension
   const ext = file.originalname.toLowerCase().slice(file.originalname.lastIndexOf('.'));
@@ -20,12 +31,18 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Create multer instance
+// Create multer instance with enhanced configuration
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit per file
+    fileSize: 10 * 1024 * 1024, // 10MB limit per file (increased from 5MB for safety)
+    fields: 10,
+    files: 20  // Allow up to 20 files in a batch
+  },
+  onError: (err, next) => {
+    console.error('Multer error:', err);
+    next(err);
   }
 });
 

@@ -255,10 +255,10 @@ const uploadAvatar = async (req, res) => {
       return res.status(400).json({ message: 'No file provided' });
     }
 
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-    if (!allowedTypes.includes(req.file.mimetype)) {
-      return res.status(400).json({ message: 'Invalid file type. Only JPG, PNG, GIF allowed' });
+    // Validate file type (including HEIC)
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/heic', 'image/heif', 'image/webp'];
+    if (!allowedTypes.includes(req.file.mimetype) && !req.file.originalname.toLowerCase().match(/\.(jpg|jpeg|png|gif|heic|heif|webp)$/i)) {
+      return res.status(400).json({ message: 'Invalid file type. Only JPG, PNG, GIF, HEIC, WEBP allowed' });
     }
 
     // Validate file size (max 2MB)
@@ -273,10 +273,9 @@ const uploadAvatar = async (req, res) => {
     }
 
     // Delete old avatar if exists
-    if (user.avatar) {
+    if (user.avatar && user.oldAvatarPublicId) {
       try {
-        const publicId = user.avatar.split('/').pop().split('.')[0];
-        await deleteFromCloudinary(publicId, 'avatars');
+        await deleteFromCloudinary(user.oldAvatarPublicId, 'avatars');
       } catch (error) {
         logger.warn('Could not delete old avatar', { error: error.message });
       }
@@ -285,19 +284,22 @@ const uploadAvatar = async (req, res) => {
     // Upload new avatar to Cloudinary
     const result = await uploadToCloudinary(
       req.file.buffer,
-      req.file.mimetype,
+      req.file.originalname,
       `avatars/user_${req.user._id}`
     );
 
-    // Update user avatar URL
+    // Update user avatar URL and store public_id for future deletion
     user.avatar = result.secure_url;
+    user.oldAvatarPublicId = result.public_id;
     const updatedUser = await user.save();
 
     logger.info('Avatar uploaded successfully', { userId: req.user._id, url: result.secure_url });
     res.json({
       message: 'Avatar uploaded successfully',
       avatar: result.secure_url,
+      success: true,
       profile: {
+        _id: updatedUser._id,
         firstName: updatedUser.name?.split(' ')[0] || '',
         lastName: updatedUser.name?.split(' ').slice(1).join(' ') || '',
         email: updatedUser.email,

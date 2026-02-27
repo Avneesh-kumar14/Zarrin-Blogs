@@ -52,6 +52,11 @@ const Cards = ({
   // Use placeholder if no image provided
   const displayImage = imageSrc || '/Assets/beach.png';
 
+  // Debug logging
+  if (!imageSrc) {
+    console.warn('📷 No image provided for card:', id, 'using default');
+  }
+
   return (
     <div 
       onClick={handleCardClick}

@@ -81,8 +81,13 @@ const BlogForm = () => {
   };
 
   const handleImageUpload = async (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
+    const fileInput = e.target;
+    const files = Array.from(fileInput.files || []);
+    
+    if (files.length === 0) {
+      setAlert({ type: 'warning', message: 'Please select at least one image' });
+      return;
+    }
 
     setUploading(true);
     try {
@@ -92,48 +97,109 @@ const BlogForm = () => {
       }
 
       const uploadedImages = [];
+      let failedUploads = [];
 
       // Upload each image to Cloudinary
       for (const file of files) {
-        console.log(`Starting upload for file: ${file.name}, size: ${file.size} bytes`);
-        
-        const formData = new FormData();
-        formData.append('image', file);
+        try {
+          // Validate file type before upload
+          const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif', 'application/octet-stream'];
+          const fileExt = file.name.toLowerCase().split('.').pop();
+          const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif'];
+          
+          // Check if file type is valid
+          if (!validTypes.includes(file.type) && !validExtensions.includes(fileExt)) {
+            console.warn(`Skipping invalid file type: ${file.type}, extension: ${fileExt}`);
+            failedUploads.push(`${file.name} - Invalid format`);
+            continue;
+          }
 
-        const res = await fetch(getApiUrl('/api/upload/upload'), {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          credentials: 'include', // CRITICAL: include cookies for production CORS
-          body: formData
-        });
+          // Validate file size (max 5MB per file)
+          if (file.size > 5 * 1024 * 1024) {
+            failedUploads.push(`${file.name} - File too large (max 5MB)`);
+            continue;
+          }
+          
+          console.log(`📸 Starting upload for file: ${file.name}, type: ${file.type}, size: ${(file.size / 1024).toFixed(2)}KB`);
+          
+          // Create fresh FormData for each file to avoid corruption
+          const formData = new FormData();
+          
+          // Properly append file - ensure it's a File object
+          if (file instanceof File) {
+            formData.append('image', file, file.name);
+          } else {
+            formData.append('image', file);
+          }
 
-        console.log(`Upload response status: ${res.status} for ${file.name}`);
+          console.log(`📤 Sending file: ${file.name} to server...`);
 
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(`Failed to upload ${file.name}: ${errorData.message || res.statusText}`);
+          const res = await fetch(getApiUrl('/api/upload/upload'), {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+              // DO NOT set Content-Type - browser will set it with proper boundary
+            },
+            credentials: 'include',
+            body: formData
+          });
+
+          console.log(`Response status: ${res.status} for ${file.name}`);
+
+          if (!res.ok) {
+            const errorText = await res.text();
+            console.error(`Upload failed for ${file.name}. Status: ${res.status}, Body:`, errorText);
+            
+            // Try to parse as JSON
+            try {
+              const errorData = JSON.parse(errorText);
+              failedUploads.push(`${file.name} - ${errorData.message || 'Upload failed'}`);
+            } catch {
+              failedUploads.push(`${file.name} - Server error (${res.status})`);
+            }
+            continue;
+          }
+
+          const data = await res.json();
+          console.log(`✅ Upload success for ${file.name}. URL:`, data.url);
+
+          if (!data.url) {
+            failedUploads.push(`${file.name} - No URL returned`);
+            continue;
+          }
+
+          uploadedImages.push({
+            file: file,
+            preview: data.url,
+            cloudinaryUrl: data.url,
+            fileName: file.name
+          });
+        } catch (fileError) {
+          console.error(`Error uploading ${file.name}:`, fileError);
+          failedUploads.push(`${file.name} - ${fileError.message}`);
         }
-
-        const data = await res.json();
-        console.log(`Upload success for ${file.name}. URL:`, data.url);
-
-        uploadedImages.push({
-          file: file,
-          preview: data.url,
-          cloudinaryUrl: data.url
-        });
       }
 
-      setImages((prev) => [...prev, ...uploadedImages]);
-      console.log('All images uploaded to Cloudinary:', uploadedImages);
-      setAlert({ type: 'success', message: `${uploadedImages.length} image(s) uploaded successfully!` });
+      if (uploadedImages.length > 0) {
+        setImages((prev) => [...prev, ...uploadedImages]);
+        console.log('✅ All images uploaded:', uploadedImages);
+      }
+
+      // Show results
+      if (failedUploads.length > 0 && uploadedImages.length === 0) {
+        setAlert({ type: 'error', message: `Upload failed: ${failedUploads.join(', ')}` });
+      } else if (failedUploads.length > 0) {
+        setAlert({ type: 'warning', message: `${uploadedImages.length} uploaded. Failed: ${failedUploads.join(', ')}` });
+      } else if (uploadedImages.length > 0) {
+        setAlert({ type: 'success', message: `✅ ${uploadedImages.length} image(s) uploaded successfully!` });
+      }
     } catch (err) {
       console.error('Upload error:', err);
       setAlert({ type: 'error', message: 'Error uploading images: ' + err.message });
     } finally {
       setUploading(false);
+      // Reset file input
+      fileInput.value = '';
     }
   };
 
@@ -170,8 +236,14 @@ const BlogForm = () => {
         category: category ? [category] : [],
         shortDesc: shortDesc.trim(),
         content,
-        images: images.map(img => img.cloudinaryUrl || img.preview)
+        images: images.filter(img => img).map(img => typeof img === 'string' ? img : (img.cloudinaryUrl || img.preview))
       };
+
+      console.log('📤 Submitting blog data:');
+      console.log('   Title:', blogData.title);
+      console.log('   Category:', blogData.category);
+      console.log('   Images count:', blogData.images.length);
+      console.log('   Images:', blogData.images);
 
       const res = await fetch(getApiUrl('/api/blogs'), {
         method: 'POST',
@@ -274,6 +346,7 @@ const BlogForm = () => {
 
           <label className="block mb-2 font-semibold">Upload Images to Cloudinary</label>
           <input
+            id="blog-image-input"
             type="file"
             accept="image/*"
             multiple

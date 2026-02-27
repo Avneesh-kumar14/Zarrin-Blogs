@@ -36,8 +36,13 @@ const OTPVerify = () => {
   const handleOTPVerify = async (e) => {
     e.preventDefault();
 
+    console.log('🔍 DEBUG: handleOTPVerify called');
+    console.log('Email:', email);
+    console.log('OTP:', otp, 'Length:', otp.length);
+
     // VALIDATION: Perform validations BEFORE setting loading
     if (!otp || otp.length !== 6) {
+      console.log('❌ Validation failed: OTP invalid');
       setAlert({ 
         type: 'warning', 
         message: 'Please enter a valid 6-digit OTP' 
@@ -46,12 +51,16 @@ const OTPVerify = () => {
       return;
     }
 
+    console.log('✅ Validation passed, starting verification...');
     // LOADING: Now start loading after validation passes
     setLoading(true);
 
     try {
+      const apiUrl = getApiUrl('/api/auth/verify-otp');
+      console.log('📡 API URL:', apiUrl);
+      
       // API CALL: Send OTP verification request to backend
-      const res = await fetch(getApiUrl('/api/auth/verify-otp'), {
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include', // ✅ CRITICAL: include cookies for production CORS
@@ -60,12 +69,16 @@ const OTPVerify = () => {
           otp: otp.trim() 
         })
       });
+      
+      console.log('📥 Response status:', res.status);
 
       // RESPONSE PARSING: Parse JSON response
       const data = await res.json();
+      console.log('📦 Response data:', data);
 
       // RATE LIMITING: Handle rate limit errors (429)
       if (res.status === 429) {
+        console.log('⏱️ Rate limited');
         setAlert({ 
           type: 'warning', 
           message: 'Too many attempts. Please try again later.' 
@@ -76,13 +89,17 @@ const OTPVerify = () => {
 
       // ERROR HANDLING: Check for HTTP errors
       if (!res.ok) {
+        console.log('❌ HTTP Error - Status:', res.status, 'Message:', data.message);
         throw new Error(data.message || data.error || 'OTP verification failed');
       }
 
       // RESPONSE VALIDATION: Ensure required tokens are present
       if (!data.token) {
+        console.log('❌ Missing token in response');
         throw new Error('Server error: Missing authentication token');
       }
+
+      console.log('✅ Token received, saving to localStorage');
 
       // TOKEN STORAGE: Save authentication data to localStorage
       localStorage.setItem('token', data.token);
@@ -110,6 +127,10 @@ const OTPVerify = () => {
       }, 1500);
 
     } catch (err) {
+      console.error('❌ OTP verification error:', err);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
+      
       // ERROR RESPONSE: Show error message to user
       // Only show alert if not already set (e.g., rate limit alert)
       if (!alert || alert.type !== 'warning') {
@@ -124,6 +145,24 @@ const OTPVerify = () => {
       // CLEANUP: Always reset loading state (try/catch/finally pattern)
       setLoading(false);
     }
+  };
+
+  const handleOTPChange = (e) => {
+    // Extract only digits and limit to 6 characters
+    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setOtp(value);
+  };
+
+  const handleOTPPaste = (e) => {
+    // Prevent default paste behavior
+    e.preventDefault();
+    
+    // Get pasted text from clipboard
+    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    
+    // Extract only digits and limit to 6 characters
+    const value = pastedText.replace(/\D/g, '').slice(0, 6);
+    setOtp(value);
   };
 
   const handleResendOTP = async () => {
@@ -242,11 +281,13 @@ const OTPVerify = () => {
                     id="otp"
                     type="text"
                     value={otp}
-                    onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onChange={handleOTPChange}
+                    onPaste={handleOTPPaste}
                     placeholder="000000"
                     maxLength="6"
                     className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:border-green-600 dark:focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100 dark:focus:ring-green-900 transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 font-mono tracking-widest text-lg text-center"
                     required
+                    autoFocus
                   />
                 </div>
                 <Paragraph className="text-xs text-gray-500 dark:text-gray-400 mt-1">
