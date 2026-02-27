@@ -5,18 +5,64 @@ const { uploadToCloudinary } = require('../utils/cloudinary');
 
 const router = express.Router();
 
+// Custom error handler for multer
+const handleUploadError = (err, req, res, next) => {
+  if (err) {
+    console.error('Multer error:', err);
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ message: 'File too large', error: err.message });
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({ message: 'Too many files', error: err.message });
+    }
+    if (err.message && err.message.includes('Unexpected end of form')) {
+      return res.status(400).json({ message: 'Form upload incomplete - malformed request', error: err.message });
+    }
+    return res.status(400).json({ message: 'File upload error', error: err.message });
+  }
+  next();
+};
+
 // Upload single image
-router.post('/upload', auth, upload.single('image'), async (req, res) => {
+router.post('/upload', auth, (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Upload middleware error:', err);
+      if (err.message && err.message.includes('Unexpected end of form')) {
+        return res.status(400).json({ 
+          success: false,
+          message: 'Invalid file upload - please try again', 
+          error: 'Malformed form data' 
+        });
+      }
+      return res.status(400).json({ 
+        success: false,
+        message: 'File upload failed', 
+        error: err.message 
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No image file provided' });
     }
 
-    console.log('Uploading file:', req.file.originalname);
+    console.log('📸 Uploading file:', req.file.originalname, 'Size:', req.file.size);
+    
+    // Validate file exists and has data
+    if (!req.file.buffer || req.file.buffer.length === 0) {
+      throw new Error('File buffer is empty');
+    }
     
     // Upload to Cloudinary
     const result = await uploadToCloudinary(req.file.buffer, req.file.originalname, 'zarrin_blogs/photos');
     const imageUrl = typeof result === 'string' ? result : result.secure_url;
+    
+    if (!imageUrl) {
+      throw new Error('No URL returned from Cloudinary');
+    }
     
     res.status(200).json({
       success: true,
@@ -34,21 +80,40 @@ router.post('/upload', auth, upload.single('image'), async (req, res) => {
 });
 
 // Upload multiple images
-router.post('/upload-multiple', auth, upload.array('images', 10), async (req, res) => {
+router.post('/upload-multiple', auth, (req, res, next) => {
+  upload.array('images', 10)(req, res, (err) => {
+    if (err) {
+      console.error('Upload middleware error:', err);
+      return res.status(400).json({ 
+        success: false,
+        message: 'Batch upload failed', 
+        error: err.message 
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: 'No image files provided' });
     }
 
-    console.log(`Uploading ${req.files.length} files`);
+    console.log(`📸 Uploading ${req.files.length} files`);
 
     // Upload all files to Cloudinary
-    const uploadPromises = req.files.map(file =>
-      uploadToCloudinary(file.buffer, file.originalname, 'zarrin_blogs/photos')
-    );
+    const uploadPromises = req.files.map(file => {
+      if (!file.buffer || file.buffer.length === 0) {
+        return Promise.reject(new Error(`${file.originalname} has empty buffer`));
+      }
+      return uploadToCloudinary(file.buffer, file.originalname, 'zarrin_blogs/photos');
+    });
 
     const results = await Promise.all(uploadPromises);
     const imageUrls = results.map(result => typeof result === 'string' ? result : result.secure_url);
+
+    if (imageUrls.length === 0) {
+      throw new Error('No images uploaded successfully');
+    }
 
     res.status(200).json({
       success: true,
