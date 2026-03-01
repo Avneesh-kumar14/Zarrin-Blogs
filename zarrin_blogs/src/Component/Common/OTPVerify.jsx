@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Paragraph from './Paragraph';
 import Headings from './Heading';
 import Button from './Button';
-import Logo from './Logo';
+import ZarrinLogo from './ZarrinLogo';
 import Alert from './Alert';
 import { Lock } from 'lucide-react';
 import { getApiUrl } from '../../utils/apiConfig';
@@ -240,7 +240,7 @@ const OTPVerify = () => {
               <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full mix-blend-multiply filter blur-xl"></div>
             </div>
             <div className="relative flex items-center gap-3">
-              <Logo size="text-4xl" className="text-white" />
+              <ZarrinLogo variant="light" size="lg" />
               <Headings type="h3" className="text-white font-bold">Verify</Headings>
             </div>
           </div>

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Headings from "../Common/Heading";
@@ -11,6 +11,7 @@ import { X } from "lucide-react";
 import { getApiUrl } from '../../utils/apiConfig';
 
 const BlogForm = () => {
+  const quillRef = useRef(null);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [newCategory, setNewCategory] = useState("");
@@ -392,6 +393,7 @@ const BlogForm = () => {
 
           <label className="block mb-2 font-semibold">Blog Content</label>
           <ReactQuill
+            ref={quillRef}
             value={content}
             onChange={setContent}
             theme="snow"

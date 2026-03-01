@@ -272,13 +272,13 @@ const AboutUS = () => {
         .animate-blob{animation:blob 8s infinite;}.animation-delay-2000{animation-delay:2s;}.animation-delay-4000{animation-delay:4s;}
 
         /* HERO */
-        .zau-hero{position:relative;overflow:hidden;background:linear-gradient(148deg,var(--color-primary-dark,#1A3F8A) 0%,var(--color-primary,#2B64D4) 55%,#2468d4 100%);padding:90px 24px 120px;text-align:center;}
+        .zau-hero{position:relative;overflow:hidden;background:linear-gradient(148deg,var(--color-primary-dark,#1A3F8A) 0%,var(--color-primary,#2B64D4) 55%,#2468d4 100%);padding:90px 24px 80px;text-align:center;display:flex;flex-direction:column;align-items:center;}
         .zau-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:52px 52px;}
         .zau-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
         .zau-o1{width:360px;height:360px;top:-80px;left:-60px;background:rgba(255,255,255,0.07);animation:drift 11s ease-in-out infinite;}
         .zau-o2{width:280px;height:280px;bottom:-20px;right:-50px;background:rgba(30,138,86,0.18);animation:drift 9s ease-in-out infinite reverse;}
         .zau-o3{width:200px;height:200px;top:35%;left:55%;background:rgba(112,64,204,0.12);animation:drift 13s ease-in-out infinite 2s;}
-        .zau-hero-inner{position:relative;z-index:2;max-width:720px;margin:0 auto;animation:fadeUp 0.7s ease both;}
+        .zau-hero-inner{position:relative;z-index:2;max-width:720px;margin:0 auto 40px;animation:fadeUp 0.7s ease both;}
 
         .zau-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:rgba(255,255,255,0.9);backdrop-filter:blur(8px);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;padding:7px 16px;border-radius:100px;margin-bottom:24px;}
         .zau-badge-light{background:rgba(43,100,212,0.08);border-color:rgba(43,100,212,0.25);color:var(--color-primary,#2B64D4);}
@@ -293,15 +293,16 @@ const AboutUS = () => {
         .zau-btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:10px;border:2px solid rgba(255,255,255,0.35);color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:all 0.2s;}
         .zau-btn-ghost:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.65);}
 
-        .zau-float-pills{position:absolute;z-index:3;bottom:-20px;left:50%;transform:translateX(-50%);display:flex;gap:9px;flex-wrap:wrap;justify-content:center;}
-        .zau-pill{display:inline-flex;align-items:center;gap:6px;background:var(--color-surface-primary,#fff);border:1px solid var(--color-border-default,#E0E0E0);padding:9px 16px;border-radius:100px;box-shadow:0 4px 14px rgba(26,24,22,0.1);animation:fadeUp 0.6s ease both;}
+        .zau-float-pills{position:relative;z-index:3;margin:0;margin-bottom:40px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:0 24px;width:100%;}
+        .zau-pill{display:inline-flex;align-items:center;gap:6px;background:var(--color-surface-primary,#fff);border:1px solid var(--color-border-default,#E0E0E0);padding:10px 18px;border-radius:100px;box-shadow:0 4px 14px rgba(26,24,22,0.1);animation:fadeUp 0.6s ease both;transition:transform 0.2s,box-shadow 0.2s;}
+        .zau-pill:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,24,22,0.15);}
         .zau-pill-val{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:800;color:var(--color-primary,#2B64D4);}
         .zau-pill-lbl{font-size:11px;color:var(--color-text-secondary,#4A4A48);}
         .zau-wave{position:absolute;bottom:-1px;left:0;right:0;height:64px;}
         .zau-wave svg{width:100%;height:100%;}
 
         /* STATS */
-        .zau-stats-sec{padding:72px 24px 56px;max-width:1200px;margin:0 auto;}
+        .zau-stats-sec{padding:56px 24px 56px;max-width:1200px;margin:0 auto;}
         .zau-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
         @media(max-width:900px){.zau-stats-grid{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:500px){.zau-stats-grid{grid-template-columns:1fr;}}
@@ -435,14 +436,34 @@ const AboutUS = () => {
 
         /* RESPONSIVE */
         @media(max-width:768px){
-          .zau-hero{padding:64px 18px 110px;}
-          .zau-stats-sec,.zau-mission,.zau-features,.zau-how,.zau-journey,.zau-drives,.zau-tests{padding:52px 18px;}
+          .zau-hero{padding:60px 18px 70px;}
+          .zau-hero-inner{margin-bottom:32px;}
+          .zau-stats-sec,.zau-mission,.zau-features,.zau-how,.zau-journey,.zau-drives,.zau-tests{padding:48px 18px;}
           .zau-cta{padding:64px 18px;}
+          .zau-float-pills{gap:10px;padding:0 16px;margin-bottom:28px;}
+          .zau-pill{padding:9px 15px;font-size:13px;}
+          .zau-pill-val{font-size:0.9rem;}
+          .zau-pill-lbl{font-size:10px;}
         }
-        @media(max-width:480px){
-          .zau-hero-h1{font-size:2.2rem;}.zau-hero-sub{font-size:15px;}
-          .zau-float-pills{gap:6px;}.zau-pill{padding:8px 13px;}
-          .zau-sec-h2{font-size:1.7rem;}.zau-val-tabs{flex-wrap:wrap;}
+        @media(max-width:540px){
+          .zau-hero{padding:48px 14px 60px;}
+          .zau-hero-inner{margin-bottom:28px;}
+          .zau-stats-sec{padding:36px 14px 36px;}
+          .zau-float-pills{gap:8px;padding:0 12px;margin-bottom:24px;}
+          .zau-pill{padding:7px 12px;font-size:12px;gap:5px;}
+          .zau-pill-val{font-size:0.85rem;}
+          .zau-pill-lbl{font-size:9px;}
+          .zau-stats-grid{gap:12px;}
+          .zau-stat-card{padding:20px 16px;}
+          .zau-sc-val{font-size:2rem;}
+          .zau-sc-lbl{font-size:12px;}
+        }
+        @media(max-width:380px){
+          .zau-hero{padding:44px 12px 55px;}
+          .zau-hero-inner{margin-bottom:24px;}
+          .zau-pill{padding:6px 10px;font-size:11px;}
+          .zau-pill-val{font-size:0.8rem;}
+          .zau-float-pills{gap:6px;margin-bottom:20px;}
         }
       `}</style>
     </div>

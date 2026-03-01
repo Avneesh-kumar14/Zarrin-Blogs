@@ -3,7 +3,6 @@ import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { TrendingUp, Eye, Heart, MessageCircle, Users, ArrowUp, ArrowDown } from "lucide-react";
 import Heading from "../Component/Common/Heading";
 import Paragraph from "../Component/Common/Paragraph";
-import { getApiUrl } from "../utils/apiConfig";
 
 const DashboardAnalytics = () => {
   const [stats, setStats] = useState(null);
@@ -59,49 +58,49 @@ const DashboardAnalytics = () => {
 
   // Stat Card Component
   const StatCard = ({ icon: Icon, label, value, change, isPositive }) => (
-    <div className="bg-surface-primary dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-md hover:shadow-lg transition-all">
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-3 bg-primary/10 rounded-lg text-primary">
-          <Icon className="text-primary" size={24} />
+    <div className="bg-surface-primary dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all">
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
+        <div className="p-2 sm:p-3 bg-primary/10 rounded-lg text-primary">
+          <Icon className="text-primary w-5 h-5 sm:w-6 sm:h-6" size={24} />
         </div>
-        <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${isPositive ? 'bg-success/10' : 'bg-error/10'}`}>
+        <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs sm:text-sm ${isPositive ? 'bg-success/10' : 'bg-error/10'}`}>
           {isPositive ? (
-            <ArrowUp className="text-success" size={16} />
+            <ArrowUp className="text-success w-3 h-3 sm:w-4 sm:h-4" size={16} />
           ) : (
-            <ArrowDown className="text-error" size={16} />
+            <ArrowDown className="text-error w-3 h-3 sm:w-4 sm:h-4" size={16} />
           )}
-          <span className={`text-xs font-bold ${isPositive ? 'text-success' : 'text-error'}`}>
+          <span className={`font-bold ${isPositive ? 'text-success' : 'text-error'}`}>
             {change}%
           </span>
         </div>
       </div>
-      <p className="text-3xl font-bold text-text-primary dark:text-text-inverse mb-2">{value}</p>
-      <p className="text-sm text-text-secondary dark:text-text-secondary">{label}</p>
+      <p className="text-xl sm:text-3xl font-bold text-text-primary dark:text-text-inverse mb-1 sm:mb-2">{value}</p>
+      <p className="text-xs sm:text-sm text-text-secondary dark:text-text-secondary">{label}</p>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-surface-primary dark:bg-surface-dark px-6 py-14">
-      <div className="max-w-7xl mx-auto space-y-10">
+    <div className="min-h-screen bg-surface-primary dark:bg-surface-dark px-4 sm:px-6 py-10 sm:py-14">
+      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-10">
 
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div className="flex items-center gap-5">
             <div className="p-3 bg-primary rounded-2xl shadow-lg text-on-primary">
               <TrendingUp className="w-8 h-8 text-on-primary" />
             </div>
             <div>
-              <Heading type="h1" className="text-4xl font-bold text-text-primary dark:text-text-inverse">
+              <Heading type="h1" className="text-2xl sm:text-4xl font-bold text-text-primary dark:text-text-inverse">
                 Analytics Dashboard
               </Heading>
-              <Paragraph variant="muted" className="text-text-secondary dark:text-text-secondary">
+              <Paragraph variant="muted" className="text-sm sm:text-base text-text-secondary dark:text-text-secondary">
                 Track your blog performance and engagement metrics
               </Paragraph>
             </div>
           </div>
 
           {/* Time Range Selector */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
             {[
               { label: "7D", value: "7d" },
               { label: "30D", value: "30d" },
@@ -110,7 +109,7 @@ const DashboardAnalytics = () => {
               <button
                 key={option.value}
                 onClick={() => setTimeRange(option.value)}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                   timeRange === option.value
                     ? "bg-primary hover:bg-primary-dark text-on-primary shadow-lg"
                     : "border-2 border-border-default dark:border-border-dark text-text-primary dark:text-text-inverse hover:border-primary"
@@ -137,7 +136,7 @@ const DashboardAnalytics = () => {
               </div>
             </div>
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <StatCard icon={Eye} label="Total Views" value={stats?.views || "12.5K"} change="18" isPositive={true} />
               <StatCard icon={Heart} label="Total Likes" value={stats?.likes || "3.2K"} change="12" isPositive={true} />
               <StatCard icon={MessageCircle} label="Comments" value={stats?.comments || "892"} change="5" isPositive={true} />
@@ -145,18 +144,18 @@ const DashboardAnalytics = () => {
             </div>
 
             {/* Charts Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Views & Engagement Chart */}
-              <div className="lg:col-span-2 bg-surface-primary dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-md">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-text-primary dark:text-text-inverse mb-2">
+              <div className="lg:col-span-2 bg-surface-primary dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md">
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-text-primary dark:text-text-inverse mb-1 sm:mb-2">
                     Weekly Performance
                   </h3>
-                  <p className="text-sm text-text-secondary dark:text-text-secondary">
+                  <p className="text-xs sm:text-sm text-text-secondary dark:text-text-secondary">
                     Views, likes, and comments over the past 7 days
                   </p>
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-light)" />
                     <XAxis stroke="var(--color-text-secondary)" />
@@ -178,16 +177,16 @@ const DashboardAnalytics = () => {
               </div>
 
               {/* Engagement Pie Chart */}
-              <div className="bg-surface-primary dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-md">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-text-primary dark:text-text-inverse mb-2">
+              <div className="bg-surface-primary dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md">
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-text-primary dark:text-text-inverse mb-1 sm:mb-2">
                     Engagement Mix
                   </h3>
-                  <p className="text-sm text-text-secondary dark:text-text-secondary">
+                  <p className="text-xs sm:text-sm text-text-secondary dark:text-text-secondary">
                     Distribution of interactions
                   </p>
                 </div>
-                <ResponsiveContainer width="100%" height={250}>
+                <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
                       data={engagementData}
@@ -204,14 +203,14 @@ const DashboardAnalytics = () => {
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
-                <div className="mt-6 space-y-3">
+                <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
                   {engagementData.map((item, idx) => (
                     <div key={idx} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-                        <span className="text-sm font-semibold text-text-secondary dark:text-text-secondary">{item.name}</span>
+                        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                        <span className="text-xs sm:text-sm font-semibold text-text-secondary dark:text-text-secondary">{item.name}</span>
                       </div>
-                      <span className="text-sm font-bold text-text-primary dark:text-text-inverse">{item.value}</span>
+                      <span className="text-xs sm:text-sm font-bold text-text-primary dark:text-text-inverse">{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -219,24 +218,24 @@ const DashboardAnalytics = () => {
             </div>
 
             {/* Top Articles Section */}
-            <div className="bg-surface-primary dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl p-6 shadow-md">
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-text-primary dark:text-text-inverse mb-2">
+            <div className="bg-surface-primary dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md">
+              <div className="mb-4 sm:mb-6">
+                <h3 className="text-lg sm:text-xl font-bold text-text-primary dark:text-text-inverse mb-1 sm:mb-2">
                   Top Performing Articles
                 </h3>
-                <p className="text-sm text-text-secondary dark:text-text-secondary">
+                <p className="text-xs sm:text-sm text-text-secondary dark:text-text-secondary">
                   Your best articles based on views and engagement
                 </p>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <table className="w-full text-xs sm:text-sm">
                   <thead>
                     <tr className="border-b border-border-light dark:border-border-dark">
-                      <th className="px-4 py-3 text-left font-bold text-text-primary dark:text-text-inverse">Article Title</th>
-                      <th className="px-4 py-3 text-center font-bold text-text-primary dark:text-text-inverse">Views</th>
-                      <th className="px-4 py-3 text-center font-bold text-text-primary dark:text-text-inverse">Likes</th>
-                      <th className="px-4 py-3 text-center font-bold text-text-primary dark:text-text-inverse">Comments</th>
-                      <th className="px-4 py-3 text-center font-bold text-text-primary dark:text-text-inverse">Engagement %</th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3 text-left font-bold text-text-primary dark:text-text-inverse">Article Title</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-center font-bold text-text-primary dark:text-text-inverse">Views</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-center font-bold text-text-primary dark:text-text-inverse hidden sm:table-cell">Likes</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-center font-bold text-text-primary dark:text-text-inverse hidden sm:table-cell">Comments</th>
+                      <th className="px-2 sm:px-4 py-2 sm:py-3 text-center font-bold text-text-primary dark:text-text-inverse">Engagement %</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -248,13 +247,13 @@ const DashboardAnalytics = () => {
                       { title: "Firebase Authentication", views: 620, likes: 156, comments: 41, engagement: 31.5 }
                     ].map((article, idx) => (
                       <tr key={idx} className="border-b border-border-light dark:border-border-dark hover:bg-surface-secondary dark:hover:bg-neutral-800 transition-colors">
-                        <td className="px-4 py-4 font-semibold text-text-primary dark:text-text-inverse">{article.title}</td>
-                        <td className="px-4 py-4 text-center text-text-secondary dark:text-text-secondary">{article.views}</td>
-                        <td className="px-4 py-4 text-center text-text-secondary dark:text-text-secondary">{article.likes}</td>
-                        <td className="px-4 py-4 text-center text-text-secondary dark:text-text-secondary">{article.comments}</td>
-                        <td className="px-4 py-4 text-center">
-                          <span className="inline-flex items-center gap-1 px-3 py-1 bg-success/10 text-success font-bold rounded-full text-sm">
-                            <ArrowUp size={14} />
+                        <td className="px-3 sm:px-4 py-2 sm:py-4 font-semibold text-text-primary dark:text-text-inverse truncate">{article.title}</td>
+                        <td className="px-2 sm:px-4 py-2 sm:py-4 text-center text-text-secondary dark:text-text-secondary">{article.views}</td>
+                        <td className="px-2 sm:px-4 py-2 sm:py-4 text-center text-text-secondary dark:text-text-secondary hidden sm:table-cell">{article.likes}</td>
+                        <td className="px-2 sm:px-4 py-2 sm:py-4 text-center text-text-secondary dark:text-text-secondary hidden sm:table-cell">{article.comments}</td>
+                        <td className="px-2 sm:px-4 py-2 sm:py-4 text-center">
+                          <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 bg-success/10 text-success font-bold rounded-full text-xs sm:text-sm">
+                            <ArrowUp size={12} className="w-3 h-3" />
                             {article.engagement}%
                           </span>
                         </td>

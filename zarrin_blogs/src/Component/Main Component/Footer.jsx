@@ -18,7 +18,7 @@ import {
   FaGithub,
 } from "react-icons/fa6";
 
-import Logo from "../Common/Logo";
+import ZarrinLogo from "../Common/ZarrinLogo";
 import Headings from "../Common/Heading";
 import Paragraph from "../Common/Paragraph";
 
@@ -130,12 +130,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-14">
           {/* Brand */}
           <div className="space-y-5">
-            <div className="flex items-center gap-3">
-              <Logo size="text-4xl" />
-              <Headings type="h3" className="text-white font-bold">
-                Zarrin
-              </Headings>
-            </div>
+            <ZarrinLogo variant="light" size="md" />
 
             <Paragraph className="text-sm text-neutral-400">
               A calm corner of the internet for meaningful writing and deep

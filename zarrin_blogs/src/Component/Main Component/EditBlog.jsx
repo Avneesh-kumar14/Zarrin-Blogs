@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -12,6 +12,7 @@ import { getApiUrl } from '../../utils/apiConfig';
 const EditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const quillRef = useRef(null);
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -270,6 +271,7 @@ const EditBlog = () => {
         <div>
           <label className="block text-sm font-semibold mb-2">Blog Content</label>
           <ReactQuill
+            ref={quillRef}
             value={formData.content}
             onChange={handleContentChange}
             modules={{
