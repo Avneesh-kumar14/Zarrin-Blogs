@@ -84,7 +84,7 @@ const Bookmarks = ({ isAuthenticated }) => {
       return (
         b.blog.title?.toLowerCase().includes(q) ||
         b.blog.author?.name?.toLowerCase().includes(q) ||
-        b.blog.category?.name?.toLowerCase().includes(q)
+        b.blog.category?.[0]?.name?.toLowerCase().includes(q)
       );
     })
     .sort((a, b) => {
@@ -491,6 +491,547 @@ const Bookmarks = ({ isAuthenticated }) => {
           .zbm-hero-sub{font-size:14px;}
           .zbm-hs-val{font-size:1.6rem;}
         }
+
+        /* ═══ NEW BEAUTIFUL GRID CARD STYLES ═══ */
+        .zbm-gc-new {
+          position: relative;
+          background: var(--color-surface-primary, #fff);
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: flex;
+          flex-direction: column;
+          animation: fadeUp 0.5s ease both;
+          border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .zbm-gc-new:hover {
+          transform: translateY(-12px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+          border-color: var(--accent);
+        }
+
+        .zbm-gc-backdrop {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, var(--accent-light), transparent);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+        }
+
+        .zbm-gc-new:hover .zbm-gc-backdrop {
+          opacity: 1;
+        }
+
+        .zbm-gc-img-container {
+          position: relative;
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        .zbm-gc-img-wrapper {
+          position: relative;
+          width: 100%;
+          height: 200px;
+          overflow: hidden;
+          background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+        }
+
+        .zbm-gc-img-new {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .zbm-gc-new:hover .zbm-gc-img-new {
+          transform: scale(1.1) rotate(1deg);
+        }
+
+        .zbm-gc-placeholder {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+        }
+
+        .zbm-gc-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+        }
+
+        .zbm-gc-saved-badge-new {
+          position: absolute;
+          top: 14px;
+          right: 14px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: linear-gradient(135deg, var(--color-warning, #C49A3C), #b8891e);
+          color: #fff;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 6px 14px;
+          border-radius: 24px;
+          z-index: 10;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          backdrop-filter: blur(4px);
+        }
+
+        .zbm-gc-category-badge {
+          position: absolute;
+          bottom: 14px;
+          left: 14px;
+          background: rgba(255, 255, 255, 0.95);
+          color: var(--accent);
+          font-size: 11px;
+          font-weight: 700;
+          padding: 5px 12px;
+          border-radius: 20px;
+          z-index: 10;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          border: 1.5px solid var(--accent);
+        }
+
+        .zbm-gc-bookmark-icon {
+          fill: currentColor;
+        }
+
+        .zbm-gc-content {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          flex: 1;
+        }
+
+        .zbm-gc-meta-new {
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+
+        .zbm-gc-meta-item-new {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 12px;
+          color: var(--color-text-secondary, #4A4A48);
+          font-weight: 500;
+        }
+
+        .zbm-gc-meta-item-new svg {
+          color: var(--accent);
+          flex-shrink: 0;
+        }
+
+        .zbm-gc-title-new {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: var(--color-text-primary, #111);
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          transition: color 0.3s ease;
+          margin: 4px 0;
+        }
+
+        .zbm-gc-new:hover .zbm-gc-title-new {
+          color: var(--accent);
+        }
+
+        .zbm-gc-desc-new {
+          font-size: 14px;
+          color: var(--color-text-secondary, #4A4A48);
+          line-height: 1.65;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .zbm-gc-author-new {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-top: 14px;
+          border-top: 1px solid rgba(0, 0, 0, 0.06);
+          margin-top: auto;
+        }
+
+        .zbm-gc-avatar-new {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          font-size: 15px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          font-family: 'Playfair Display', serif;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .zbm-gc-author-info {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .zbm-gc-author-name {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--color-text-primary, #111);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .zbm-gc-actions-new {
+          display: flex;
+          gap: 10px;
+          margin-top: 8px;
+        }
+
+        .zbm-gc-read-btn-new {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 7px;
+          padding: 12px;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          font-family: 'Outfit', sans-serif;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .zbm-gc-read-btn-new:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .zbm-gc-read-btn-new:active {
+          transform: translateY(-1px);
+        }
+
+        .zbm-gc-delete-btn-new {
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(204, 46, 46, 0.08);
+          border: 1.5px solid rgba(204, 46, 46, 0.2);
+          color: var(--color-error, #CC2E2E);
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          flex-shrink: 0;
+        }
+
+        .zbm-gc-delete-btn-new:hover:not(:disabled) {
+          background: var(--color-error, #CC2E2E);
+          color: #fff;
+          transform: translateY(-3px);
+          box-shadow: 0 6px 16px rgba(204, 46, 46, 0.3);
+        }
+
+        .zbm-gc-delete-btn-new:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .zbm-spinner-mini {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          border: 2px solid currentColor;
+          border-top-color: transparent;
+          border-radius: 50%;
+          animation: spin 0.6s linear infinite;
+        }
+
+        /* ═══ NEW BEAUTIFUL LIST CARD STYLES ═══ */
+        .zbm-lc-new {
+          display: flex;
+          align-items: stretch;
+          gap: 0;
+          background: var(--color-surface-primary, #fff);
+          border: 1px solid rgba(0, 0, 0, 0.04);
+          border-radius: 18px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .zbm-lc-new:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .zbm-lc-image-side {
+          width: 160px;
+          flex-shrink: 0;
+          overflow: hidden;
+        }
+
+        .zbm-lc-img-wrapper-new {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          overflow: hidden;
+        }
+
+        .zbm-lc-img-new {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .zbm-lc-new:hover .zbm-lc-img-new {
+          transform: scale(1.1);
+        }
+
+        .zbm-lc-placeholder-new {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+        }
+
+        .zbm-lc-image-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2));
+          pointer-events: none;
+        }
+
+        .zbm-lc-content-side {
+          flex: 1;
+          min-width: 0;
+          padding: 18px 22px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .zbm-lc-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .zbm-lc-tag {
+          font-size: 11px;
+          font-weight: 700;
+          padding: 5px 12px;
+          border-radius: 16px;
+          border: 1.5px solid;
+          white-space: nowrap;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .zbm-lc-date {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 12px;
+          color: var(--color-text-secondary, #4A4A48);
+          margin-left: auto;
+        }
+
+        .zbm-lc-title-new {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: var(--color-text-primary, #111);
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          transition: color 0.3s ease;
+        }
+
+        .zbm-lc-new:hover .zbm-lc-title-new {
+          color: var(--accent);
+        }
+
+        .zbm-lc-desc-new {
+          font-size: 14px;
+          color: var(--color-text-secondary, #4A4A48);
+          line-height: 1.65;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .zbm-lc-footer {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-top: 10px;
+          margin-top: auto;
+          flex-wrap: wrap;
+        }
+
+        .zbm-lc-author-badge {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .zbm-lc-author-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          font-family: 'Playfair Display', serif;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .zbm-lc-author-name-new {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--color-text-primary, #111);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .zbm-lc-reading-time {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 12px;
+          color: var(--color-text-secondary, #4A4A48);
+          white-space: nowrap;
+          margin-left: auto;
+        }
+
+        .zbm-lc-actions-side {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 18px 16px;
+          flex-shrink: 0;
+        }
+
+        .zbm-lc-read-btn-new {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 10px 18px;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          color: #fff;
+          border: none;
+          border-radius: 10px;
+          font-family: 'Outfit', sans-serif;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          white-space: nowrap;
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .zbm-lc-read-btn-new:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .zbm-lc-delete-btn-new {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          background: rgba(204, 46, 46, 0.08);
+          border: 1.5px solid rgba(204, 46, 46, 0.2);
+          color: var(--color-error, #CC2E2E);
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          flex-shrink: 0;
+        }
+
+        .zbm-lc-delete-btn-new:hover:not(:disabled) {
+          background: var(--color-error, #CC2E2E);
+          color: #fff;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(204, 46, 46, 0.3);
+        }
+
+        .zbm-lc-delete-btn-new:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        @media (max-width: 900px) {
+          .zbm-lc-image-side {
+            width: 140px;
+          }
+        }
+
+        @media (max-width: 700px) {
+          .zbm-lc-new {
+            flex-direction: column;
+          }
+
+          .zbm-lc-image-side {
+            width: 100%;
+            height: 160px;
+          }
+
+          .zbm-lc-content-side {
+            padding: 16px;
+          }
+
+          .zbm-lc-actions-side {
+            padding: 14px 16px;
+            gap: 10px;
+            width: 100%;
+          }
+
+          .zbm-lc-date {
+            margin-left: 0;
+          }
+
+          .zbm-lc-reading-time {
+            margin-left: 0;
+          }
+        }
       `}</style>
     </div>
   );
@@ -498,66 +1039,84 @@ const Bookmarks = ({ isAuthenticated }) => {
 
 /* ══ GRID CARD ══ */
 const GridCard = ({ bookmark, idx, deleting, onView, onRemove }) => {
-  const accents = [
-    'var(--color-primary,#2B64D4)',
-    'var(--color-secondary,#1E8A56)',
-    'var(--color-accent,#7040CC)',
-    'var(--color-warning,#C49A3C)',
+  const colorPalette = [
+    { accent: '#2B64D4', light: 'rgba(43,100,212,0.08)', dark: '#1A3F8A' },      // Primary Blue
+    { accent: '#1E8A56', light: 'rgba(30,138,86,0.08)', dark: '#156B44' },       // Jade Green
+    { accent: '#7040CC', light: 'rgba(112,64,204,0.08)', dark: '#4A2680' },      // Violet
+    { accent: '#C49A3C', light: 'rgba(196,154,60,0.08)', dark: '#A07C28' },      // Gold
   ];
-  const accent = accents[idx % accents.length];
+  const color = colorPalette[idx % colorPalette.length];
 
   return (
-    <article className="zbm-gc" style={{ '--gca': accent, animationDelay: `${idx * 0.06}s` }}>
-      <div className="zbm-gc-top-bar" />
+    <article className="zbm-gc-new" style={{ '--accent': color.accent, '--accent-light': color.light, '--accent-dark': color.dark, animationDelay: `${idx * 0.06}s` }}>
+      {/* Gradient backdrop */}
+      <div className="zbm-gc-backdrop" />
 
-      {/* Image */}
-      <div className="zbm-gc-img-wrap">
-        {bookmark.blog.image
-          ? <img src={bookmark.blog.image} alt={bookmark.blog.title} className="zbm-gc-img" />
-          : <div className="zbm-gc-no-img"><BookOpen size={32} color="rgba(255,255,255,0.4)" /></div>
-        }
-        <div className="zbm-gc-img-ov" />
-        <div className="zbm-gc-saved-badge"><Bookmark size={11} className="zbm-gc-bk-fill" />Saved</div>
-        {bookmark.blog.category?.name && (
-          <div className="zbm-gc-cat-badge">{bookmark.blog.category.name}</div>
-        )}
-      </div>
-
-      {/* Body */}
-      <div className="zbm-gc-body">
-        <div className="zbm-gc-meta">
-          <span className="zbm-gc-meta-item"><Clock size={11} />{new Date(bookmark.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-          <span className="zbm-gc-meta-item"><Eye size={11} />{bookmark.blog.readingTime || '5'} min</span>
+      {/* Image Container */}
+      <div className="zbm-gc-img-container">
+        <div className="zbm-gc-img-wrapper">
+          {bookmark.blog.images?.[0]
+            ? <img src={bookmark.blog.images[0]} alt={bookmark.blog.title} className="zbm-gc-img-new" />
+            : <div className="zbm-gc-placeholder"><BookOpen size={40} color="rgba(255,255,255,0.5)" /></div>
+          }
+          <div className="zbm-gc-overlay" />
         </div>
 
-        <h3 className="zbm-gc-title">{bookmark.blog.title}</h3>
-        <p className="zbm-gc-desc">{bookmark.blog.description || bookmark.blog.short_description || 'Click to read the full story…'}</p>
+        {/* Category Badge */}
+        {bookmark.blog.category?.[0]?.name && (
+          <div className="zbm-gc-category-badge">{bookmark.blog.category[0].name}</div>
+        )}
+        
+        {/* Saved Badge */}
+        <div className="zbm-gc-saved-badge-new">
+          <Bookmark size={12} className="zbm-gc-bookmark-icon" />
+          Saved
+        </div>
+      </div>
 
-        {/* Author */}
+      {/* Content */}
+      <div className="zbm-gc-content">
+        {/* Meta Info */}
+        <div className="zbm-gc-meta-new">
+          <span className="zbm-gc-meta-item-new">
+            <Clock size={12} />
+            {new Date(bookmark.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          </span>
+          <span className="zbm-gc-meta-item-new">
+            <Eye size={12} />
+            {bookmark.blog.readingTime || '5'} min read
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3 className="zbm-gc-title-new">{bookmark.blog.title}</h3>
+
+        {/* Description */}
+        <p className="zbm-gc-desc-new">{bookmark.blog.description || bookmark.blog.short_description || 'Click to read the full story…'}</p>
+
+        {/* Author Info */}
         {bookmark.blog.author && (
-          <div className="zbm-gc-author">
-            <div className="zbm-gc-av">{bookmark.blog.author.name?.charAt(0).toUpperCase()}</div>
-            <div>
-              <p className="zbm-gc-aname">{bookmark.blog.author.name}</p>
-              <p className="zbm-gc-arole">Author</p>
+          <div className="zbm-gc-author-new">
+            <div className="zbm-gc-avatar-new">{bookmark.blog.author.name?.charAt(0).toUpperCase()}</div>
+            <div className="zbm-gc-author-info">
+              <p className="zbm-gc-author-name">{bookmark.blog.author.name}</p>
             </div>
           </div>
         )}
 
         {/* Actions */}
-        <div className="zbm-gc-actions">
-          <button onClick={() => onView(bookmark.blog._id)} className="zbm-gc-read">
-            Read Article <ArrowRight size={14} />
+        <div className="zbm-gc-actions-new">
+          <button onClick={() => onView(bookmark.blog._id)} className="zbm-gc-read-btn-new">
+            <span>Read Article</span>
+            <ArrowRight size={14} />
           </button>
           <button
             onClick={() => onRemove(bookmark.blog._id)}
             disabled={deleting === bookmark.blog._id}
-            className="zbm-gc-del"
-            title="Remove bookmark">
-            {deleting === bookmark.blog._id
-              ? <div className="zbm-del-spin" />
-              : <Trash2 size={15} />
-            }
+            className="zbm-gc-delete-btn-new"
+            title="Remove bookmark"
+          >
+            {deleting === bookmark.blog._id ? <span className="zbm-spinner-mini" /> : <Trash2 size={16} />}
           </button>
         </div>
       </div>
@@ -566,109 +1125,78 @@ const GridCard = ({ bookmark, idx, deleting, onView, onRemove }) => {
 };
 
 /* ══ LIST CARD ══ */
-const ListCard = ({ bookmark, deleting, onView, onRemove }) => (
-  <article className="zbm-lc">
-    {/* Image */}
-    <div className="zbm-lc-img-wrap">
-      {bookmark.blog.image
-        ? <img src={bookmark.blog.image} alt={bookmark.blog.title} className="zbm-lc-img" />
-        : <div className="zbm-lc-no-img"><BookOpen size={22} color="rgba(255,255,255,0.4)" /></div>
-      }
-    </div>
+const ListCard = ({ bookmark, deleting, onView, onRemove }) => {
+  const colorPalette = [
+    { accent: '#2B64D4', light: 'rgba(43,100,212,0.08)', dark: '#1A3F8A' },
+    { accent: '#1E8A56', light: 'rgba(30,138,86,0.08)', dark: '#156B44' },
+    { accent: '#7040CC', light: 'rgba(112,64,204,0.08)', dark: '#4A2680' },
+    { accent: '#C49A3C', light: 'rgba(196,154,60,0.08)', dark: '#A07C28' },
+  ];
+  const color = colorPalette[Object.keys(bookmark).length % colorPalette.length];
 
-    {/* Content */}
-    <div className="zbm-lc-body">
-      <div className="zbm-lc-top">
-        {bookmark.blog.category?.name && <span className="zbm-lc-cat">{bookmark.blog.category.name}</span>}
-        <span className="zbm-lc-date"><Clock size={11} />{new Date(bookmark.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-      </div>
-      <h3 className="zbm-lc-title">{bookmark.blog.title}</h3>
-      <p className="zbm-lc-desc">{bookmark.blog.description || 'Click to read the full story…'}</p>
-      {bookmark.blog.author && (
-        <div className="zbm-lc-author">
-          <div className="zbm-lc-av">{bookmark.blog.author.name?.charAt(0).toUpperCase()}</div>
-          <span className="zbm-lc-aname">{bookmark.blog.author.name}</span>
-          <span className="zbm-lc-sep">·</span>
-          <span className="zbm-lc-read"><Eye size={11} />{bookmark.blog.readingTime || '5'} min read</span>
+  return (
+    <article className="zbm-lc-new" style={{ '--accent': color.accent, '--accent-dark': color.dark }}>
+      {/* Left side - Image */}
+      <div className="zbm-lc-image-side">
+        <div className="zbm-lc-img-wrapper-new">
+          {bookmark.blog.images?.[0]
+            ? <img src={bookmark.blog.images[0]} alt={bookmark.blog.title} className="zbm-lc-img-new" />
+            : <div className="zbm-lc-placeholder-new"><BookOpen size={28} color="rgba(255,255,255,0.5)" /></div>
+          }
+          <div className="zbm-lc-image-overlay" />
         </div>
-      )}
-    </div>
+      </div>
 
-    {/* Actions */}
-    <div className="zbm-lc-actions">
-      <button onClick={() => onView(bookmark.blog._id)} className="zbm-lc-read">
-        Read <ArrowRight size={13} />
-      </button>
-      <button onClick={() => onRemove(bookmark.blog._id)} disabled={deleting === bookmark.blog._id} className="zbm-lc-del">
-        {deleting === bookmark.blog._id ? <div className="zbm-del-spin zbm-del-spin-sm" /> : <Trash2 size={14} />}
-      </button>
-    </div>
+      {/* Middle - Content */}
+      <div className="zbm-lc-content-side">
+        <div className="zbm-lc-header">
+          {bookmark.blog.category?.[0]?.name && (
+            <span className="zbm-lc-tag" style={{ backgroundColor: color.light, borderColor: color.accent }}>
+              {bookmark.blog.category[0].name}
+            </span>
+          )}
+          <span className="zbm-lc-date">
+            <Clock size={12} />
+            {new Date(bookmark.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })}
+          </span>
+        </div>
 
-    <style>{`
-      /* Grid card styles */
-      .zbm-gc { background:var(--color-surface-primary,#fff);border:1px solid var(--color-border-light,#EEE);border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(26,24,22,0.06);transition:transform 0.22s,box-shadow 0.22s;position:relative;animation:fadeUp 0.5s ease both;display:flex;flex-direction:column; }
-      .zbm-gc:hover { transform:translateY(-6px);box-shadow:0 16px 40px rgba(26,24,22,0.12); }
-      .zbm-gc-top-bar { height:4px;background:var(--gca);flex-shrink:0; }
-      .zbm-gc-img-wrap { position:relative;height:180px;overflow:hidden;background:linear-gradient(135deg,var(--gca),rgba(0,0,0,0.6));flex-shrink:0; }
-      .zbm-gc-img { width:100%;height:100%;object-fit:cover;transition:transform 0.4s;display:block; }
-      .zbm-gc:hover .zbm-gc-img { transform:scale(1.08); }
-      .zbm-gc-no-img { width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gca),rgba(0,0,0,0.5)); }
-      .zbm-gc-img-ov { position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.35),transparent 60%);pointer-events:none; }
-      .zbm-gc-saved-badge { position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:5px;background:var(--color-warning,#C49A3C);color:#fff;font-size:10px;font-weight:700;padding:5px 11px;border-radius:100px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,0.15); }
-      .zbm-gc-bk-fill { fill:#fff; }
-      .zbm-gc-cat-badge { position:absolute;bottom:12px;left:12px;background:var(--gca);color:#fff;font-size:10px;font-weight:700;padding:5px 11px;border-radius:100px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,0.15); }
-      .zbm-gc-body { padding:18px;display:flex;flex-direction:column;gap:11px;flex:1; }
-      .zbm-gc-meta { display:flex;gap:12px;flex-wrap:wrap; }
-      .zbm-gc-meta-item { display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-muted,#B0B0AD); }
-      .zbm-gc-title { font-family:'Playfair Display',serif;font-size:1.08rem;font-weight:700;color:var(--color-text-primary,#111);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;transition:color 0.2s;min-height:3rem; }
-      .zbm-gc:hover .zbm-gc-title { color:var(--gca); }
-      .zbm-gc-desc { font-size:13px;color:var(--color-text-secondary,#4A4A48);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4rem; }
-      .zbm-gc-author { display:flex;align-items:center;gap:9px;padding-top:12px;border-top:1px solid var(--color-border-light,#EEE);margin-top:auto; }
-      .zbm-gc-av { width:34px;height:34px;border-radius:50%;background:var(--gca);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Playfair Display',serif;box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-      .zbm-gc-aname { font-size:12px;font-weight:600;color:var(--color-text-primary,#111); }
-      .zbm-gc-arole { font-size:11px;color:var(--color-text-muted,#B0B0AD); }
-      .zbm-gc-actions { display:flex;gap:9px; }
-      .zbm-gc-read { flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;background:var(--gca);color:#fff;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,opacity 0.15s;box-shadow:0 3px 12px rgba(0,0,0,0.15); }
-      .zbm-gc-read:hover { transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.2);opacity:0.95; }
-      .zbm-gc-del { display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:var(--color-error-bg,rgba(204,46,46,0.06));border:1px solid rgba(204,46,46,0.2);color:var(--color-error,#CC2E2E);border-radius:9px;cursor:pointer;transition:all 0.15s;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-      .zbm-gc-del:hover:not(:disabled) { background:var(--color-error,#CC2E2E);color:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(204,46,46,0.3); }
-      .zbm-gc-del:disabled { opacity:0.5;cursor:not-allowed; }
-      .zbm-del-spin { width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite; }
-      .zbm-del-spin-sm { width:12px;height:12px; }
+        <h3 className="zbm-lc-title-new">{bookmark.blog.title}</h3>
+        <p className="zbm-lc-desc-new">{bookmark.blog.description || 'Click to read the full story…'}</p>
 
-      /* List card */
-      .zbm-lc { display:flex;align-items:stretch;gap:16px;background:var(--color-surface-primary,#fff);border:1px solid var(--color-border-light,#EEE);border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(26,24,22,0.05);transition:transform 0.2s,box-shadow 0.2s; }
-      .zbm-lc:hover { transform:translateY(-3px);box-shadow:0 10px 24px rgba(26,24,22,0.1); }
-      @media(max-width:700px){.zbm-lc{flex-direction:column;align-items:stretch;gap:0;}}
-      .zbm-lc-img-wrap { width:140px;height:100px;border-radius:0;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,var(--color-primary,#2B64D4),rgba(0,0,0,0.6)); }
-      @media(max-width:700px){.zbm-lc-img-wrap{width:100%;height:140px;}}
-      .zbm-lc-img { width:100%;height:100%;object-fit:cover;transition:transform 0.3s; }
-      .zbm-lc:hover .zbm-lc-img { transform:scale(1.05); }
-      .zbm-lc-no-img { width:100%;height:100%;display:flex;align-items:center;justify-content:center; }
-      .zbm-lc-body { flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;padding:16px 0;padding-right:16px; }
-      @media(max-width:700px){.zbm-lc-body{padding:16px;}}
-      .zbm-lc-top { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
-      .zbm-lc-cat { font-size:11px;font-weight:700;background:rgba(43,100,212,0.08);color:var(--color-primary,#2B64D4);padding:4px 10px;border-radius:100px;white-space:nowrap; }
-      .zbm-lc-date { display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-muted,#B0B0AD); }
-      .zbm-lc-title { font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--color-text-primary,#111);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
-      .zbm-lc:hover .zbm-lc-title { color:var(--color-primary,#2B64D4); }
-      .zbm-lc-desc { font-size:13px;color:var(--color-text-secondary,#4A4A48);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
-      .zbm-lc-author { display:flex;align-items:center;gap:7px;font-size:12px;margin-top:auto; }
-      .zbm-lc-av { width:28px;height:28px;border-radius:50%;background:var(--color-secondary,#1E8A56);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Playfair Display',serif; }
-      .zbm-lc-aname { font-weight:600;color:var(--color-text-primary,#111);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-      .zbm-lc-sep { color:var(--color-border-default,#E0E0E0); }
-      .zbm-lc-read { display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-muted,#B0B0AD); }
-      .zbm-lc-actions { display:flex;gap:8px;flex-shrink:0;padding:16px 0;padding-right:2px;align-self:center; }
-      @media(max-width:700px){.zbm-lc-actions{padding:16px;gap:12px;width:100%;}}
-      .zbm-lc-read { display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;background:var(--color-primary,#2B64D4);color:#fff;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap;flex:1; }
-      @media(max-width:700px){.zbm-lc-read{flex:auto;}}
-      .zbm-lc-read:hover { background:var(--color-primary-dark,#1A3F8A);transform:translateY(-1px); }
-      .zbm-lc-del { display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--color-error-bg,rgba(204,46,46,0.06));border:1px solid rgba(204,46,46,0.2);color:var(--color-error,#CC2E2E);border-radius:8px;cursor:pointer;transition:all 0.15s;flex-shrink:0; }
-      @media(max-width:700px){.zbm-lc-del{width:100%;height:auto;padding:10px;}}
-      .zbm-lc-del:hover:not(:disabled) { background:var(--color-error,#CC2E2E);color:#fff;transform:translateY(-1px); }
-      .zbm-lc-del:disabled { opacity:0.5;cursor:not-allowed; }
-    `}</style>
-  </article>
-);
+        {bookmark.blog.author && (
+          <div className="zbm-lc-footer">
+            <div className="zbm-lc-author-badge">
+              <span className="zbm-lc-author-avatar" style={{ backgroundColor: color.accent }}>
+                {bookmark.blog.author.name?.charAt(0).toUpperCase()}
+              </span>
+              <span className="zbm-lc-author-name-new">{bookmark.blog.author.name}</span>
+            </div>
+            <span className="zbm-lc-reading-time">
+              <Eye size={12} />
+              {bookmark.blog.readingTime || '5'} min
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Right side - Actions */}
+      <div className="zbm-lc-actions-side">
+        <button onClick={() => onView(bookmark.blog._id)} className="zbm-lc-read-btn-new">
+          <span>Read</span>
+          <ArrowRight size={14} />
+        </button>
+        <button
+          onClick={() => onRemove(bookmark.blog._id)}
+          disabled={deleting === bookmark.blog._id}
+          className="zbm-lc-delete-btn-new"
+          title="Remove bookmark"
+        >
+          {deleting === bookmark.blog._id ? <span className="zbm-spinner-mini" /> : <Trash2 size={16} />}
+        </button>
+      </div>
+    </article>
+  );
+};
 
 export default Bookmarks;

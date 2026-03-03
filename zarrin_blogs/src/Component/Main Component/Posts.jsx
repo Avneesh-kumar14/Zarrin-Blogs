@@ -175,6 +175,11 @@ const BlogForm = () => {
             cloudinaryUrl: data.url,
             fileName: file.name
           });
+          console.log(`✅ Image object created:`, {
+            fileName: file.name,
+            preview: data.url,
+            cloudinaryUrl: data.url
+          });
         } catch (fileError) {
           console.error(`Error uploading ${file.name}:`, fileError);
           failedUploads.push(`${file.name} - ${fileError.message}`);
@@ -182,7 +187,20 @@ const BlogForm = () => {
       }
 
       if (uploadedImages.length > 0) {
-        setImages((prev) => [...prev, ...uploadedImages]);
+        setImages((prev) => {
+          const newImages = [...prev, ...uploadedImages];
+          console.log('🖼️ Images state updated:', newImages);
+          newImages.forEach((img, idx) => {
+            console.log(`   Image ${idx}:`, {
+              type: typeof img,
+              hasPreview: !!img.preview,
+              hasCloudinaryUrl: !!img.cloudinaryUrl,
+              preview: img.preview?.substring(0, 60) + '...',
+              cloudinaryUrl: img.cloudinaryUrl?.substring(0, 60) + '...'
+            });
+          });
+          return newImages;
+        });
         console.log('✅ All images uploaded:', uploadedImages);
       }
 
@@ -244,7 +262,8 @@ const BlogForm = () => {
       console.log('   Title:', blogData.title);
       console.log('   Category:', blogData.category);
       console.log('   Images count:', blogData.images.length);
-      console.log('   Images:', blogData.images);
+      console.log('   Full images array:', blogData.images);
+      console.log('   Complete blogData payload:', JSON.stringify(blogData, null, 2));
 
       const res = await fetch(getApiUrl('/api/blogs'), {
         method: 'POST',
@@ -255,6 +274,9 @@ const BlogForm = () => {
         credentials: 'include', // CRITICAL: include cookies for production CORS
         body: JSON.stringify(blogData)
       });
+      
+      console.log('📥 API Response Status:', res.status);
+      
       if (!res.ok) {
         const errorData = await res.json();
         let errorMessage = errorData.message || 'Failed to create blog';
@@ -267,6 +289,14 @@ const BlogForm = () => {
         console.error('Detailed error response:', errorData);
         throw new Error(errorMessage);
       }
+      
+      const responseData = await res.json();
+      console.log('✅ Blog created successfully!');
+      console.log('   Response data:', responseData);
+      console.log('   Blog has images in response:', !!responseData.images);
+      console.log('   Response images count:', responseData.images?.length || 0);
+      console.log('   Response images array:', responseData.images);
+      
       setAlert({ type: 'success', message: 'Blog submitted successfully!' });
       setTitle('');
       setCategory('');

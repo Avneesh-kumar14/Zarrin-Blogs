@@ -80,6 +80,11 @@ const Home = () => {
 
   useEffect(() => { fetchAllData(); }, [fetchAllData]);
 
+  /* ── FILTERED BLOGS BY CATEGORY ── */
+  const filteredTrendingBlogs = activeCategory === 'All' 
+    ? trendingBlogs 
+    : trendingBlogs.filter(blog => blog.category?.[0]?.name === activeCategory);
+
   /* ── STATIC DATA ── */
   const categories = ['All', 'Technology', 'Design', 'Business', 'Lifestyle', 'Travel', 'Science', 'Culture'];
 
@@ -130,7 +135,7 @@ const Home = () => {
     { type: 'new_post', user: 'Aisha K.', action: 'published', target: '"Building a SaaS in 30 Days"', time: '22m ago', avatar: 'A' },
   ];
 
-  const trendAccents = ['var(--color-primary,#2B64D4)', 'var(--color-secondary,#1E8A56)', 'var(--color-accent,#7040CC)'];
+  const trendAccents = ['var(--color-primary,#2B64D4)', 'var(--color-secondary,#1E8A56)', 'var(--color-accent,#7040CC)', 'var(--color-warning,#C49A3C)'];
 
   return (
     <div className="zh-root">
@@ -252,9 +257,11 @@ const Home = () => {
           </div>
 
           <div className="zh-trend-grid">
-            {trendingBlogs.length > 0 ? trendingBlogs.map((blog,i) => (
+            {filteredTrendingBlogs.length > 0 ? filteredTrendingBlogs.map((blog,i) => {
+              const colorIdx = (blog._id?.charCodeAt(0) || i) % trendAccents.length;
+              return (
               <a key={blog._id} href={`/blog/${blog._id}/preview`}
-                className="zh-trend-card" style={{'--ca':trendAccents[i%3]}}>
+                className="zh-trend-card" style={{'--ca':trendAccents[colorIdx]}}>
                 <div className="zh-tc-top"/>
                 <div className="zh-tc-img-wrap">
                   <img src={blog.images?.[0]||'/Assets/beach.png'} alt={blog.title} className="zh-tc-img"/>
@@ -277,8 +284,9 @@ const Home = () => {
                   </div>
                 </div>
               </a>
-            )) : (
-              <div className="zh-empty">No trending articles yet</div>
+            );
+            }) : (
+              <div className="zh-empty">No trending articles in this category</div>
             )}
           </div>
         </div>
@@ -552,28 +560,37 @@ const Home = () => {
         .zh-cat-active{background:var(--color-primary,#2B64D4)!important;border-color:var(--color-primary,#2B64D4)!important;color:#fff!important;}
 
         /* TREND CARDS */
-        .zh-trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-        @media(max-width:900px){.zh-trend-grid{grid-template-columns:1fr;}}
-        .zh-trend-card{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:var(--color-surface-primary,#fff);border:1px solid var(--color-border-light,#EEE);box-shadow:0 2px 10px rgba(26,24,22,0.06);text-decoration:none;transition:transform 0.22s,box-shadow 0.22s;position:relative;}
-        .zh-tc-top{height:3px;background:var(--ca);}
-        .zh-trend-card:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(26,24,22,0.1);}
-        .zh-tc-img-wrap{position:relative;height:190px;overflow:hidden;}
-        .zh-tc-img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s;}
-        .zh-trend-card:hover .zh-tc-img{transform:scale(1.07);}
-        .zh-tc-ov{position:absolute;inset:0;background:rgba(0,0,0,0.3);}
-        .zh-tc-badge{position:absolute;top:10px;left:10px;background:var(--ca);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:100px;}
-        .zh-tc-rank{position:absolute;bottom:10px;right:12px;font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:800;color:rgba(255,255,255,0.18);}
-        .zh-tc-body{padding:18px;flex:1;display:flex;flex-direction:column;}
-        .zh-tc-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--color-text-primary,#111);margin-bottom:8px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+        /* ╔══ TRENDING CARDS — Bookmarks-style design ══╗ */
+        .zh-trend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;}
+        @media(max-width:1200px){.zh-trend-grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){.zh-trend-grid{grid-template-columns:1fr;}}
+        
+        .zh-trend-card{display:flex;flex-direction:column;border-radius:20px;overflow:hidden;background:var(--color-surface-primary,#fff);border:1px solid rgba(0,0,0,0.04);box-shadow:0 2px 8px rgba(0,0,0,0.08);text-decoration:none;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);position:relative;animation:fadeUp 0.5s ease both;}
+        .zh-tc-top{height:4px;background:linear-gradient(90deg,var(--ca),rgba(var(--ca),0.5));}
+        .zh-trend-card:hover{transform:translateY(-12px);box-shadow:0 20px 40px rgba(0,0,0,0.12);border-color:var(--ca);}
+        
+        .zh-tc-img-wrap{position:relative;height:200px;overflow:hidden;background:linear-gradient(135deg,var(--ca),rgba(var(--ca),0.6));}
+        .zh-tc-img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+        .zh-trend-card:hover .zh-tc-img{transform:scale(1.1) rotate(1deg);}
+        .zh-tc-ov{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,0.4) 100%);}
+        
+        .zh-tc-badge{position:absolute;top:14px;left:14px;background:rgba(255,255,255,0.95);color:var(--ca);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.15);border:1.5px solid var(--ca);}
+        .zh-tc-rank{position:absolute;bottom:14px;right:14px;font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:800;color:rgba(255,255,255,0.12);}
+        
+        .zh-tc-body{padding:20px;flex:1;display:flex;flex-direction:column;gap:10px;}
+        .zh-tc-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:800;color:var(--color-text-primary,#111);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
         .zh-trend-card:hover .zh-tc-title{color:var(--ca);}
-        .zh-tc-desc{font-size:12px;color:var(--color-text-secondary,#4A4A48);line-height:1.6;flex:1;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-        .zh-tc-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--color-border-light,#EEE);}
-        .zh-tc-author{display:flex;align-items:center;gap:7px;}
-        .zh-tc-av{width:28px;height:28px;border-radius:50%;background:var(--ca);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-        .zh-tc-aname{font-size:11px;font-weight:600;color:var(--color-text-primary,#111);}
-        .zh-tc-read{font-size:10px;color:var(--color-text-muted,#B0B0AD);}
-        .zh-tc-stats{display:flex;gap:8px;}
-        .zh-tc-s{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--color-text-muted,#B0B0AD);}
+        .zh-tc-desc{font-size:13px;color:var(--color-text-secondary,#4A4A48);line-height:1.5;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+        
+        .zh-tc-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(0,0,0,0.05);}
+        .zh-tc-author{display:flex;align-items:center;gap:8px;}
+        .zh-tc-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--ca),rgba(var(--ca),0.7));color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .zh-tc-aname{font-size:12px;font-weight:600;color:var(--color-text-primary,#111);}
+        .zh-tc-read{font-size:11px;color:var(--color-text-muted,#B0B0AD);}
+        .zh-tc-stats{display:flex;gap:10px;margin-left:auto;}
+        .zh-tc-s{display:flex;align-items:center;gap:3px;font-size:12px;color:var(--color-text-muted,#B0B0AD);}
+        
+        @keyframes fadeUp { from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);} }
 
         /* TRENDING TOPICS */
         .zh-topics-wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}

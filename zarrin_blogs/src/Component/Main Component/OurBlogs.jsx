@@ -29,17 +29,37 @@ const OurBlogs = () => {
         if (!res.ok) throw new Error('Failed to fetch blogs');
         
         const data = await res.json();
-        
+        console.log('📥 OurBlogs API Response received:', {
+          status: res.status,
+          hasData: !!data.data,
+          blogCount: data.data?.length || 0,
+          paginationInfo: data.pagination
+        });
+
         // ✅ Update pagination state
         if (data.pagination) {
-          setBlogs(data.data || []);
+          const fetchedBlogs = data.data || [];
+          console.log('🔍 Analyzing fetched blogs:');
+          fetchedBlogs.forEach((blog, idx) => {
+            console.log(`   Blog ${idx + 1}: "${blog.title}"`, {
+              hasImages: !!blog.images,
+              isArray: Array.isArray(blog.images),
+              imageCount: blog.images?.length || 0,
+              firstImage: blog.images?.[0] ? blog.images[0].substring(0, 60) + '...' : 'NONE',
+              allImages: blog.images
+            });
+          });
+          setBlogs(fetchedBlogs);
           setTotalPages(data.pagination.totalPages);
           setTotalItems(data.pagination.totalItems);
         } else {
           // Fallback for API without pagination response
-          setBlogs(Array.isArray(data) ? data : []);
+          const blogArray = Array.isArray(data) ? data : [];
+          console.log('⚠️ Response without pagination structure:', blogArray);
+          setBlogs(blogArray);
         }
       } catch (err) {
+        console.error('❌ Error fetching blogs:', err);
         setError(err.message);
         setBlogs([]);
       } finally {

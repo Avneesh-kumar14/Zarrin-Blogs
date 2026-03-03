@@ -117,13 +117,13 @@ const OTPVerify = () => {
       // SUCCESS: Show success message
       setAlert({ 
         type: 'success', 
-        message: 'Email verified! Redirecting to dashboard...' 
+        message: 'Email verified! Redirecting to home...' 
       });
 
-      // NAVIGATION: Redirect to dashboard
+      // NAVIGATION: Redirect to home
       // Use setTimeout to let user see success message before redirect
       setTimeout(() => {
-        navigate('/dashboard/analytics');
+        navigate('/');
       }, 1500);
 
     } catch (err) {

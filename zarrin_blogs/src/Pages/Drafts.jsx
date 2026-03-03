@@ -283,7 +283,7 @@ const D = {
   hero: {
     position: 'relative', overflow: 'hidden',
     background: 'linear-gradient(148deg, var(--color-primary-dark) 0%, var(--color-primary) 60%, #2468d4 100%)',
-    padding: '72px 24px 110px', zIndex: 1,
+    padding: '72px 24px 130px', zIndex: 1,
   },
   heroGrid: {
     position: 'absolute', inset: 0, pointerEvents: 'none',
@@ -322,7 +322,7 @@ const D = {
     flexShrink: 0,
   },
   heroPills: {
-    position: 'absolute', zIndex: 3, bottom: -20, left: '50%',
+    position: 'absolute', zIndex: 10, bottom: 20, left: '50%',
     transform: 'translateX(-50%)',
     display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center',
   },

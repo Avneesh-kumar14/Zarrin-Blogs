@@ -159,7 +159,7 @@ const Login = () => {
       // The backend already returned a valid token, no need to verify it again
       // This saves one API call and improves login speed
       setTimeout(() => {
-        navigate('/dashboard/analytics');
+        navigate('/');
       }, 1500);
 
     } catch (err) {
