@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Paragraph from '../Common/Paragraph';
 import Cards from '../Common/Cards';
 import Pagination from '../Pagination';
+import CardSkeleton from '../Common/CardSkeleton';
 import { getApiUrl } from '../../utils/apiConfig';
 
 const OurBlogs = () => {
@@ -84,11 +85,8 @@ const OurBlogs = () => {
 
         {/* Blogs Grid */}
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-pulse space-y-4">
-              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg w-80"></div>
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-64"></div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <CardSkeleton count={Math.min(6, itemsPerPage)} />
           </div>
         ) : error ? (
           <div className="bg-red-50 dark:bg-red-900 dark:bg-opacity-20 border border-red-200 dark:border-red-700 rounded-lg p-6 text-center">
