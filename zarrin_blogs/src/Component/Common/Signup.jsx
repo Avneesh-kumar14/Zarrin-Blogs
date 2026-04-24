@@ -205,7 +205,7 @@ const Signup = () => {
           </div>
 
           <div className="zs-eyebrow">
-            <div className="zs-eyebrow-line" /><span>Join Zarrin Blogs</span><div className="zs-eyebrow-line" />
+            <div className="zs-eyebrow-line" /><span>Join True Blogs</span><div className="zs-eyebrow-line" />
           </div>
 
           <h1 className="zs-headline">Start your<br /><em>writing</em><br />journey</h1>

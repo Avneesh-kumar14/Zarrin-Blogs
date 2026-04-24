@@ -5,7 +5,7 @@ require('dotenv').config();
 const resetAdmin = async () => {
   try {
     // Connect to MongoDB Atlas
-    await mongoose.connect(process.env.MONGO_URL);
+    await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Connected to MongoDB Atlas');
 
     // Define User Schema with pre-save middleware
@@ -53,7 +53,7 @@ const resetAdmin = async () => {
     const admin = new User({
       name: 'Rajneesh Kumar',
       email: 'admin@gmail.com',  // Use lowercase directly
-      password: 'Raj@1234',
+      password: 'Adminraj@123',
       role: 'admin',
       blog: []
     });
@@ -65,7 +65,7 @@ const resetAdmin = async () => {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('Name:', admin.name);
     console.log('Email:', admin.email);
-    console.log('Password: Raj@1234');
+    console.log('Password: Adminraj@123');
     console.log('Role:', admin.role);
     console.log('ID:', admin._id);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');

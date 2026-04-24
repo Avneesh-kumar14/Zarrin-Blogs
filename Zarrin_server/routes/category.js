@@ -52,8 +52,8 @@ router.patch('/:id', auth, admin, async (req, res) => {
   }
 });
 
-// Delete category (auth required, admin preferred)
-router.delete('/:id', auth, async (req, res) => {
+// Delete category (admin only)
+router.delete('/:id', auth, admin, async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
     if (!category) return res.status(404).json({ message: 'Category not found' });

@@ -195,7 +195,7 @@ const Login = () => {
 
         <div className="zl-brand-inner">
           <div className="zl-overline">
-            <div className="zl-overline-rule" /><span>Zarrin</span><div className="zl-overline-rule" />
+            <div className="zl-overline-rule" /><span>TRUE</span><div className="zl-overline-rule" />
           </div>
 
           <h1 className="zl-wordmark">Blogs</h1>
@@ -241,7 +241,7 @@ const Login = () => {
           {/* Mobile logo */}
           <div className="zl-mobile-mark">
             <div className="zl-mobile-dot" />
-            <span>Zarrin Blogs</span>
+            <span>True Blogs</span>
           </div>
 
           <div className="zl-header">

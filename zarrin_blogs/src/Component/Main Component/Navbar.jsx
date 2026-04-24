@@ -190,7 +190,7 @@ const Navbar = () => {
                 <span className="text-on-primary font-bold text-base tracking-tight">Z</span>
               </div>
               <div className="hidden sm:flex flex-col leading-none">
-                <span className="text-[15px] font-bold text-primary tracking-tight">Zarrin</span>
+                <span className="text-[15px] font-bold text-primary tracking-tight">TRUE</span>
                 <span className="text-[10px] text-text-secondary font-medium tracking-widest uppercase">Blogs</span>
               </div>
             </NavLink>

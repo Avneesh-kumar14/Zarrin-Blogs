@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Users, FileText, Eye, Heart, TrendingUp, Trash2, ArrowLeft } from 'lucide-react';
+import { Users, FileText, Eye, Heart, TrendingUp, Trash2, ArrowLeft, Edit2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Heading from '../Component/Common/Heading';
 import Paragraph from '../Component/Common/Paragraph';
@@ -111,6 +111,29 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
         }
       }
     });
+  };
+
+  const handleEditBlog = (blogId) => {
+    navigate(`/blog/${blogId}/edit`);
+  };
+
+  const handleStatusChange = async (blogId, newStatus) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/blogs/${blogId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (!res.ok) throw new Error('Failed to update blog status');
+      setAlert({ type: 'success', message: 'Blog status updated successfully!' });
+      fetchDashboard();
+    } catch (err) {
+      setAlert({ type: 'error', message: err.message });
+    }
   };
 
   if (loading) {
@@ -388,26 +411,40 @@ const AdminDashboard = ({ isAuthenticated, currentUser }) => {
                 <tbody>
                   {blogs.map(blog => (
                     <tr key={blog._id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
-                      <td className="p-3 dark:text-gray-300 truncate">{blog.title}</td>
+                      <td className="p-3 dark:text-gray-300 truncate max-w-xs" title={blog.title}>
+                        {blog.title}
+                      </td>
                       <td className="p-3 dark:text-gray-300">{blog.author?.name}</td>
                       <td className="text-center p-3">
-                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                          blog.status === 'published' ? 'bg-green-100 text-green-800' :
-                          blog.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-blue-100 text-blue-800'
-                        }`}>
-                          {blog.status}
-                        </span>
+                        <select
+                          value={blog.status}
+                          onChange={(e) => handleStatusChange(blog._id, e.target.value)}
+                          className="px-2 py-1 text-xs font-semibold rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                        >
+                          <option value="draft">Draft</option>
+                          <option value="published">Published</option>
+                          <option value="scheduled">Scheduled</option>
+                        </select>
                       </td>
                       <td className="text-center p-3 dark:text-gray-300">{blog.views || 0}</td>
                       <td className="text-center p-3 dark:text-gray-300">{new Date(blog.createdAt).toLocaleDateString()}</td>
                       <td className="text-center p-3">
-                        <button
-                          onClick={() => handleDeleteBlog(blog._id)}
-                          className="text-red-600 hover:text-red-800 dark:text-red-400"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleEditBlog(blog._id)}
+                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                            title="Edit blog"
+                          >
+                            <Edit2   size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBlog(blog._id)}
+                            className="text-red-600 hover:text-red-800 dark:text-red-400"
+                            title="Delete blog"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

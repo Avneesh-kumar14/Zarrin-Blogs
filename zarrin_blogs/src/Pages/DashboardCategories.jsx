@@ -172,6 +172,9 @@ const DashboardCategories = () => {
             type={alert.type}
             onClose={() => setAlert(null)}
             duration={5000}
+            isConfirmation={alert.isConfirmation}
+            onConfirm={alert.onConfirm}
+            onCancel={alert.onCancel}
           />
         )}
         {error && <Alert message={error} type="error" onClose={() => setError("")} />}

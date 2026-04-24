@@ -151,7 +151,7 @@ const Comments = ({ blogId, currentUser, isAuthenticated }) => {
   };
 
   const canEditDelete = (comment) => {
-    return currentUser && (currentUser._id === comment.author?._id || currentUser.isAdmin);
+    return currentUser && (currentUser._id === comment.author?._id || currentUser.role === 'admin');
   };
 
   return (
